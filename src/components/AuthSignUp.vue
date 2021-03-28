@@ -1,4 +1,4 @@
-<template>
+ <template>
   <div class="container">
     <div class="flexbox cardStyle cardBackground">
       <form @submit.prevent="signUp">
@@ -9,7 +9,7 @@
           </ion-col>
           <ion-col>
             <ion-input
-              v-model="state.email"
+              v-model="s.email"
               @change="v$.email.$touch()"
               :class="{ invalid: v$.email.$invalid && v$.email.$dirty }"
               name="email"
@@ -26,7 +26,7 @@
           </ion-col>
           <ion-col>
             <ion-input
-              v-model="state.name"
+              v-model="s.name"
               @change="v$.name.$touch()"
               :class="{ invalid: v$.name.$invalid && v$.name.$dirty }"
               name="userName"
@@ -43,7 +43,7 @@
           </ion-col>
           <ion-col>
             <ion-input
-              v-model="state.listName"
+              v-model="s.listName"
               type="text"
               placeholder="Name of your list"
             ></ion-input>
@@ -57,7 +57,7 @@
           </ion-col>
           <ion-col>
             <ion-input
-              v-model="state.password"
+              v-model="s.password"
               @change="v$.password.$touch()"
               :class="{ invalid: v$.password.$invalid && v$.password.$dirty }"
               type="password"
@@ -79,7 +79,7 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
 import { computed, reactive } from "vue";
 import { useRouter } from "vue-router";
 import { IonRow, IonCol, IonIcon, IonInput, IonButton } from "@ionic/vue";
@@ -87,6 +87,10 @@ import { at, key, personOutline, listOutline } from "ionicons/icons";
 import useVuelidate from "@vuelidate/core";
 import { required, email, minLength } from "@vuelidate/validators";
 import { firestore, firebaseAuth } from "@/db/firebase";
+import { User }  from "@/models/Usuario";
+import { SharedList } from "@/models/List";
+import components from "@/mixins/components";
+
 
 export default {
   components: {
@@ -96,7 +100,7 @@ export default {
     IonInput,
     IonButton,
   },
-  setup() {
+   setup() {
     const router = useRouter();
 
     const colors = [
@@ -108,7 +112,8 @@ export default {
       "#25A0C5",
       "#5EAE9E",
     ];
-    const state = reactive({
+
+    const s = reactive({
       name: "",
       email: "",
       password: "",
@@ -124,9 +129,9 @@ export default {
       };
     });
 
-    const v$ = useVuelidate(rules, state);
+    const v$ = useVuelidate(rules, s);
 
-    function createUser(id, email, name, sharedListIdentifier, qrUrl) {
+    function createUser(id: string, email: string, name: string, sharedListIdentifier: string, qrUrl: string): User {
       return {
         id,
         email,
@@ -138,63 +143,73 @@ export default {
       };
     }
 
-    function createIdentifier() {
+    function createIdentifier(): string {
       return new Date().getTime().toString();
     }
 
-    const qrURL = (id) =>
+    const qrURL = (id: string) =>
       `https://api.qrserver.com/v1/create-qr-code/?data=${id}&size=200x200`;
 
-    function generateListColor() {
+    function generateListColor(): string {
       const color = Math.round(Math.random() * colors.length);
       return colors[color];
     }
 
-    function signUp() {
-      v$.value.$validate();
-      if (v$.value.$error === true) {
-        return;
-      }
+    function createSharedList(user, sharedListName, sharedListIdentifier): SharedList {
+      const users = [];
+      const color = generateListColor();
+      users.unshift(user.id);
+      return {
+        users,
+        admin: user.id,
+        products: [],
+        name: sharedListName,
+        listCode: sharedListIdentifier,
+        color,
+      };
+    }
 
-      function createSharedList(user, sharedListName, sharedListIdentifier) {
-        const users = [];
-        const color = generateListColor();
-        users.unshift(user.id);
-        return {
-          users,
-          admin: user.id,
-          products: [],
-          name: sharedListName,
-          listCode: sharedListIdentifier,
-          color,
-        };
-      }
+    function saveUserAndUserListOnFirestore(user: User, sharedList: SharedList) {
+      //Save user on firestore.
+      firestore.doc(`usuarios/${user.id}`).set(user).then(() => {
+        //Save shared list on firestore
+        firestore.doc(`sharedList/${sharedList.listCode}`).set(sharedList).then(() => {
+          //TODO Save user on vuex
+          router.push("/");
+        });
+      });
+    }
+
+     function signUp() {
+      v$.value.$validate();
+      if (v$.value.$error) return;
 
       firebaseAuth
-        .createUserWithEmailAndPassword(state.email, state.password)
+        .createUserWithEmailAndPassword(s.email, s.password)
         .then((user) => {
           const sharedListIdentifier = createIdentifier();
           debugger;
-          const newUser = createUser(
+          const newUser: User = createUser(
             user.user.uid,
-            email,
-            name,
+            s.email,
+            s.name,
             sharedListIdentifier,
             qrURL(sharedListIdentifier)
           );
-          const sharedList = createSharedList(
+
+          const sharedList: SharedList = createSharedList(
             newUser,
-            this.listName,
+            s.listName,
+            s.password,
             sharedListIdentifier
           );
-          console.log(sharedList);
-          //save user in firestore.
-          //router.push("/");
+
+          saveUserAndUserListOnFirestore(newUser,sharedList);
         });
     }
 
     return {
-      state,
+      s,
       v$,
       signUp,
       email: at,

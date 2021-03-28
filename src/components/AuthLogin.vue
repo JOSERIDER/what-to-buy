@@ -94,14 +94,14 @@ export default {
 
     function login() {
       v$.value.$validate();
-      if (v$.value.$error === false) {
-        firebaseAuth
-          .signInWithEmailAndPassword(state.email, state.password)
-          .then((user) => {
-            //Save vuex user
-            router.push("/");
-          });
-      }
+      if (v$.value.$error === true) return;
+
+      firebaseAuth
+        .signInWithEmailAndPassword(state.email, state.password)
+        .then((user) => {
+          //Save vuex user
+          router.push("/");
+        });
     }
 
     onUnmounted(() => {

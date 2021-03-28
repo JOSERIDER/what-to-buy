@@ -1,16 +1,13 @@
 import { loadingController } from '@ionic/vue';
 
-export default {
-    setup() {
-        async function createLoading(message: string, duration: number) {
+export default function () {
+    async function createLoading(message: string) {
            return  await loadingController
                 .create({
                     cssClass: 'my-custom-class',
                     message,
-                    duration,
                 });
-        }
+    }
 
         return {loading: createLoading}
-    }
 }
