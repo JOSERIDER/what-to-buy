@@ -37,17 +37,17 @@ export default {
 </script>
 
 <style scoped>
+ion-content {
+  overflow-y: hidden;
+}
 ion-slides {
-  height: 100%;
-  background: transparent;
+  height: calc(100% - 136px);
 }
 
 .content {
   height: 100%;
-  background: url("../assets/resources/login-background.svg");
-  background-attachment: fixed;
   background-size: cover;
-  background-repeat: no-repeat;
+  background: url("../assets/resources/login-background.svg") no-repeat fixed;
 }
 .content .logoContainer {
   display: flex;

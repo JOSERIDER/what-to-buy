@@ -56,7 +56,14 @@
 <script lang="ts">
 import { computed, reactive } from "vue";
 import { at, key } from "ionicons/icons";
-import { IonButton, IonCol, IonIcon, IonInput, IonRow } from "@ionic/vue";
+import {
+  alertController,
+  IonButton,
+  IonCol,
+  IonIcon,
+  IonInput,
+  IonRow,
+} from "@ionic/vue";
 import useVuelidate from "@vuelidate/core";
 import { email, required } from "@vuelidate/validators";
 import { auth, userCollection } from "@/firebase";
@@ -96,6 +103,15 @@ export default {
 
     const v$ = useVuelidate(rules, state);
 
+    async function presentAlert(header: string, message: string) {
+      const alert = await alertController.create({
+        cssClass: "my-custom-class",
+        header,
+        message,
+        buttons: ["OK"],
+      });
+      return alert.present();
+    }
     function login() {
       v$.value.$validate();
       if (v$.value.$error) return;
@@ -108,7 +124,7 @@ export default {
             .get()
             .then(docData => {
               if (!docData.exists) {
-                //TODO Show error user not found in db.
+                presentAlert("Error", "User not fount in our dataBase");
                 return;
               }
               const userDB = docData.data() as User;
