@@ -12,7 +12,7 @@ const USER_UID_STORAGE = "USER_UID_STORAGE";
 type AugmentedActionContext = {
   commit<K extends keyof Mutations>(
     key: K,
-    payload: Parameters<Mutations[K]>[1]
+    payload?: Parameters<Mutations[K]>[1]
   ): ReturnType<Mutations[K]>;
 } & Omit<ActionContext<State, State>, "commit">;
 
@@ -28,17 +28,20 @@ export interface Actions {
 }
 
 export const actions: ActionTree<State, State> = {
-  async [ActionTypes.GET_USER]() {
+  async [ActionTypes.GET_USER]({ commit }) {
     const r = await storage.create();
-    return r.get(CURRENT_USER_STORAGE);
+    const user = await r.get(CURRENT_USER_STORAGE);
+    commit(MutationsTypes.SET_USER, user);
+
+    return user;
   },
 
   async [ActionTypes.SET_USER]({ commit }, payload: User) {
     const r = await storage.create();
     await r.set(USER_UID_STORAGE, payload.id);
     await r.set(CURRENT_USER_STORAGE, payload);
-
     commit(MutationsTypes.SET_USER, payload);
+
     return true;
   },
 
@@ -46,7 +49,8 @@ export const actions: ActionTree<State, State> = {
     const r = await storage.create();
     await r.remove(USER_UID_STORAGE);
     await r.remove(CURRENT_USER_STORAGE);
-
     commit(MutationsTypes.REMOVE_USER);
+
+    return true;
   },
 };
