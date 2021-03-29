@@ -53,14 +53,17 @@
   </div>
 </template>
 
-<script>
-import { computed, reactive, onUnmounted } from "vue";
+<script lang="ts">
+import { computed, reactive } from "vue";
 import { at, key } from "ionicons/icons";
-import { IonRow, IonCol, IonIcon, IonInput, IonButton } from "@ionic/vue";
+import { IonButton, IonCol, IonIcon, IonInput, IonRow } from "@ionic/vue";
 import useVuelidate from "@vuelidate/core";
-import { required, email } from "@vuelidate/validators";
-import { firebaseAuth } from "@/db/firebase";
+import { email, required } from "@vuelidate/validators";
+import { auth, userCollection } from "@/firebase";
 import { useRouter } from "vue-router";
+import { useStore } from "@/store/store";
+import { User } from "@/models/Usuario";
+import { ActionTypes } from "@/store/action-types";
 
 export default {
   components: {
@@ -72,6 +75,7 @@ export default {
   },
   setup() {
     const router = useRouter();
+    const store = useStore();
 
     const state = reactive({
       email: "",
@@ -94,19 +98,25 @@ export default {
 
     function login() {
       v$.value.$validate();
-      if (v$.value.$error === true) return;
+      if (v$.value.$error) return;
 
-      firebaseAuth
+      auth
         .signInWithEmailAndPassword(state.email, state.password)
-        .then((user) => {
-          //Save vuex user
-          router.push("/");
+        .then(user => {
+          userCollection
+            .doc(user.user?.uid)
+            .get()
+            .then(docData => {
+              if (!docData.exists) {
+                //TODO Show error user not found in db.
+                return;
+              }
+              const userDB = docData.data() as User;
+              store.dispatch(ActionTypes.SET_USER, userDB);
+              router.push("/");
+            });
         });
     }
-
-    onUnmounted(() => {
-      v$.$reset();
-    });
 
     return { v$, state, login, email: at, password: key };
   },

@@ -1,4 +1,4 @@
- <template>
+<template>
   <div class="container">
     <div class="flexbox cardStyle cardBackground">
       <form @submit.prevent="signUp">
@@ -82,15 +82,17 @@
 <script lang="ts">
 import { computed, reactive } from "vue";
 import { useRouter } from "vue-router";
-import { IonRow, IonCol, IonIcon, IonInput, IonButton } from "@ionic/vue";
-import { at, key, personOutline, listOutline } from "ionicons/icons";
+import { IonButton, IonCol, IonIcon, IonInput, IonRow } from "@ionic/vue";
+import { at, key, listOutline, personOutline } from "ionicons/icons";
 import useVuelidate from "@vuelidate/core";
-import { required, email, minLength } from "@vuelidate/validators";
-import { firestore, firebaseAuth } from "@/db/firebase";
-import { User }  from "@/models/Usuario";
+import { email, minLength, required } from "@vuelidate/validators";
+import { auth, db } from "@/firebase";
+import { User } from "@/models/Usuario";
 import { SharedList } from "@/models/List";
-import components from "@/mixins/components";
-
+import firebase from "firebase";
+import DocumentData = firebase.firestore.DocumentData;
+import { useStore } from "@/store/store";
+import { ActionTypes } from "@/store/action-types";
 
 export default {
   components: {
@@ -100,10 +102,11 @@ export default {
     IonInput,
     IonButton,
   },
-   setup() {
+  setup() {
     const router = useRouter();
+    const store = useStore();
 
-    const colors = [
+    const colors: string[] = [
       "#FF2626",
       "#D73E68",
       "#B300B3",
@@ -131,7 +134,13 @@ export default {
 
     const v$ = useVuelidate(rules, s);
 
-    function createUser(id: string, email: string, name: string, sharedListIdentifier: string, qrUrl: string): User {
+    function createUser(
+      id: string,
+      email: string,
+      name: string,
+      sharedListIdentifier: string,
+      qrUrl: string
+    ): User {
       return {
         id,
         email,
@@ -155,38 +164,54 @@ export default {
       return colors[color];
     }
 
-    function createSharedList(user, sharedListName, sharedListIdentifier): SharedList {
-      const users = [];
+    function createSharedList(
+      user: User,
+      shareListName: string,
+      listCode: string
+    ): SharedList {
+      const users: string[] = [];
       const color = generateListColor();
-      users.unshift(user.id);
+
+      //Create a default name list based on user name followed list.
+      if (shareListName === "") {
+        shareListName = `${user.name}-list`;
+      }
+
       return {
         users,
         admin: user.id,
         products: [],
-        name: sharedListName,
-        listCode: sharedListIdentifier,
+        name: shareListName,
+        listCode: listCode,
         color,
       };
     }
 
-    function saveUserAndUserListOnFirestore(user: User, sharedList: SharedList) {
+    function saveUserAndUserListOnFirestore(
+      user: User,
+      sharedList: SharedList
+    ) {
       //Save user on firestore.
-      firestore.doc(`usuarios/${user.id}`).set(user).then(() => {
-        //Save shared list on firestore
-        firestore.doc(`sharedList/${sharedList.listCode}`).set(sharedList).then(() => {
-          //TODO Save user on vuex
-          router.push("/");
+      db.doc(`usuarios/${user.id}`)
+        .set(user as DocumentData)
+        .then(() => {
+          //Save shared list on firestore
+          db.doc(`sharedList/${sharedList.listCode}`)
+            .set(sharedList)
+            .then(() => {
+              store.dispatch(ActionTypes.SET_USER, user);
+              router.push("/");
+            });
         });
-      });
     }
 
-     function signUp() {
+    function signUp() {
       v$.value.$validate();
       if (v$.value.$error) return;
 
-      firebaseAuth
+      auth
         .createUserWithEmailAndPassword(s.email, s.password)
-        .then((user) => {
+        .then((user: any) => {
           const sharedListIdentifier = createIdentifier();
           debugger;
           const newUser: User = createUser(
@@ -200,11 +225,10 @@ export default {
           const sharedList: SharedList = createSharedList(
             newUser,
             s.listName,
-            s.password,
             sharedListIdentifier
           );
 
-          saveUserAndUserListOnFirestore(newUser,sharedList);
+          saveUserAndUserListOnFirestore(newUser, sharedList);
         });
     }
 
@@ -234,11 +258,6 @@ export default {
   width: 90vw;
 }
 
-.text {
-  bottom: 0;
-  margin-bottom: 1rem;
-  background-color: rgba(228, 228, 228, 0.74);
-}
 .text ion-label {
   display: flex;
   flex-direction: row;

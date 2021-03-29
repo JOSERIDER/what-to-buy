@@ -1,5 +1,6 @@
-import firebase from "firebase";
-
+import * as firebase from "firebase/app";
+import "firebase/auth";
+import "firebase/firestore";
 //Firebase configuration.
 const firebaseConfig = {
   apiKey: process.env.VUE_APP_API_KEY,
@@ -12,7 +13,11 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-const firebaseApp = firebase.initializeApp(firebaseConfig);
+const firebaseApp = firebase.default.initializeApp(firebaseConfig);
 
-export const firestore = firebaseApp.firestore();
-export const firebaseAuth = firebaseApp.auth();
+export const db = firebaseApp.firestore();
+export const auth = firebaseApp.auth();
+
+export const userCollection = db.collection("usuarios");
+
+export const sharedListCollection = db.collection("sharedList");

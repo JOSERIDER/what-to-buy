@@ -2,7 +2,11 @@
   <ion-content>
     <div class="content absolute_center">
       <div class="logoContainer">
-        <img class="logo" :src="require('@/assets/resources/login-icon.png')" />
+        <img
+          class="logo"
+          :src="require('@/assets/resources/login-icon.png')"
+          alt="login icon"
+        />
       </div>
       <ion-slides mode="ios">
         <ion-slide>
