@@ -2,19 +2,19 @@
   <ion-page>
     <ion-header :translucent="true">
       <ion-toolbar>
-        <ion-title>Blank</ion-title>
+        <ion-title>Dashboard</ion-title>
       </ion-toolbar>
     </ion-header>
 
     <ion-content :fullscreen="true">
       <ion-header collapse="condense">
         <ion-toolbar>
-          <ion-title size="large">Blank</ion-title>
+          <ion-title size="large">List of {{ user.name }}</ion-title>
         </ion-toolbar>
       </ion-header>
 
       <div id="container">
-        <strong>Ready to create an app?</strong>
+        <strong>{{ user.name }}</strong>
         <p>
           Start with Ionic
           <a
@@ -37,16 +37,23 @@ import {
   IonTitle,
   IonToolbar,
 } from "@ionic/vue";
-import { defineComponent } from "vue";
+import { computed, defineComponent } from "vue";
+import { useStore } from "@/store/store";
 
 export default defineComponent({
-  name: "Home",
+  name: "DashboardList",
   components: {
     IonContent,
     IonHeader,
     IonPage,
     IonTitle,
     IonToolbar,
+  },
+  async setup() {
+    const store = useStore();
+    const user = await store.getters.loggedUser;
+
+    return { user };
   },
 });
 </script>

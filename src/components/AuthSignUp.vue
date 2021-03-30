@@ -206,7 +206,6 @@ export default {
         .createUserWithEmailAndPassword(s.email, s.password)
         .then((user: any) => {
           const sharedListIdentifier = createIdentifier();
-          debugger;
           const newUser: User = createUser(
             user.user.uid,
             s.email,

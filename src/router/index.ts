@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from "@ionic/vue-router";
 import { RouteRecordRaw } from "vue-router";
-import Home from "../views/Home.vue";
+import Home from "../views/Dashboard.vue";
 import Auth from "../views/Auth.vue";
 import { useStore } from "@/store/store";
 

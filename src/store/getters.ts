@@ -5,15 +5,17 @@ import { useStore } from "@/store/store";
 import { ActionTypes } from "@/store/action-types";
 
 export type Getters = {
-  loggedUser(state: State): User;
-  isLoggedIn(): Promise<boolean>;
+  loggedUser(state: State): Promise<User>;
+  isLoggedIn(state: State): Promise<boolean>;
 };
 
 export const getters: GetterTree<State, State> & Getters = {
-  loggedUser(state: State): User {
-    return state.user as User;
+  async loggedUser(state: State): Promise<User> {
+    const store = useStore();
+    const user = await store.dispatch(ActionTypes.GET_USER);
+    return user;
   },
-  async isLoggedIn(): Promise<boolean> {
+  async isLoggedIn(state: State): Promise<boolean> {
     const store = useStore();
     const user = await store.dispatch(ActionTypes.GET_USER);
     return !!user;
