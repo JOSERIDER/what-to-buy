@@ -1,5 +1,5 @@
 import { State } from "@/store/state";
-import { User } from "@/models/Usuario";
+import { User } from "@/models/Users";
 import { GetterTree } from "vuex";
 import { useStore } from "@/store/store";
 import { ActionTypes } from "@/store/action-types";

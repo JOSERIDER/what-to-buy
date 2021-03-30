@@ -2,7 +2,7 @@ import { ActionTypes } from "@/store/action-types";
 import { Mutations } from "@/store/mutations";
 import { ActionContext, ActionTree } from "vuex";
 import { State } from "@/store/state";
-import { User } from "@/models/Usuario";
+import { User } from "@/models/Users";
 import { storage } from "@/storage";
 import { MutationsTypes } from "@/store/mutations-types";
 

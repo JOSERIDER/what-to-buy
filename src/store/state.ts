@@ -1,4 +1,4 @@
-import { User } from "@/models/Usuario";
+import { User } from "@/models/Users";
 
 export const state = {
   user: {} as User | null,

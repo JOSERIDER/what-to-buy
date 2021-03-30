@@ -78,7 +78,7 @@ import AuthCard from "@/components/AuthCard.vue";
 import useVuelidate from "@vuelidate/core";
 import { email, minLength, required } from "@vuelidate/validators";
 import { auth, userCollection } from "@/firebase";
-import { User } from "@/models/Usuario";
+import { User } from "@/models/Users";
 import { SharedList } from "@/models/List";
 import firebase from "firebase";
 import { useStore } from "@/store/store";

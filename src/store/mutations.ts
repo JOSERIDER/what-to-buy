@@ -1,6 +1,6 @@
 import { State } from "@/store/state";
 import { MutationsTypes } from "@/store/mutations-types";
-import { User } from "@/models/Usuario";
+import { User } from "@/models/Users";
 import { MutationTree } from "vuex";
 
 //The mutations in the enum is represent by a function of type Mutations.

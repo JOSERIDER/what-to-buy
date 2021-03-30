@@ -52,7 +52,7 @@ import { email, required } from "@vuelidate/validators";
 import { auth, userCollection } from "@/firebase";
 import { useRouter } from "vue-router";
 import { useStore } from "@/store/store";
-import { User } from "@/models/Usuario";
+import { User } from "@/models/Users";
 import { ActionTypes } from "@/store/action-types";
 import AuthCard from "@/components/AuthCard.vue";
 
