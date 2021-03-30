@@ -1,5 +1,6 @@
 <template>
   <ion-content>
+    <TheParticles/>
     <div class="content absolute_center">
       <div class="logoContainer">
         <img
@@ -24,9 +25,11 @@
 import AuthLogin from "@/components/AuthLogin.vue";
 import AuthSignUp from "@/components/AuthSignUp.vue";
 import { IonContent, IonSlides, IonSlide } from "@ionic/vue";
+import TheParticles from "@/components/TheParticles.vue";
 
 export default {
   components: {
+    TheParticles,
     AuthLogin,
     AuthSignUp,
     IonContent,
@@ -44,6 +47,9 @@ ion-slides {
   height: calc(100% - 136px);
 }
 
+.logo {
+  z-index: 999;
+}
 .content {
   height: 100%;
   background-size: cover;
