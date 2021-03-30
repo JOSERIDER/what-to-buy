@@ -1,98 +1,89 @@
 <template>
-  <div class="container">
-    <div class="flexbox cardStyle cardBackground">
-      <form @submit.prevent="signUp">
-        <!-- Email -->
-        <ion-row class=" ion-align-items-baseline ">
-          <ion-col size="1" class="ion-margin-horizontal">
-            <ion-icon :icon="email"></ion-icon>
-          </ion-col>
-          <ion-col>
-            <ion-input
-              v-model="s.email"
-              @change="v$.email.$touch()"
-              :class="{ invalid: v$.email.$invalid && v$.email.$dirty }"
-              name="email"
-              placeholder="Email"
-            >
-            </ion-input>
-          </ion-col>
-        </ion-row>
+  <AuthCard @submit="signUp">
+    <template #form>
+      <!-- Email -->
+      <ion-row class=" ion-align-items-baseline ">
+        <ion-col size="1" class="ion-margin-horizontal">
+          <ion-icon :icon="email"></ion-icon>
+        </ion-col>
+        <ion-col>
+          <ion-input
+            v-model="s.email"
+            @change="v$.email.$touch()"
+            :class="{ invalid: v$.email.$invalid && v$.email.$dirty }"
+            name="email"
+            placeholder="Email"
+          >
+          </ion-input>
+        </ion-col>
+      </ion-row>
 
-        <!-- Name -->
-        <ion-row class=" ion-align-items-baseline ">
-          <ion-col size="1" class="ion-margin-horizontal">
-            <ion-icon :icon="person"></ion-icon>
-          </ion-col>
-          <ion-col>
-            <ion-input
-              v-model="s.name"
-              @change="v$.name.$touch()"
-              :class="{ invalid: v$.name.$invalid && v$.name.$dirty }"
-              name="userName"
-              type="text"
-              placeholder="Name"
-            ></ion-input>
-          </ion-col>
-        </ion-row>
+      <!-- Name -->
+      <ion-row class=" ion-align-items-baseline ">
+        <ion-col size="1" class="ion-margin-horizontal">
+          <ion-icon :icon="person"></ion-icon>
+        </ion-col>
+        <ion-col>
+          <ion-input
+            v-model="s.name"
+            @change="v$.name.$touch()"
+            :class="{ invalid: v$.name.$invalid && v$.name.$dirty }"
+            name="userName"
+            type="text"
+            placeholder="Name"
+          ></ion-input>
+        </ion-col>
+      </ion-row>
 
-        <!-- sharedList name -->
-        <ion-row class=" ion-align-items-baseline ">
-          <ion-col size="1" class="ion-margin-horizontal">
-            <ion-icon :icon="list"></ion-icon>
-          </ion-col>
-          <ion-col>
-            <ion-input
-              v-model="s.listName"
-              type="text"
-              placeholder="Name of your list"
-            ></ion-input>
-          </ion-col>
-        </ion-row>
+      <!-- sharedList name -->
+      <ion-row class=" ion-align-items-baseline ">
+        <ion-col size="1" class="ion-margin-horizontal">
+          <ion-icon :icon="list"></ion-icon>
+        </ion-col>
+        <ion-col>
+          <ion-input
+            v-model="s.listName"
+            type="text"
+            placeholder="Name of your list"
+          ></ion-input>
+        </ion-col>
+      </ion-row>
 
-        <!-- Password -->
-        <ion-row class=" ion-align-items-baseline ">
-          <ion-col size="1" class="ion-margin-horizontal">
-            <ion-icon :icon="password"></ion-icon>
-          </ion-col>
-          <ion-col>
-            <ion-input
-              v-model="s.password"
-              @change="v$.password.$touch()"
-              :class="{ invalid: v$.password.$invalid && v$.password.$dirty }"
-              type="password"
-              placeholder="Password"
-            ></ion-input>
-          </ion-col>
-        </ion-row>
-
-        <ion-button
-          type="submit"
-          class="btn btn-login"
-          expand="block"
-          shape="round"
-        >
-          Sign up
-        </ion-button>
-      </form>
-    </div>
-  </div>
+      <!-- Password -->
+      <ion-row class=" ion-align-items-baseline ">
+        <ion-col size="1" class="ion-margin-horizontal">
+          <ion-icon :icon="password"></ion-icon>
+        </ion-col>
+        <ion-col>
+          <ion-input
+            v-model="s.password"
+            @change="v$.password.$touch()"
+            :class="{ invalid: v$.password.$invalid && v$.password.$dirty }"
+            type="password"
+            placeholder="Password"
+          ></ion-input>
+        </ion-col>
+      </ion-row>
+    </template>
+    <template #button-text>Sign up</template>
+  </AuthCard>
 </template>
 
 <script lang="ts">
 import { computed, reactive } from "vue";
 import { useRouter } from "vue-router";
-import { IonButton, IonCol, IonIcon, IonInput, IonRow } from "@ionic/vue";
+import { IonCol, IonIcon, IonInput, IonRow } from "@ionic/vue";
 import { at, key, listOutline, personOutline } from "ionicons/icons";
+import AuthCard from "@/components/AuthCard.vue";
 import useVuelidate from "@vuelidate/core";
 import { email, minLength, required } from "@vuelidate/validators";
-import { auth, db } from "@/firebase";
+import { auth, userCollection } from "@/firebase";
 import { User } from "@/models/Usuario";
 import { SharedList } from "@/models/List";
 import firebase from "firebase";
-import DocumentData = firebase.firestore.DocumentData;
 import { useStore } from "@/store/store";
 import { ActionTypes } from "@/store/action-types";
+import DocumentData = firebase.firestore.DocumentData;
 
 export default {
   components: {
@@ -100,7 +91,7 @@ export default {
     IonCol,
     IonIcon,
     IonInput,
-    IonButton,
+    AuthCard,
   },
   setup() {
     const router = useRouter();
@@ -192,11 +183,13 @@ export default {
       sharedList: SharedList
     ) {
       //Save user on firestore.
-      db.doc(`usuarios/${user.id}`)
+      userCollection
+        .doc(user.id)
         .set(user as DocumentData)
         .then(() => {
           //Save shared list on firestore
-          db.doc(`sharedList/${sharedList.listCode}`)
+          userCollection
+            .doc(sharedList.listCode)
             .set(sharedList)
             .then(() => {
               store.dispatch(ActionTypes.SET_USER, user);
@@ -244,25 +237,3 @@ export default {
   },
 };
 </script>
-
-<style scoped>
-@import "../assets/style/auth.css";
-
-.container {
-  height: 100%;
-}
-
-.flexbox {
-  position: relative;
-  z-index: 1;
-  width: 90vw;
-}
-
-.text ion-label {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  font-size: 1rem;
-}
-</style>
