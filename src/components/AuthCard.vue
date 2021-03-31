@@ -1,6 +1,6 @@
 <template>
-  <div class="container">
-    <div class="flexbox cardStyle cardBackground">
+  <div class="h-full">
+    <div class="flexbox relative z-10 cardStyle cardBackground">
       <form @submit.prevent="$emit('submit')">
         <slot name="form"></slot>
         <ion-button
@@ -31,13 +31,7 @@ export default {
 <style scoped>
 @import "../assets/style/auth.css";
 
-.container {
-  height: 100%;
-}
-
 .flexbox {
-  position: relative;
-  z-index: 1;
   width: 90vw;
 }
 

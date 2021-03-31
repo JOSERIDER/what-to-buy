@@ -1,10 +1,10 @@
 <template>
-  <ion-content>
-    <TheParticles/>
-    <div class="content absolute_center">
-      <div class="logoContainer">
+  <ion-content class="overflow-y-hidden">
+    <TheParticles />
+    <div class="h-full bg-cover content">
+      <div class=" flex justify-center">
         <img
-          class="logo"
+          class="z-50 mt-10 w-24 h-25"
           :src="require('@/assets/resources/login-icon.png')"
           alt="login icon"
         />
@@ -40,29 +40,11 @@ export default {
 </script>
 
 <style scoped>
-ion-content {
-  overflow-y: hidden;
-}
 ion-slides {
   height: calc(100% - 136px);
 }
 
-.logo {
-  z-index: 999;
-}
 .content {
-  height: 100%;
-  background-size: cover;
   background: url("../assets/resources/login-background.svg") no-repeat fixed;
-}
-.content .logoContainer {
-  display: flex;
-  justify-content: center;
-}
-
-.content .logoContainer .logo {
-  margin-top: 2.5rem;
-  width: 6rem;
-  height: 6rem;
 }
 </style>

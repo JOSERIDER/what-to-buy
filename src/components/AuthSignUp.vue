@@ -2,8 +2,8 @@
   <AuthCard @submit="signUp">
     <template #form>
       <!-- Email -->
-      <ion-row class=" ion-align-items-baseline ">
-        <ion-col size="1" class="ion-margin-horizontal">
+      <ion-row class="items-baseline">
+        <ion-col size="1" class="mx-4">
           <ion-icon :icon="email"></ion-icon>
         </ion-col>
         <ion-col>
@@ -19,8 +19,8 @@
       </ion-row>
 
       <!-- Name -->
-      <ion-row class=" ion-align-items-baseline ">
-        <ion-col size="1" class="ion-margin-horizontal">
+      <ion-row class="items-baseline">
+        <ion-col size="1" class="mx-4">
           <ion-icon :icon="person"></ion-icon>
         </ion-col>
         <ion-col>
@@ -50,8 +50,8 @@
       </ion-row>
 
       <!-- Password -->
-      <ion-row class=" ion-align-items-baseline ">
-        <ion-col size="1" class="ion-margin-horizontal">
+      <ion-row class="items-baseline">
+        <ion-col size="1" class="mx-4">
           <ion-icon :icon="password"></ion-icon>
         </ion-col>
         <ion-col>
@@ -193,7 +193,7 @@ export default {
             .set(sharedList)
             .then(() => {
               store.dispatch(ActionTypes.SET_USER, user);
-              router.push("/");
+              router.push({ name: "Dashboard" });
             });
         });
     }
