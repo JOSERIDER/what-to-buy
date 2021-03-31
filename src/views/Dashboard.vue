@@ -1,24 +1,23 @@
 <template>
-  <Suspense>
-    <template #default>
-      <DashboardList />
-    </template>
-    <template #fallback>
-      <TheLoading />
-    </template>
-  </Suspense>
+  <ion-content>
+    <Suspense>
+      <template #default>
+        <DashboardContainer />
+      </template>
+    </Suspense>
+  </ion-content>
 </template>
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import DashboardList from "@/components/DashboardList.vue";
-import TheLoading from "@/components/TheLoading.vue";
+import { IonContent } from "@ionic/vue";
+import DashboardContainer from "@/components/DashboardContainer.vue";
 
 export default defineComponent({
   name: "Dashboard",
   components: {
-    TheLoading,
-    DashboardList,
+    DashboardContainer,
+    IonContent,
   },
 });
 </script>

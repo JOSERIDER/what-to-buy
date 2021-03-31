@@ -36,13 +36,11 @@ export const actions: ActionTree<State, State> = {
     return user;
   },
 
-  async [ActionTypes.SET_USER]({ commit }, payload: User) {
+  async [ActionTypes.SET_USER]({ commit }, payload: User): Promise<any> {
     const r = await storage.create();
-    await r.set(USER_UID_STORAGE, payload.id);
-    await r.set(CURRENT_USER_STORAGE, payload);
-    commit(MutationsTypes.SET_USER, payload);
-
-    return true;
+    return r.set(CURRENT_USER_STORAGE, payload).then(() => {
+      commit(MutationsTypes.SET_USER, payload);
+    });
   },
 
   async [ActionTypes.REMOVE_USER]({ commit }) {

@@ -1,88 +1,63 @@
 <template>
-  <ion-page>
-    <ion-header :translucent="true">
-      <ion-toolbar>
-        <ion-title>Dashboard</ion-title>
-      </ion-toolbar>
-    </ion-header>
-
-    <ion-content :fullscreen="true">
-      <ion-header collapse="condense">
-        <ion-toolbar>
-          <ion-title size="large">List of {{ user.name }}</ion-title>
-        </ion-toolbar>
-      </ion-header>
-
-      <div id="container">
-        <strong>{{ user.name }}</strong>
-        <p>
-          Start with Ionic
-          <a
-            target="_blank"
-            rel="noopener noreferrer"
-            href="https://ionicframework.com/docs/components"
-            >UI Components</a
-          >
-        </p>
+  <ion-list>
+    <ion-list-header>
+      <ion-label>{{ listType }} list </ion-label>
+      <ion-button @click="$emit('create-list', listType)"
+        >Create new list</ion-button
+      >
+    </ion-list-header>
+    <div
+      class="flex m-4 flex-col justify-center content-center"
+      v-if="list.length === 0"
+    >
+      <div>
+        <h1>Start adding a new list</h1>
+        <ion-img
+          class="w-16 mr-3"
+          :src="require('@/assets/resources/arrow-up.png')"
+        ></ion-img>
       </div>
-    </ion-content>
-  </ion-page>
+    </div>
+    <DashboardListItem
+      v-else
+      v-for="item in list"
+      :key="item.listCode"
+      :list="item"
+    />
+  </ion-list>
 </template>
 
 <script lang="ts">
 import {
-  IonContent,
-  IonHeader,
-  IonPage,
-  IonTitle,
-  IonToolbar,
+  IonList,
+  IonListHeader,
+  IonLabel,
+  IonButton,
+  IonImg,
 } from "@ionic/vue";
-import { computed, defineComponent } from "vue";
-import { useStore } from "@/store/store";
+import { defineComponent } from "vue";
+import DashboardListItem from "@/components/DashboardListItem.vue";
 
 export default defineComponent({
   name: "DashboardList",
-  components: {
-    IonContent,
-    IonHeader,
-    IonPage,
-    IonTitle,
-    IonToolbar,
+  emits: ["create-list"],
+  props: {
+    listType: {
+      type: String,
+      required: true,
+    },
+    list: {
+      type: Array,
+      required: true,
+    },
   },
-  async setup() {
-    const store = useStore();
-    const user = await store.getters.loggedUser;
-
-    return { user };
+  components: {
+    DashboardListItem,
+    IonList,
+    IonListHeader,
+    IonLabel,
+    IonButton,
+    IonImg,
   },
 });
 </script>
-
-<style scoped>
-#container {
-  text-align: center;
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 50%;
-  transform: translateY(-50%);
-}
-
-#container strong {
-  font-size: 20px;
-  line-height: 26px;
-}
-
-#container p {
-  font-size: 16px;
-  line-height: 22px;
-
-  color: #8c8c8c;
-
-  margin: 0;
-}
-
-#container a {
-  text-decoration: none;
-}
-</style>

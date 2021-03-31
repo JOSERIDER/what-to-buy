@@ -36,8 +36,8 @@
       </ion-row>
 
       <!-- sharedList name -->
-      <ion-row class=" ion-align-items-baseline ">
-        <ion-col size="1" class="ion-margin-horizontal">
+      <ion-row class="items-baseline">
+        <ion-col size="1" class="mx-4">
           <ion-icon :icon="list"></ion-icon>
         </ion-col>
         <ion-col>
