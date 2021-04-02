@@ -18,21 +18,32 @@ const routes: Array<RouteRecordRaw> = [
     path: "/auth",
     name: "Auth",
     component: Auth,
-    beforeEnter: async (to, from, next) => {
-      const store = useStore();
-      const isLoggedIn = await store.getters.isLoggedIn;
-      if (isLoggedIn) {
-        next(from);
-        return;
-      }
-      next();
-    },
   },
 ];
 
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes,
+});
+
+router.beforeEach(async (to, from, next) => {
+  const store = useStore();
+  const isLoggedIn = await store.getters.isLoggedIn;
+
+  if (to.name === "Auth" && !isLoggedIn) {
+    next();
+    return;
+  } else if (to.name === "Auth" && isLoggedIn) {
+    next({ name: "Dashboard" });
+    return;
+  }
+
+  if (!isLoggedIn) {
+    next({ name: "Auth" });
+    return;
+  }
+
+  next();
 });
 
 export default router;
