@@ -2,22 +2,17 @@
   <ion-list>
     <ion-list-header>
       <ion-label>{{ listType }} list </ion-label>
-      <ion-button @click="$emit('create-list', listType)"
+      <ion-button v-if="listType === 'Private'" @click="$emit('create-list')"
         >Create new list</ion-button
       >
+      <ion-button v-if="listType === 'Shared'" @click="$emit('join-list')"
+        >Join to other list</ion-button
+      >
     </ion-list-header>
-    <div
-      class="flex m-4 flex-col justify-center content-center"
+    <VEmptyView
+      @click="$emit('create-list', listType)"
       v-if="list.length === 0"
-    >
-      <div>
-        <h1>Start adding a new list</h1>
-        <ion-img
-          class="w-16 mr-3"
-          :src="require('@/assets/resources/arrow-up.png')"
-        ></ion-img>
-      </div>
-    </div>
+    />
     <DashboardListItem
       v-else
       v-for="item in list"
@@ -28,19 +23,14 @@
 </template>
 
 <script lang="ts">
-import {
-  IonList,
-  IonListHeader,
-  IonLabel,
-  IonButton,
-  IonImg,
-} from "@ionic/vue";
+import { IonList, IonListHeader, IonLabel, IonButton } from "@ionic/vue";
 import { defineComponent } from "vue";
 import DashboardListItem from "@/components/DashboardListItem.vue";
+import VEmptyView from "@/components/VEmptyView.vue";
 
 export default defineComponent({
   name: "DashboardList",
-  emits: ["create-list"],
+  emits: ["create-list", "join-list"],
   props: {
     listType: {
       type: String,
@@ -52,12 +42,12 @@ export default defineComponent({
     },
   },
   components: {
+    VEmptyView,
     DashboardListItem,
     IonList,
     IonListHeader,
     IonLabel,
     IonButton,
-    IonImg,
   },
 });
 </script>

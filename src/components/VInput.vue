@@ -10,6 +10,7 @@
         @input="$emit('update:value', $event.target.value)"
         :class="{
           invalid: v$.$invalid && v$.$dirty,
+          border: border,
         }"
         :placeholder="placeholder"
         :type="type"
@@ -25,6 +26,10 @@ export default {
   name: "VInput",
   emits: ["update:value"],
   props: {
+    border: {
+      type: Boolean,
+      default: false,
+    },
     value: {
       type: String,
       required: true,

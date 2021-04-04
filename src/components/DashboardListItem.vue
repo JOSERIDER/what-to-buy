@@ -1,10 +1,9 @@
 <template>
   <ion-card class="my-4" button="true">
     <ion-label
-      :class="{ 'background-color': list.color }"
+      :style="{ 'background-color': list.color }"
       class="w-20 h-full absolute float-left"
     ></ion-label>
-
     <ion-item class="bg-opacity-0" lines="none">
       <ion-button
         v-if="deleting"

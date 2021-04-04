@@ -49,13 +49,11 @@ import { at, key, listOutline, personOutline } from "ionicons/icons";
 import AuthCard from "@/components/AuthCard.vue";
 import useVuelidate from "@vuelidate/core";
 import { email, minLength, required } from "@vuelidate/validators";
-import { auth, userCollection } from "@/firebase";
-import { User } from "@/models/Users";
-import { SharedList } from "@/models/List";
-import firebase from "firebase";
+import { auth, sharedListCollection, userCollection } from "@/firebase";
+import { User, UserBuild } from "@/models/Users";
+import { SharedList, SharedListBuild } from "@/models/SharedList";
 import { useStore } from "@/store/store";
 import { ActionTypes } from "@/store/action-types";
-import DocumentData = firebase.firestore.DocumentData;
 import VInput from "@/components/VInput.vue";
 
 export default {
@@ -66,16 +64,6 @@ export default {
   setup() {
     const router = useRouter();
     const store = useStore();
-
-    const colors: string[] = [
-      "#FF2626",
-      "#D73E68",
-      "#B300B3",
-      "#8D18AB",
-      "#5B5BFF",
-      "#25A0C5",
-      "#5EAE9E",
-    ];
 
     const state = reactive({
       name: "",
@@ -95,59 +83,6 @@ export default {
 
     const v$ = useVuelidate(rules, state);
 
-    function createUser(
-      id: string,
-      email: string,
-      name: string,
-      sharedListIdentifier: string,
-      qrUrl: string
-    ): User {
-      return {
-        id,
-        email,
-        name,
-        mysharedList: sharedListIdentifier,
-        privateList: [],
-        sharedList: [sharedListIdentifier],
-        qrUrl,
-      };
-    }
-
-    function createIdentifier(): string {
-      return new Date().getTime().toString();
-    }
-
-    const qrURL = (id: string) =>
-      `https://api.qrserver.com/v1/create-qr-code/?data=${id}&size=200x200`;
-
-    function generateListColor(): string {
-      const color = Math.round(Math.random() * colors.length);
-      return colors[color];
-    }
-
-    function createSharedList(
-      user: User,
-      shareListName: string,
-      listCode: string
-    ): SharedList {
-      const users: string[] = [];
-      const color = generateListColor();
-
-      //Create a default name list based on user name followed list.
-      if (shareListName === "") {
-        shareListName = `${user.name}-list`;
-      }
-
-      return {
-        users,
-        admin: user.id,
-        products: [],
-        name: shareListName,
-        listCode: listCode,
-        color,
-      };
-    }
-
     function saveUserAndUserListOnFirestore(
       user: User,
       sharedList: SharedList
@@ -155,15 +90,15 @@ export default {
       //Save user on firestore.
       userCollection
         .doc(user.id)
-        .set(user as DocumentData)
+        .set(user)
         .then(() => {
           //Save shared list on firestore
-          userCollection
+          sharedListCollection
             .doc(sharedList.listCode)
             .set(sharedList)
-            .then(() => {
-              store.dispatch(ActionTypes.SET_USER, user);
-              router.push({ name: "Dashboard" });
+            .then(async () => {
+              await store.dispatch(ActionTypes.SET_USER, user);
+              await router.push({ name: "Dashboard" });
             });
         });
     }
@@ -175,19 +110,16 @@ export default {
       auth
         .createUserWithEmailAndPassword(state.email, state.password)
         .then((user: any) => {
-          const sharedListIdentifier = createIdentifier();
-          const newUser: User = createUser(
+          const sharedList: SharedList = SharedListBuild.build(
+            user.user.uid,
+            state.listName
+          );
+
+          const newUser: User = UserBuild.build(
             user.user.uid,
             state.email,
             state.name,
-            sharedListIdentifier,
-            qrURL(sharedListIdentifier)
-          );
-
-          const sharedList: SharedList = createSharedList(
-            newUser,
-            state.listName,
-            sharedListIdentifier
+            sharedList.listCode
           );
 
           saveUserAndUserListOnFirestore(newUser, sharedList);

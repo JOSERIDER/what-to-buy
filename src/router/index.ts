@@ -3,6 +3,7 @@ import { RouteRecordRaw } from "vue-router";
 import Dashboard from "../views/Dashboard.vue";
 import Auth from "../views/Auth.vue";
 import { useStore } from "@/store/store";
+import { ActionTypes } from "@/store/action-types";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -28,17 +29,17 @@ const router = createRouter({
 
 router.beforeEach(async (to, from, next) => {
   const store = useStore();
-  const isLoggedIn = await store.getters.isLoggedIn;
+  const user = await store.dispatch(ActionTypes.GET_USER);
 
-  if (to.name === "Auth" && !isLoggedIn) {
+  if (to.name === "Auth" && user === null) {
     next();
     return;
-  } else if (to.name === "Auth" && isLoggedIn) {
+  } else if (to.name === "Auth" && user !== null) {
     next({ name: "Dashboard" });
     return;
   }
 
-  if (!isLoggedIn) {
+  if (user === null) {
     next({ name: "Auth" });
     return;
   }
