@@ -2,8 +2,6 @@ export interface User {
   id: string;
   email: string;
   name: string;
-  sharedList: string[];
-  privateList: string[];
   mySharedList: string;
   qrUrl: string;
   image?: string;
@@ -24,8 +22,6 @@ export class UserBuild {
       id,
       email,
       name,
-      sharedList: [mySharedList],
-      privateList: [],
       mySharedList,
       qrUrl,
     };

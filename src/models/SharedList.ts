@@ -11,6 +11,6 @@ export class SharedListBuild {
     const color = ColorBuilder.getRandomColor();
     const listCode = IdBuilder.createIdentifier();
 
-    return { admin, name, color, listCode, users: [], products: [] };
+    return { admin, name, color, listCode, users: [admin], products: [] };
   }
 }

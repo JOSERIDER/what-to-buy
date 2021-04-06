@@ -13,10 +13,10 @@ export class SharedListRepository implements SharedListRepositoryInterface {
     ).data() as SharedList;
   }
 
-  async getUserList(sharedList: string[]): Promise<SharedList[]> {
+  async getUserList(userId: string): Promise<SharedList[]> {
     //TODO: DO this request reactive
     const resp = await Client(this.resource)
-      .where("listCode", "in", sharedList)
+      .where("users", "array-contains", userId)
       .get();
     return resp.docs.map(doc => doc.data());
   }

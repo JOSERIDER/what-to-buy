@@ -3,7 +3,7 @@ import { SharedList } from "@/models/SharedList";
 export interface SharedListRepositoryInterface {
   getList(id: string): Promise<SharedList>;
 
-  getUserList(sharedList: string[]): Promise<SharedList[]>;
+  getUserList(userId: string): Promise<SharedList[]>;
 
   create(payload: SharedList);
 
