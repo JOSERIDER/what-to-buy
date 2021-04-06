@@ -81,7 +81,7 @@ export default defineComponent({
     async function createList() {
       await v$.value.$validate();
       if (v$.value.$error) return;
-      privateListRepository.create(ListBuild.build(user.id, name));
+      privateListRepository.create(ListBuild.build(user.id, state.name));
       props.close;
     }
 

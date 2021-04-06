@@ -99,7 +99,7 @@ export default defineComponent({
     }
 
     function getSharedList(currentUser: User): Promise<SharedList[]> {
-      return sharedListRepository.getUserList(currentUser.sharedList);
+      return sharedListRepository.getUserList(currentUser.id);
     }
 
     async function fetchList(type: string, currentUser: User) {

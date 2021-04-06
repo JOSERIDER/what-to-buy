@@ -1,39 +1,36 @@
 <template>
-  <ion-card class="my-4" button="true">
-    <ion-label
-      :style="{ 'background-color': list.color }"
-      class="w-20 h-full absolute float-left"
-    ></ion-label>
-    <ion-item class="bg-opacity-0" lines="none">
-      <ion-button
-        v-if="deleting"
-        slot="start"
-        expand="block"
-        fill="clear"
-        @click="$emit('remove-list', { type: 'private', list })"
-      >
-        <ion-icon color="danger" :icon="`trash`"></ion-icon>
-      </ion-button>
-      <ion-label
-        class="w-40 mt-0 mb-auto"
-        @click="$emit('view-list', { type: 'private', list })"
-      >
-        <h2 class="flex items-center float-left">{{ list.name }}</h2>
-        <ion-icon
-          class="flex items-center float-right"
-          :icon="`chevron-forward-outline`"
-        ></ion-icon>
-        <h2 class="flex items-center float-right">
-          {{ list.products.length }}
-        </h2>
-      </ion-label>
+  <ion-card class="my-4" :button="!deleting">
+    <div
+      class="w-4 h-full absolute float-left"
+      :style="{ background: list.color }"
+    ></div>
+
+    <ion-item lines="none" class="ml-4 bg-transparent">
+      <div class="flex items-center w-full">
+        <h2 class="w-2/3">{{ list.name }}</h2>
+
+        <div v-if="deleting" class="flex items-center w-1/3 justify-end">
+          <ion-icon
+            size="large"
+            color="danger"
+            :icon="trash"
+            class="ml-2 mr-1"
+          ></ion-icon>
+        </div>
+        <div v-else class="flex items-center w-1/3 justify-end">
+          <h2>{{ list.products.length }}</h2>
+          <ion-icon :icon="arrow" class="ml-2 mr-1"></ion-icon>
+        </div>
+      </div>
     </ion-item>
   </ion-card>
 </template>
 
 <script lang="ts">
-import { IonCard, IonLabel, IonItem, IonButton, IonIcon } from "@ionic/vue";
-
+import { PropType } from "vue";
+import { IonCard, IonIcon, IonItem } from "@ionic/vue";
+import { chevronForwardOutline, trashOutline } from "ionicons/icons";
+import { List } from "@/models/List";
 export default {
   name: "DashboardListItem",
   emits: ["remove-list", "view-list"],
@@ -44,8 +41,15 @@ export default {
     IonButton,
     IonIcon,
   },
+  data() {
+    return {
+      arrow: chevronForwardOutline,
+      trash: trashOutline,
+    };
+  },
   props: {
     list: {
+      type: Object as PropType<List>,
       required: true,
     },
     deleting: {
