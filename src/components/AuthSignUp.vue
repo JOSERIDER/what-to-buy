@@ -49,7 +49,8 @@ import { at, key, listOutline, personOutline } from "ionicons/icons";
 import AuthCard from "@/components/AuthCard.vue";
 import useVuelidate from "@vuelidate/core";
 import { email, minLength, required } from "@vuelidate/validators";
-import { auth, sharedListCollection, userCollection } from "@/firebase";
+import { auth } from "@/repository/Client/firebaseClient.js";
+import { repositories, repositoryTypes } from "@/repository/RepositoryFactory";
 import { User, UserBuild } from "@/models/Users";
 import { SharedList, SharedListBuild } from "@/models/SharedList";
 import { useStore } from "@/store/store";
@@ -62,6 +63,10 @@ export default {
     AuthCard,
   },
   setup() {
+    const userRepository = repositories[repositoryTypes.USER_REPOSITORY];
+    const sharedListRepository =
+      repositories[repositoryTypes.SHARED_LIST_REPOSITORY];
+
     const router = useRouter();
     const store = useStore();
 
@@ -87,20 +92,12 @@ export default {
       user: User,
       sharedList: SharedList
     ) {
-      //Save user on firestore.
-      userCollection
-        .doc(user.id)
-        .set(user)
-        .then(() => {
-          //Save shared list on firestore
-          sharedListCollection
-            .doc(sharedList.listCode)
-            .set(sharedList)
-            .then(async () => {
-              await store.dispatch(ActionTypes.SET_USER, user);
-              await router.push({ name: "Dashboard" });
-            });
+      userRepository.create(user).then(() => {
+        sharedListRepository.create(sharedList).then(async () => {
+          await store.dispatch(ActionTypes.SET_USER, user);
+          await router.push({ name: "Dashboard" });
         });
+      });
     }
 
     function signUp() {

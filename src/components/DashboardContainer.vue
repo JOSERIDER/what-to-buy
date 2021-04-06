@@ -40,9 +40,8 @@
 
 <script lang="ts">
 import DashboardList from "@/components/DashboardList.vue";
-import { usePrivateList, useSharedList } from "@/firebase";
+import DashBoardModalCreateList from "@/components/DashboardModalCreateList.vue";
 import { useStore } from "@/store/store";
-
 import {
   IonButton,
   IonHeader,
@@ -58,7 +57,9 @@ import {
 import { shareOutline, chevronDownCircleOutline } from "ionicons/icons";
 import { defineComponent, ref, watch } from "vue";
 import { User } from "@/models/Users";
-import DashBoardModalCreateList from "@/components/DashboardModalCreateList.vue";
+import { repositories, repositoryTypes } from "@/repository/RepositoryFactory";
+import { SharedList } from "@/models/SharedList";
+import { List } from "@/models/List";
 
 export default defineComponent({
   name: "DashboardContainer",
@@ -77,8 +78,13 @@ export default defineComponent({
     IonModal,
   },
   async setup() {
+    const privateListRepository =
+      repositories[repositoryTypes.PRIVATE_LIST_REPOSITORY];
+    const sharedListRepository =
+      repositories[repositoryTypes.SHARED_LIST_REPOSITORY];
+
     const store = useStore();
-    const list = ref([]);
+    const list = ref([] as List[]);
     const type = ref("Private");
     const isModalOpen = ref(false);
 
@@ -88,11 +94,19 @@ export default defineComponent({
 
     const user: User = fetchUser() as User;
 
+    function getPrivateList(currentUser: User): Promise<List[]> {
+      return privateListRepository.getUserList(currentUser.id);
+    }
+
+    function getSharedList(currentUser: User): Promise<SharedList[]> {
+      return sharedListRepository.getUserList(currentUser.sharedList);
+    }
+
     async function fetchList(type: string, currentUser: User) {
       list.value =
         type === "Private"
-          ? await usePrivateList(currentUser.privateList)
-          : await useSharedList(currentUser.sharedList);
+          ? await getPrivateList(currentUser)
+          : await getSharedList(currentUser);
     }
 
     async function doRefresh(event: any) {

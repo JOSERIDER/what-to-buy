@@ -48,10 +48,11 @@ import VInput from "@/components/VInput.vue";
 import { computed, defineComponent, reactive } from "vue";
 import { minLength, required } from "@vuelidate/validators";
 import useVuelidate from "@vuelidate/core";
-import { privateListCollection } from "@/firebase";
+
 import { useStore } from "@/store/store";
 import { User } from "@/models/Users";
 import { ListBuild } from "@/models/List";
+import { repositories, repositoryTypes } from "@/repository/RepositoryFactory";
 
 export default defineComponent({
   name: "DashBoardModalCreateList",
@@ -63,6 +64,8 @@ export default defineComponent({
   },
   setup(props) {
     const user: User = useStore().getters.loggedUser as User;
+    const privateListRepository =
+      repositories[repositoryTypes.PRIVATE_LIST_REPOSITORY];
 
     const state = reactive({
       name: "",
@@ -78,7 +81,7 @@ export default defineComponent({
     async function createList() {
       await v$.value.$validate();
       if (v$.value.$error) return;
-      await privateListCollection.add(ListBuild.build(user.id, name));
+      privateListRepository.create(ListBuild.build(user.id, name));
       props.close;
     }
 
