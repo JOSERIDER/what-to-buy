@@ -14,7 +14,7 @@ export enum repositoryTypes {
   PRODUCT_REPOSITORY = "PRODUCT_REPOSITORY",
 }
 
-export interface Repositories {
+interface Repositories {
   [repositoryTypes.USER_REPOSITORY]: UserRepositoryInterface;
   [repositoryTypes.PRIVATE_LIST_REPOSITORY]: PrivateListRepositoryInterface;
   [repositoryTypes.SHARED_LIST_REPOSITORY]: SharedListRepositoryInterface;
