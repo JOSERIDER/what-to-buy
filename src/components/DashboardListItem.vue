@@ -36,9 +36,7 @@ export default {
   emits: ["remove-list", "view-list"],
   components: {
     IonCard,
-    IonLabel,
     IonItem,
-    IonButton,
     IonIcon,
   },
   data() {
