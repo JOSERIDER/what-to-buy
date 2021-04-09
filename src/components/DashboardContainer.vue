@@ -16,26 +16,37 @@
     </ion-toolbar>
   </ion-header>
 
-  <ion-refresher slot="fixed" @ionRefresh="doRefresh($event)">
-    <ion-refresher-content
-      :pulling-icon="icons.circleOutline"
-      pulling-text="Pull to refresh"
-      refreshing-spinner="circles"
-      refreshing-text="Refreshing..."
+  <ion-content class="ion-padding">
+    <ion-refresher slot="fixed" @ionRefresh="doRefresh($event)">
+      <ion-refresher-content
+        :pulling-icon="icons.circleOutline"
+        pulling-text="Pull to refresh"
+        refreshing-spinner="circles"
+        refreshing-text="Refreshing..."
+      >
+      </ion-refresher-content>
+    </ion-refresher>
+    <ion-fab
+      v-if="!editing && type === 'Private'"
+      class="mb-16"
+      vertical="bottom"
+      slot="fixed"
+      horizontal="end"
+      @click="openModal()"
     >
-    </ion-refresher-content>
-  </ion-refresher>
-
-  <ion-modal :is-open="isModalOpen">
-    <DashBoardModalCreateList :close="modalProps"></DashBoardModalCreateList>
-  </ion-modal>
-
-  <DashboardList
-    @create-list="setOpen(true)"
-    class="h-full"
-    :list="list"
-    :list-type="type"
-  />
+      <ion-fab-button>
+        <ion-icon :icon="icons.add"></ion-icon>
+      </ion-fab-button>
+    </ion-fab>
+    <DashboardList
+      @create-list="openModal()"
+      @edit-list="editing = !editing"
+      :list="list"
+      :private-repository="privateListRepository"
+      :shared-repository="sharedListRepository"
+      :list-type="type"
+    />
+  </ion-content>
 </template>
 
 <script lang="ts">
@@ -52,9 +63,12 @@ import {
   IonRefresher,
   IonRefresherContent,
   IonToolbar,
-  IonModal,
+  modalController,
+  IonContent,
+  IonFab,
+  IonFabButton,
 } from "@ionic/vue";
-import { shareOutline, chevronDownCircleOutline } from "ionicons/icons";
+import { shareOutline, chevronDownCircleOutline, add } from "ionicons/icons";
 import { defineComponent, ref, watch } from "vue";
 import { User } from "@/models/Users";
 import { repositories, repositoryTypes } from "@/repository/RepositoryFactory";
@@ -75,7 +89,9 @@ export default defineComponent({
     IonSegmentButton,
     IonRefresher,
     IonRefresherContent,
-    IonModal,
+    IonContent,
+    IonFab,
+    IonFabButton,
   },
   async setup() {
     const privateListRepository =
@@ -86,6 +102,7 @@ export default defineComponent({
     const store = useStore();
     const list = ref([] as List[]);
     const type = ref("Private");
+    const editing = ref(false);
     const isModalOpen = ref(false);
 
     function fetchUser() {
@@ -102,6 +119,13 @@ export default defineComponent({
       return sharedListRepository.getUserList(currentUser.id);
     }
 
+    async function openModal() {
+      const modal = await modalController.create({
+        component: DashBoardModalCreateList,
+      });
+      await modal.present();
+    }
+
     async function fetchList(type: string, currentUser: User) {
       list.value =
         type === "Private"
@@ -114,11 +138,14 @@ export default defineComponent({
       event.target.complete();
     }
 
-    const setOpen = (state: boolean) => (isModalOpen.value = state);
-    const modalProps = { close: () => setOpen(false) };
-
     watch(type, async type => {
       await fetchList(type, user);
+    });
+
+    watch(list, list => {
+      if (list.length === 0) {
+        editing.value = false;
+      }
     });
 
     await fetchList(type.value, user);
@@ -128,10 +155,16 @@ export default defineComponent({
       user,
       type,
       isModalOpen,
+      editing,
+      privateListRepository,
+      sharedListRepository,
       doRefresh,
-      modalProps,
-      setOpen,
-      icons: { shared: shareOutline, circleOutline: chevronDownCircleOutline },
+      openModal,
+      icons: {
+        shared: shareOutline,
+        circleOutline: chevronDownCircleOutline,
+        add,
+      },
     };
   },
 });

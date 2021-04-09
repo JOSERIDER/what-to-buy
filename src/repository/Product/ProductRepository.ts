@@ -7,7 +7,7 @@ export class ProductRepository implements ProductRepositoryInterface {
 
   async create(payload: Product) {
     await Client(this.resource)
-      .doc(payload.idProducto)
+      .doc(payload.id)
       .set(payload);
   }
 

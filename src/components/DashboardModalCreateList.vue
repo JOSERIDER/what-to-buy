@@ -2,7 +2,7 @@
   <ion-header>
     <ion-toolbar>
       <ion-title>Create new list</ion-title>
-      <ion-button fill="clear" slot="end" color="primary">
+      <ion-button @click="close()" fill="clear" slot="end" color="primary">
         <ion-text>Close</ion-text>
       </ion-button>
     </ion-toolbar>
@@ -53,16 +53,11 @@ import { useStore } from "@/store/store";
 import { User } from "@/models/Users";
 import { ListBuild } from "@/models/List";
 import { repositories, repositoryTypes } from "@/repository/RepositoryFactory";
+import { modalController } from "@ionic/vue";
 
 export default defineComponent({
   name: "DashBoardModalCreateList",
-  props: {
-    close: {
-      type: Function,
-      required: true,
-    },
-  },
-  setup(props) {
+  setup() {
     const user: User = useStore().getters.loggedUser as User;
     const privateListRepository =
       repositories[repositoryTypes.PRIVATE_LIST_REPOSITORY];
@@ -78,14 +73,18 @@ export default defineComponent({
     });
     const v$ = useVuelidate(rules, state);
 
+    async function close() {
+      await modalController.dismiss();
+    }
+
     async function createList() {
       await v$.value.$validate();
       if (v$.value.$error) return;
       privateListRepository.create(ListBuild.build(user.id, state.name));
-      props.close;
+      await close();
     }
 
-    return { state, v$, createList };
+    return { state, v$, createList, close };
   },
   components: {
     VInput,
