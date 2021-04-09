@@ -78,7 +78,6 @@ import { List } from "@/models/List";
 export default defineComponent({
   name: "DashboardContainer",
   components: {
-    DashBoardModalCreateList,
     DashboardList,
     IonHeader,
     IonToolbar,
