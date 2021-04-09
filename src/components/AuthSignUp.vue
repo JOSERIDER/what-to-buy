@@ -2,68 +2,41 @@
   <AuthCard @submit="signUp">
     <template #form>
       <!-- Email -->
-      <ion-row class=" ion-align-items-baseline ">
-        <ion-col size="1" class="ion-margin-horizontal">
-          <ion-icon :icon="email"></ion-icon>
-        </ion-col>
-        <ion-col>
-          <ion-input
-            v-model="s.email"
-            @change="v$.email.$touch()"
-            :class="{ invalid: v$.email.$invalid && v$.email.$dirty }"
-            name="email"
-            placeholder="Email"
-          >
-          </ion-input>
-        </ion-col>
-      </ion-row>
+      <VInput
+        :v$="v$.email"
+        v-model:value="s.email"
+        placeholder="Email"
+        :icon="email"
+        name="Email"
+      />
 
       <!-- Name -->
-      <ion-row class=" ion-align-items-baseline ">
-        <ion-col size="1" class="ion-margin-horizontal">
-          <ion-icon :icon="person"></ion-icon>
-        </ion-col>
-        <ion-col>
-          <ion-input
-            v-model="s.name"
-            @change="v$.name.$touch()"
-            :class="{ invalid: v$.name.$invalid && v$.name.$dirty }"
-            name="userName"
-            type="text"
-            placeholder="Name"
-          ></ion-input>
-        </ion-col>
-      </ion-row>
+      <VInput
+        :v$="v$.name"
+        v-model:value="s.name"
+        placeholder="userName"
+        :icon="person"
+        name="userName"
+      />
 
       <!-- sharedList name -->
-      <ion-row class=" ion-align-items-baseline ">
-        <ion-col size="1" class="ion-margin-horizontal">
-          <ion-icon :icon="list"></ion-icon>
-        </ion-col>
-        <ion-col>
-          <ion-input
-            v-model="s.listName"
-            type="text"
-            placeholder="Name of your list"
-          ></ion-input>
-        </ion-col>
-      </ion-row>
+      <VInput
+        :v$="v$.listName"
+        v-model:value="s.listName"
+        placeholder="Name of your shared list"
+        :icon="list"
+        name="listName"
+      />
 
       <!-- Password -->
-      <ion-row class=" ion-align-items-baseline ">
-        <ion-col size="1" class="ion-margin-horizontal">
-          <ion-icon :icon="password"></ion-icon>
-        </ion-col>
-        <ion-col>
-          <ion-input
-            v-model="s.password"
-            @change="v$.password.$touch()"
-            :class="{ invalid: v$.password.$invalid && v$.password.$dirty }"
-            type="password"
-            placeholder="Password"
-          ></ion-input>
-        </ion-col>
-      </ion-row>
+      <VInput
+        :v$="v$.password"
+        v-model:value="s.password"
+        placeholder="Password"
+        :icon="password"
+        name="password"
+        type="password"
+      />
     </template>
     <template #button-text>Sign up</template>
   </AuthCard>
@@ -72,42 +45,32 @@
 <script lang="ts">
 import { computed, reactive } from "vue";
 import { useRouter } from "vue-router";
-import { IonCol, IonIcon, IonInput, IonRow } from "@ionic/vue";
 import { at, key, listOutline, personOutline } from "ionicons/icons";
 import AuthCard from "@/components/AuthCard.vue";
 import useVuelidate from "@vuelidate/core";
 import { email, minLength, required } from "@vuelidate/validators";
-import { auth, userCollection } from "@/firebase";
-import { User } from "@/models/Users";
-import { SharedList } from "@/models/List";
-import firebase from "firebase";
+import { auth } from "@/repository/Client/firebaseClient.js";
+import { repositories, repositoryTypes } from "@/repository/RepositoryFactory";
+import { User, UserBuild } from "@/models/Users";
+import { SharedList, SharedListBuild } from "@/models/SharedList";
 import { useStore } from "@/store/store";
 import { ActionTypes } from "@/store/action-types";
-import DocumentData = firebase.firestore.DocumentData;
+import VInput from "@/components/VInput.vue";
 
 export default {
   components: {
-    IonRow,
-    IonCol,
-    IonIcon,
-    IonInput,
+    VInput,
     AuthCard,
   },
   setup() {
+    const userRepository = repositories[repositoryTypes.USER_REPOSITORY];
+    const sharedListRepository =
+      repositories[repositoryTypes.SHARED_LIST_REPOSITORY];
+
     const router = useRouter();
     const store = useStore();
 
-    const colors: string[] = [
-      "#FF2626",
-      "#D73E68",
-      "#B300B3",
-      "#8D18AB",
-      "#5B5BFF",
-      "#25A0C5",
-      "#5EAE9E",
-    ];
-
-    const s = reactive({
+    const state = reactive({
       name: "",
       email: "",
       password: "",
@@ -123,79 +86,18 @@ export default {
       };
     });
 
-    const v$ = useVuelidate(rules, s);
-
-    function createUser(
-      id: string,
-      email: string,
-      name: string,
-      sharedListIdentifier: string,
-      qrUrl: string
-    ): User {
-      return {
-        id,
-        email,
-        name,
-        mysharedList: sharedListIdentifier,
-        privateList: [],
-        sharedList: [sharedListIdentifier],
-        qrUrl,
-      };
-    }
-
-    function createIdentifier(): string {
-      return new Date().getTime().toString();
-    }
-
-    const qrURL = (id: string) =>
-      `https://api.qrserver.com/v1/create-qr-code/?data=${id}&size=200x200`;
-
-    function generateListColor(): string {
-      const color = Math.round(Math.random() * colors.length);
-      return colors[color];
-    }
-
-    function createSharedList(
-      user: User,
-      shareListName: string,
-      listCode: string
-    ): SharedList {
-      const users: string[] = [];
-      const color = generateListColor();
-
-      //Create a default name list based on user name followed list.
-      if (shareListName === "") {
-        shareListName = `${user.name}-list`;
-      }
-
-      return {
-        users,
-        admin: user.id,
-        products: [],
-        name: shareListName,
-        listCode: listCode,
-        color,
-      };
-    }
+    const v$ = useVuelidate(rules, state);
 
     function saveUserAndUserListOnFirestore(
       user: User,
       sharedList: SharedList
     ) {
-      //Save user on firestore.
-      userCollection
-        .doc(user.id)
-        .set(user as DocumentData)
-        .then(() => {
-          //Save shared list on firestore
-          userCollection
-            .doc(sharedList.listCode)
-            .set(sharedList)
-            .then(() => {
-              store.dispatch(ActionTypes.SET_USER, user);
-              router.push("/");
-            });
+      userRepository.create(user).then(() => {
+        sharedListRepository.create(sharedList).then(async () => {
+          await store.dispatch(ActionTypes.SET_USER, user);
+          await router.push({ name: "Dashboard" });
         });
+      });
     }
 
     function signUp() {
@@ -203,22 +105,18 @@ export default {
       if (v$.value.$error) return;
 
       auth
-        .createUserWithEmailAndPassword(s.email, s.password)
+        .createUserWithEmailAndPassword(state.email, state.password)
         .then((user: any) => {
-          const sharedListIdentifier = createIdentifier();
-          debugger;
-          const newUser: User = createUser(
+          const sharedList: SharedList = SharedListBuild.build(
             user.user.uid,
-            s.email,
-            s.name,
-            sharedListIdentifier,
-            qrURL(sharedListIdentifier)
+            state.listName
           );
 
-          const sharedList: SharedList = createSharedList(
-            newUser,
-            s.listName,
-            sharedListIdentifier
+          const newUser: User = UserBuild.build(
+            user.user.uid,
+            state.email,
+            state.name,
+            sharedList.listCode
           );
 
           saveUserAndUserListOnFirestore(newUser, sharedList);
@@ -226,7 +124,7 @@ export default {
     }
 
     return {
-      s,
+      s: state,
       v$,
       signUp,
       email: at,

@@ -1,5 +1,5 @@
 {
-  "name": "shopping-list",
+  "name": "what-to-buy",
   "version": "0.0.1",
   "private": true,
   "scripts": {
@@ -14,15 +14,19 @@
     "@ionic/storage": "^3.0.2",
     "@ionic/vue": "^5.4.0",
     "@ionic/vue-router": "^5.4.0",
+    "@tailwindcss/postcss7-compat": "^2.0.4",
     "@vuelidate/core": "^2.0.0-alpha.14",
     "@vuelidate/validators": "^2.0.0-alpha.12",
+    "autoprefixer": "^9.8.6",
     "axios": "^0.21.1",
     "core-js": "^3.6.5",
     "firebase": "^8.3.1",
+    "particles.js": "^2.0.0",
+    "postcss": "^7.0.35",
+    "tailwindcss": "npm:@tailwindcss/postcss7-compat@^2.0.4",
     "vue": "^3.0.0-0",
     "vue-router": "^4.0.0-0",
-    "vuex": "^4.0.0",
-    "particles.js": "^2.0.0"
+    "vuex": "^4.0.0"
   },
   "devDependencies": {
     "@capacitor/cli": "2.4.7",

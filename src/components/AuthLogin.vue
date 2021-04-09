@@ -2,69 +2,49 @@
   <AuthCard @submit="login">
     <template #form>
       <!-- Email -->
-      <ion-row class="ion-align-items-baseline ">
-        <ion-col size="1" class="ion-margin-horizontal">
-          <ion-icon :icon="email"></ion-icon>
-        </ion-col>
-        <ion-col>
-          <ion-input
-            name="email"
-            @change="v$.email.$touch()"
-            v-model="state.email"
-            :class="{
-              invalid: v$.email.$invalid && v$.email.$dirty,
-            }"
-            placeholder="Email"
-          >
-          </ion-input>
-        </ion-col>
-      </ion-row>
+      <VInput
+        :v$="v$.email"
+        v-model:value="state.email"
+        placeholder="Email"
+        :icon="email"
+        name="email"
+      />
 
       <!-- Password -->
-      <ion-row class="ion-align-items-baseline ">
-        <ion-col size="1" class="ion-margin-horizontal">
-          <ion-icon :icon="password"></ion-icon>
-        </ion-col>
-        <ion-col>
-          <ion-input
-            name="password"
-            @change="v$.email.$touch()"
-            :class="{
-              invalid: v$.password.$invalid && v$.password.$dirty,
-            }"
-            v-model="state.password"
-            type="password"
-            placeholder="Password"
-          ></ion-input>
-        </ion-col>
-      </ion-row>
+      <VInput
+        :v$="v$.password"
+        v-model:value="state.password"
+        placeholder="Password"
+        :icon="password"
+        name="password"
+        type="password"
+      />
     </template>
     <template #button-text>Login</template>
   </AuthCard>
 </template>
 
 <script lang="ts">
+import AuthCard from "@/components/AuthCard.vue";
+import VInput from "@/components/VInput.vue";
 import { computed, reactive } from "vue";
 import { at, key } from "ionicons/icons";
-import { alertController, IonCol, IonIcon, IonInput, IonRow } from "@ionic/vue";
+import { alertController } from "@ionic/vue";
 import useVuelidate from "@vuelidate/core";
 import { email, required } from "@vuelidate/validators";
-import { auth, userCollection } from "@/firebase";
+import { repositories, repositoryTypes } from "@/repository/RepositoryFactory";
 import { useRouter } from "vue-router";
 import { useStore } from "@/store/store";
-import { User } from "@/models/Users";
 import { ActionTypes } from "@/store/action-types";
-import AuthCard from "@/components/AuthCard.vue";
+import { auth } from "@/repository/Client/firebaseClient";
 
 export default {
   components: {
-    IonRow,
-    IonCol,
-    IonIcon,
-    IonInput,
+    VInput,
     AuthCard,
   },
   setup() {
+    const userRepository = repositories[repositoryTypes.USER_REPOSITORY];
     const router = useRouter();
     const store = useStore();
 
@@ -104,18 +84,14 @@ export default {
       auth
         .signInWithEmailAndPassword(state.email, state.password)
         .then(user => {
-          userCollection
-            .doc(user.user?.uid)
-            .get()
-            .then(docData => {
-              if (!docData.exists) {
-                presentAlert("Error", "User not fount in our dataBase");
-                return;
-              }
-              const userDB = docData.data() as User;
-              store.dispatch(ActionTypes.SET_USER, userDB);
-              router.push("/");
-            });
+          userRepository.getUser(user.user.uid).then(async user => {
+            if (!user) {
+              await presentAlert("Error", "User not fount in our dataBase");
+              return;
+            }
+            await store.dispatch(ActionTypes.SET_USER, user);
+            await router.push("/");
+          });
         });
     }
 

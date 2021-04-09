@@ -1,6 +1,7 @@
 import * as firebase from "firebase/app";
 import "firebase/auth";
 import "firebase/firestore";
+
 //Firebase configuration.
 const firebaseConfig = {
   apiKey: process.env.VUE_APP_API_KEY,
@@ -15,9 +16,6 @@ const firebaseConfig = {
 // Initialize Firebase
 const firebaseApp = firebase.default.initializeApp(firebaseConfig);
 
-export const db = firebaseApp.firestore();
+export default resource => firebaseApp.firestore().collection(resource);
+
 export const auth = firebaseApp.auth();
-
-export const userCollection = db.collection("usuarios");
-
-export const sharedListCollection = db.collection("sharedList");
