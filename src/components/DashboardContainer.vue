@@ -1,5 +1,5 @@
 <template>
-  <ion-header>
+  <ion-header :translucent="true">
     <ion-toolbar>
       <ion-segment @ionChange="type = $event.detail.value" value="Private">
         <ion-segment-button value="Private">
@@ -9,14 +9,13 @@
           <ion-label>Shared</ion-label>
         </ion-segment-button>
       </ion-segment>
-
       <ion-button fill="clear" slot="end" color="primary">
         <ion-icon :icon="icons.shared" size="large"></ion-icon>
       </ion-button>
     </ion-toolbar>
   </ion-header>
 
-  <ion-content class="ion-padding">
+  <ion-content :fullscreen="true">
     <ion-refresher slot="fixed" @ionRefresh="doRefresh($event)">
       <ion-refresher-content
         :pulling-icon="icons.circleOutline"
@@ -28,7 +27,7 @@
     </ion-refresher>
     <ion-fab
       v-if="!editing && type === 'Private'"
-      class="mb-16"
+      class="mb-14"
       vertical="bottom"
       slot="fixed"
       horizontal="end"
