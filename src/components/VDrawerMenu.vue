@@ -1,83 +1,150 @@
 <template>
-<IonSplitPane>
-  <ion-menu content-id="main-content" type="overlay">
+  <!--  Only render the menu when the router isn't Auth-->
+  <ion-menu
+    v-if="$router.currentRoute.value.name !== 'Auth'"
+    side="start"
+    menu-id="first"
+    content-id="main"
+  >
+    <ion-header class="flex items-center justify-around p-4">
+      <div>
+        <h3>{{ user.name }}</h3>
+        <ion-label color="medium">{{ user.email }}</ion-label>
+      </div>
+      <ion-img
+        class="w-14 h-14 rounded-full"
+        :src="user.image ? user.image : require('@/assets/resources/user.png')"
+      ></ion-img>
+    </ion-header>
     <ion-content>
       <ion-list id="inbox-list">
-        <ion-list-header>Inbox</ion-list-header>
-        <ion-note>hi@ionicframework.com</ion-note>
-
-        <ion-menu-toggle auto-hide="false" v-for="(page, index) in appPages" :key="index">
+        <ion-menu-toggle
+          auto-hide="false"
+          v-for="(page, index) in appPages"
+          :key="index"
+        >
           <ion-item
-            @click="selectedIndex = index" router-direction="root" :router-link="page.url" lines="none" detail="false" class="hydrated" :class="{ selected: selectedIndex === index }">
+            @click="selectedIndex = index"
+            router-direction="root"
+            :router-link="page.url"
+            lines="none"
+            detail="false"
+            class="hydrated"
+            :class="{ selected: selectedIndex === index }"
+          >
             <ion-icon slot="start" :icon="page.icon"></ion-icon>
             <ion-label>{{ page.title }}</ion-label>
           </ion-item>
         </ion-menu-toggle>
       </ion-list>
+      <ion-menu-toggle>
+        <ion-item
+          @click="logout()"
+          lines="none"
+          detail="false"
+          class="hydrated"
+        >
+          <ion-icon slot="start" :icon="logOutOutline"></ion-icon>
+          <ion-label>Logout</ion-label></ion-item
+        >
+      </ion-menu-toggle>
     </ion-content>
   </ion-menu>
-
-  <!-- Should render <ion-router-outlet/> -->
-  <slot name="content"/>
-</IonSplitPane>
+  <!-- Should render <ion-router-outlet/> and must have contentId as id -->
+  <slot name="content" contentId="main" />
 </template>
 
-<script>
+<script lang="ts">
 import {
   IonContent,
+  IonHeader,
   IonIcon,
+  IonImg,
   IonItem,
   IonLabel,
   IonList,
-  IonListHeader,
   IonMenu,
   IonMenuToggle,
-  IonSplitPane
 } from "@ionic/vue";
-import { list, fastFood, shareSocial } from "ionicons/icons";
+import {
+  cogOutline,
+  fastFoodOutline,
+  listOutline,
+  logOutOutline,
+  shareOutline,
+} from "ionicons/icons";
+import { useStore } from "@/store/store";
+import { defineComponent, ref } from "vue";
+import { User } from "@/models/Users";
+import { ActionTypes } from "@/store/action-types";
+import { useRouter } from "vue-router";
 
-
-export default {
+export default defineComponent({
   name: "VDrawerMenu",
   components: {
-    IonSplitPane,
     IonContent,
     IonMenu,
     IonList,
-    IonListHeader,
     IonMenuToggle,
     IonItem,
     IonIcon,
-    IonLabel
+    IonImg,
+    IonHeader,
+    IonLabel,
   },
-  setup(){
+  setup() {
+    const store = useStore();
+    const user: User = store.getters.loggedUser as User;
+    const router = useRouter();
+    const selectedIndex = ref(0);
     const appPages = [
       {
-        title: 'Lists',
-        url: '/folder/Inbox',
-        icon: list,
+        title: "Dashboard",
+        url: "/dashboard",
+        icon: listOutline,
       },
       {
-        title: 'Products',
-        url: '/folder/Outbox',
-        icon: fastFood,
+        title: "Products",
+        url: "/products",
+        icon: fastFoodOutline,
       },
       {
-        title: 'Share',
-        url: '/folder/Favorites',
-        icon: shareSocial,
-      }
+        title: "Share",
+        url: "/share",
+        icon: shareOutline,
+      },
+      {
+        title: "Settings",
+        url: "/settings",
+        icon: cogOutline,
+      },
     ];
+
+    async function logout() {
+      await store.dispatch(ActionTypes.REMOVE_USER);
+      await router.push("/auth");
+    }
+    const path: string = router.currentRoute.value.path;
+
+    function findCurrentRoute() {
+      selectedIndex.value = appPages.findIndex(page => page.url === path);
+    }
+
+    findCurrentRoute();
 
     return {
       appPages,
-      selectedIndex
-    }
-
-  }
-}
+      user,
+      logOutOutline,
+      selectedIndex,
+      logout,
+    };
+  },
+});
 </script>
 
 <style scoped>
-
+ion-item.selected {
+  --color: var(--ion-color-primary);
+}
 </style>

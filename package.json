@@ -21,6 +21,7 @@
     "axios": "^0.21.1",
     "core-js": "^3.6.5",
     "firebase": "^8.3.1",
+    "ionicons": "^5.5.1",
     "particles.js": "^2.0.0",
     "postcss": "^7.0.35",
     "tailwindcss": "npm:@tailwindcss/postcss7-compat@^2.0.4",
