@@ -18,10 +18,10 @@ export class UserRepository implements UserRepositoryInterface {
   }
 
   async getUser(id: string): Promise<User> {
-    return (await Client(this.resource)
+    const resp = await Client(this.resource)
       .doc(id)
-      .get()
-      .data()) as User;
+      .get();
+    return resp.data() as User;
   }
 
   async update(id: string, payload: User) {
