@@ -1,6 +1,6 @@
 {
-  "appId": "io.ionic.starter",
-  "appName": "shopping list",
+  "appId": "jose.alvarez.whatToBuy",
+  "appName": "WhatToBuy",
   "bundledWebRuntime": false,
   "npmClient": "npm",
   "webDir": "dist",
@@ -9,5 +9,10 @@
       "launchShowDuration": 0
     }
   },
-  "cordova": {}
+  "cordova": {},
+  "server": {
+    "url": "http://192.168.1.112:8100",
+    "originalUrl": "http://192.168.1.112:8100/",
+    "cleartext": true
+  }
 }

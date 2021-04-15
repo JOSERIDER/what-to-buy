@@ -1,7 +1,7 @@
 <template>
   <ion-header :translucent="true">
     <ion-toolbar>
-      <ion-menu-button> </ion-menu-button>
+      <ion-menu-button slot="start"> </ion-menu-button>
       <ion-segment @ionChange="type = $event.detail.value" value="Private">
         <ion-segment-button value="Private">
           <ion-label>Private</ion-label>

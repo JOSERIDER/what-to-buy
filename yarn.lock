@@ -2,6 +2,13 @@
 # yarn lockfile v1
 
 
+"@angular/core@^11.2.10":
+  version "11.2.10"
+  resolved "https://registry.npmjs.org/@angular/core/-/core-11.2.10.tgz"
+  integrity sha512-1nZGSVZPvTA6rFJhoivcUKm2YBx9A+569cV1UTPlXjcpO+wNcrrXG+6yjxS2wAffTWEQ7xA0ajyo8mZrpqqw9Q==
+  dependencies:
+    tslib "^2.0.0"
+
 "@babel/code-frame@^7.0.0", "@babel/code-frame@^7.12.13", "@babel/code-frame@^7.8.3":
   version "7.12.13"
   resolved "https://registry.npmjs.org/@babel/code-frame/-/code-frame-7.12.13.tgz"
@@ -867,6 +874,11 @@
     lodash "^4.17.19"
     to-fast-properties "^2.0.0"
 
+"@capacitor/android@^2.4.7":
+  version "2.4.7"
+  resolved "https://registry.npmjs.org/@capacitor/android/-/android-2.4.7.tgz"
+  integrity sha512-7jcmwheo94dJEOX1z4r3SlZrL+MvESav1xsUwC5ydLFZCpuvBKJ0szbDNWzCAglgpXmW9hC0WdwYBErgDrDPRg==
+
 "@capacitor/cli@2.4.7":
   version "2.4.7"
   resolved "https://registry.npmjs.org/@capacitor/cli/-/cli-2.4.7.tgz"
@@ -890,6 +902,11 @@
   integrity sha512-ZPzXXQ4EPwR/ZhNDkmlxyzw4FvquIl/ROj8HMMM0MEd4xZfM8ulNGPIL6br9TWdlFLGBKq40eymPZjKaivGnig==
   dependencies:
     tslib "^1.9.0"
+
+"@capacitor/ios@^2.4.7":
+  version "2.4.7"
+  resolved "https://registry.npmjs.org/@capacitor/ios/-/ios-2.4.7.tgz"
+  integrity sha512-XKYU67ZM+yY4/vDJ3ZVfs+phjtWK8TcKwq75fGoxB9PKXuCmMi5bihPuA3Xs/sIFXuozpnaYnspp0eTRJ7bG0w==
 
 "@cnakazawa/watch@^1.0.3":
   version "1.0.4"
@@ -1205,6 +1222,20 @@
     cssnano "^4.0.0"
     cssnano-preset-default "^4.0.0"
     postcss "^7.0.0"
+
+"@ionic-native/core@^5.32.0":
+  version "5.32.0"
+  resolved "https://registry.npmjs.org/@ionic-native/core/-/core-5.32.0.tgz"
+  integrity sha512-4/+HaZniaMyr/fSobTAflKkrgDFvrzK+eZKk3hxalyvg00FQFmT8lu0gt5fQwiHfjn970FOaIh5USJqTwpplbQ==
+  dependencies:
+    "@types/cordova" latest
+
+"@ionic-native/social-sharing@^5.32.0":
+  version "5.32.0"
+  resolved "https://registry.npmjs.org/@ionic-native/social-sharing/-/social-sharing-5.32.0.tgz"
+  integrity sha512-YfW+0DNwZ1iZflXDiRgENkdHJSuKgOZp7nhLxmWPzb6Ukf5R7no1/HmTUyUd/6wr/eVHbq85OIByyFcyzYuhDg==
+  dependencies:
+    "@types/cordova" latest
 
 "@ionic/core@5.6.3":
   version "5.6.3"
@@ -1557,6 +1588,11 @@
   integrity sha512-ePPA/JuI+X0vb+gSWlPKOY0NdNAie/rPUqX2GUPpbZwiKTkSPhjXWuee47E4MtE54QVzGCQMQkAL6JhV2E1+cQ==
   dependencies:
     "@types/node" "*"
+
+"@types/cordova@latest":
+  version "0.0.34"
+  resolved "https://registry.npmjs.org/@types/cordova/-/cordova-0.0.34.tgz"
+  integrity sha1-6nrd907Ow9dimCegw54smt3HPQQ=
 
 "@types/eslint-visitor-keys@^1.0.0":
   version "1.0.0"
@@ -3974,6 +4010,11 @@ copy-webpack-plugin@^5.1.1:
     serialize-javascript "^4.0.0"
     webpack-log "^2.0.0"
 
+cordova-plugin-x-socialsharing@^6.0.3:
+  version "6.0.3"
+  resolved "https://registry.npmjs.org/cordova-plugin-x-socialsharing/-/cordova-plugin-x-socialsharing-6.0.3.tgz"
+  integrity sha512-pnrE2CXsz4G0n0WoFDAasLS1VT3nIsNpddvXgfpiqX3wyOlSjO2NdF+sjYaTvs1B+f7z8EWbYCHpCrgBQiMLIg==
+
 core-js-compat@^3.6.5, core-js-compat@^3.8.1, core-js-compat@^3.9.0:
   version "3.9.1"
   resolved "https://registry.npmjs.org/core-js-compat/-/core-js-compat-3.9.1.tgz"
@@ -4853,6 +4894,11 @@ es-to-primitive@^1.2.1:
     is-callable "^1.1.4"
     is-date-object "^1.0.1"
     is-symbol "^1.0.2"
+
+es6-promise-plugin@^4.2.2:
+  version "4.2.2"
+  resolved "https://registry.npmjs.org/es6-promise-plugin/-/es6-promise-plugin-4.2.2.tgz"
+  integrity sha512-uoA4aVplXI9oqUYJFBAVRwAqIN9/n9JgrTAUGX3qPbnSZVE5yY1+6/MsoN5f4xsaPO62WjPHOdtts6okMN6tNA==
 
 escalade@^3.1.1:
   version "3.1.1"
@@ -6473,16 +6519,9 @@ invariant@^2.2.2, invariant@^2.2.4:
   dependencies:
     loose-envify "^1.0.0"
 
-ionicons@^5.1.2:
+ionicons@^5.1.2, ionicons@^5.5.1:
   version "5.5.1"
   resolved "https://registry.npmjs.org/ionicons/-/ionicons-5.5.1.tgz"
-  integrity sha512-1auVisfaXmkmxINer8Q3kJGHP1vSxk86hf7By95eJ+Av9+oBcNuAEBfSe3jaMaGRVxVw8U/2j23MFq7R3c0HPg==
-  dependencies:
-    "@stencil/core" "^2.5.0"
-
-ionicons@^5.5.1:
-  version "5.5.1"
-  resolved "https://registry.yarnpkg.com/ionicons/-/ionicons-5.5.1.tgz#c337b2a0871c18910dea5c72384b0f0a393abf15"
   integrity sha512-1auVisfaXmkmxINer8Q3kJGHP1vSxk86hf7By95eJ+Av9+oBcNuAEBfSe3jaMaGRVxVw8U/2j23MFq7R3c0HPg==
   dependencies:
     "@stencil/core" "^2.5.0"
@@ -11259,7 +11298,12 @@ tslib@^1.8.0, tslib@^1.8.1, tslib@^1.9.0:
   resolved "https://registry.npmjs.org/tslib/-/tslib-1.14.1.tgz"
   integrity sha512-Xni35NKzjgMrwevysHTCArtLDpPvye8zV/0E4EyYn43P7/7qvQwPh9BGkHewbMulVntbigmcT7rdX3BNo9wRJg==
 
-tslib@^2.0.0, tslib@^2.1.0:
+tslib@^2.0.0:
+  version "2.2.0"
+  resolved "https://registry.npmjs.org/tslib/-/tslib-2.2.0.tgz"
+  integrity sha512-gS9GVHRU+RGn5KQM2rllAlR3dU6m7AcpJKdtH8gFvQiC4Otgk98XnmMU+nZenHt/+VhnBPWwgrJsyrdcw6i23w==
+
+tslib@^2.1.0:
   version "2.1.0"
   resolved "https://registry.npmjs.org/tslib/-/tslib-2.1.0.tgz"
   integrity sha512-hcVC3wYEziELGGmEEXue7D75zbwIIVUMWAVbHItGPx0ziyXxrOMQx4rQEVEV45Ut/1IotuEvwqPopzIOkDMf0A==
@@ -11662,6 +11706,11 @@ vue-loader@^15.9.2:
     loader-utils "^1.1.0"
     vue-hot-reload-api "^2.3.0"
     vue-style-loader "^4.1.0"
+
+vue-qrcode@^0.3.5:
+  version "0.3.5"
+  resolved "https://registry.yarnpkg.com/vue-qrcode/-/vue-qrcode-0.3.5.tgz#d95bd81fea0c7f007f4e69244203d0eee2d573a5"
+  integrity sha512-AZJ+HzhOFokHuMVVwUIjG1FCWT1vJqn/Ro8XnQbyNlZTlQ8l4040JawVqUvTql3AdjJnI9bXaCTPplN502SnFw==
 
 vue-router@^4.0.0-0:
   version "4.0.5"

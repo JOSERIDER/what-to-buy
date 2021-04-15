@@ -4,6 +4,7 @@ import Dashboard from "../views/Dashboard.vue";
 import Auth from "../views/Auth.vue";
 import { useStore } from "@/store/store";
 import { ActionTypes } from "@/store/action-types";
+import Share from "@/views/Share.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -19,6 +20,11 @@ const routes: Array<RouteRecordRaw> = [
     path: "/auth",
     name: "Auth",
     component: Auth,
+  },
+  {
+    path: "/share",
+    name: "Share",
+    component: Share,
   },
 ];
 

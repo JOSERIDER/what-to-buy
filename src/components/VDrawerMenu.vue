@@ -99,7 +99,7 @@ export default defineComponent({
     const selectedIndex = ref(0);
     const appPages = [
       {
-        title: "Dashboard",
+        title: "Home",
         url: "/dashboard",
         icon: listOutline,
       },
