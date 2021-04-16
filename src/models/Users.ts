@@ -17,7 +17,7 @@ export class UserBuild {
     name: string,
     mySharedList: string
   ): User {
-    const qrUrl = this.qrURL(id);
+    const qrUrl = this.qrURL(mySharedList);
     return {
       id,
       email,
