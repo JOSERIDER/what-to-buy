@@ -15,7 +15,7 @@
         <ion-img class="w-48 h-48" :src="user.qrUrl"></ion-img>
         <ion-card-subtitle class="ion-margin-vertical"
           >Ask someone to scan this code to join your shared list if they don't
-          share this code. if they don't share this code</ion-card-subtitle
+          share this code.</ion-card-subtitle
         >
       </ion-card-content>
     </ion-card>
@@ -33,7 +33,9 @@ import {
   IonCardHeader,
   IonCardSubtitle,
   IonCardTitle,
+  IonContent,
   IonHeader,
+  IonImg,
   IonMenuButton,
   IonTitle,
   IonToolbar,
@@ -55,6 +57,8 @@ export default defineComponent({
     IonCardContent,
     IonCardSubtitle,
     IonMenuButton,
+    IonContent,
+    IonImg,
   },
   name: "Share",
   setup() {

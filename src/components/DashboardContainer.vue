@@ -40,6 +40,7 @@
     </ion-fab>
     <DashboardList
       @create-list="openModal()"
+      @join-list="openJoinOptions()"
       @edit-list="editing = !editing"
       :list="list"
       :private-repository="privateListRepository"
@@ -68,6 +69,9 @@ import {
   IonFab,
   IonFabButton,
   IonMenuButton,
+  actionSheetController,
+  toastController,
+  alertController,
 } from "@ionic/vue";
 import { shareOutline, chevronDownCircleOutline, add } from "ionicons/icons";
 import { defineComponent, ref, watch } from "vue";
@@ -75,6 +79,7 @@ import { User } from "@/models/Users";
 import { repositories, repositoryTypes } from "@/repository/RepositoryFactory";
 import { SharedList } from "@/models/SharedList";
 import { List } from "@/models/List";
+import { BarcodeScanner } from "@ionic-native/barcode-scanner/ngx";
 
 export default defineComponent({
   name: "DashboardContainer",
@@ -105,6 +110,7 @@ export default defineComponent({
     const type = ref("Private");
     const editing = ref(false);
     const isModalOpen = ref(false);
+    const barcodeScanner: BarcodeScanner = new BarcodeScanner();
 
     function fetchUser() {
       return store.getters.loggedUser;
@@ -139,6 +145,90 @@ export default defineComponent({
       event.target.complete();
     }
 
+    async function joinToList(resp: string) {
+      const exits = await sharedListRepository.checkList(resp);
+      if (!exits) {
+        const toast = await toastController.create({
+          message: "This list or user not exists.",
+          duration: 2000,
+        });
+        await toast.present();
+        console.log("list doesn't exists");
+
+        return;
+      }
+      const added = await sharedListRepository.addUser(resp, user.id);
+      if (!added) {
+        const toast = await toastController.create({
+          message: "You already belong to this list.",
+          duration: 2000,
+        });
+        await toast.present();
+        return;
+      }
+    }
+
+    function openScanner() {
+      barcodeScanner
+        .scan()
+        .then(resp => joinToList(resp.text))
+        .catch(async () => {
+          const toast = await toastController.create({
+            message: "Scanner no available.",
+            duration: 2000,
+          });
+          await toast.present();
+        });
+    }
+    async function insertCode() {
+      const alert = await alertController.create({
+        header: "Insert list code",
+        inputs: [
+          {
+            name: "listCode",
+            id: "listCode",
+            placeholder: "List code",
+          },
+        ],
+        buttons: [
+          {
+            text: "Cancel",
+            role: "cancel",
+            cssClass: "secondary",
+            handler: () => {
+              console.log("Confirm Cancel");
+            },
+          },
+          {
+            text: "Join",
+            handler: data => joinToList(data.listCode),
+          },
+        ],
+      });
+      return alert.present();
+    }
+
+    async function openJoinOptions() {
+      const actionSheet = await actionSheetController.create({
+        header: "Join to list",
+        buttons: [
+          {
+            text: "Scan QR",
+            handler: () => openScanner(),
+          },
+          {
+            text: "Insert list code",
+            handler: () => insertCode(),
+          },
+          {
+            text: "Cancel",
+            role: "cancel",
+          },
+        ],
+      });
+      await actionSheet.present();
+    }
+
     watch(type, async type => {
       await fetchList(type, user);
     });
@@ -161,6 +251,7 @@ export default defineComponent({
       sharedListRepository,
       doRefresh,
       openModal,
+      openJoinOptions,
       icons: {
         shared: shareOutline,
         circleOutline: chevronDownCircleOutline,

@@ -38,4 +38,26 @@ export class SharedListRepository implements SharedListRepositoryInterface {
       .doc(id)
       .update(payload);
   }
+
+  async checkList(id: string): Promise<boolean> {
+    const resp = await Client(this.resource)
+      .doc(id)
+      .get();
+    return resp.exists;
+  }
+
+  async addUser(listId: string, userId: string): Promise<boolean> {
+    const list: SharedList = (
+      await Client(this.resource)
+        .doc(listId)
+        .get()
+    ).data();
+    //This means that user already belong to this list.
+    if (list.users.includes(userId)) {
+      return false;
+    }
+    list.users.push(userId);
+    await this.update(listId, list);
+    return true;
+  }
 }
