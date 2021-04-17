@@ -49,13 +49,13 @@ import { at, key, listOutline, personOutline } from "ionicons/icons";
 import AuthCard from "@/components/AuthCard.vue";
 import useVuelidate from "@vuelidate/core";
 import { email, minLength, required } from "@vuelidate/validators";
-import { auth } from "@/repository/Client/firebaseClient.js";
-import { repositories, repositoryTypes } from "@/repository/RepositoryFactory";
 import { User, UserBuild } from "@/models/Users";
 import { SharedList, SharedListBuild } from "@/models/SharedList";
 import { useStore } from "@/store/store";
 import { ActionTypes } from "@/store/action-types";
 import VInput from "@/components/VInput.vue";
+import apiClient from "@/api-client";
+import { auth } from "@/models/http-client/client/firebase.config";
 
 export default {
   components: {
@@ -63,9 +63,8 @@ export default {
     AuthCard,
   },
   setup() {
-    const userRepository = repositories[repositoryTypes.USER_REPOSITORY];
-    const sharedListRepository =
-      repositories[repositoryTypes.SHARED_LIST_REPOSITORY];
+    const userApiClient = apiClient.users;
+    const sharedListApiClient = apiClient.sharedLists;
 
     const router = useRouter();
     const store = useStore();
@@ -92,8 +91,8 @@ export default {
       user: User,
       sharedList: SharedList
     ) {
-      userRepository.create(user).then(() => {
-        sharedListRepository.create(sharedList).then(async () => {
+      userApiClient.create(user).then(() => {
+        sharedListApiClient.create(sharedList).then(async () => {
           await store.dispatch(ActionTypes.SET_USER, user);
           await router.push({ name: "Dashboard" });
         });

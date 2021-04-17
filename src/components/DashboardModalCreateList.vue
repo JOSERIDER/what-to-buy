@@ -52,15 +52,14 @@ import useVuelidate from "@vuelidate/core";
 import { useStore } from "@/store/store";
 import { User } from "@/models/Users";
 import { ListBuild } from "@/models/List";
-import { repositories, repositoryTypes } from "@/repository/RepositoryFactory";
 import { modalController } from "@ionic/vue";
+import apiClient from "@/api-client";
 
 export default defineComponent({
   name: "DashBoardModalCreateList",
   setup() {
     const user: User = useStore().getters.loggedUser as User;
-    const privateListRepository =
-      repositories[repositoryTypes.PRIVATE_LIST_REPOSITORY];
+    const privateListApiClient = apiClient.privateLists;
 
     const state = reactive({
       name: "",
@@ -80,8 +79,9 @@ export default defineComponent({
     async function createList() {
       await v$.value.$validate();
       if (v$.value.$error) return;
-      privateListRepository.create(ListBuild.build(user.id, state.name));
-      await close();
+      await privateListApiClient
+        .create(ListBuild.build(user.id, state.name))
+        .then(async () => await close());
     }
 
     return { state, v$, createList, close };

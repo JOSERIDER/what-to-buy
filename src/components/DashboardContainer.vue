@@ -43,8 +43,6 @@
       @join-list="openJoinOptions()"
       @edit-list="editing = !editing"
       :list="list"
-      :private-repository="privateListRepository"
-      :shared-repository="sharedListRepository"
       :list-type="type"
     />
   </ion-content>
@@ -76,10 +74,10 @@ import {
 import { shareOutline, chevronDownCircleOutline, add } from "ionicons/icons";
 import { defineComponent, ref, watch } from "vue";
 import { User } from "@/models/Users";
-import { repositories, repositoryTypes } from "@/repository/RepositoryFactory";
 import { SharedList } from "@/models/SharedList";
 import { List } from "@/models/List";
 import { BarcodeScanner } from "@ionic-native/barcode-scanner/ngx";
+import apiClient from "@/api-client";
 
 export default defineComponent({
   name: "DashboardContainer",
@@ -100,10 +98,8 @@ export default defineComponent({
     IonMenuButton,
   },
   async setup() {
-    const privateListRepository =
-      repositories[repositoryTypes.PRIVATE_LIST_REPOSITORY];
-    const sharedListRepository =
-      repositories[repositoryTypes.SHARED_LIST_REPOSITORY];
+    const privateListApiClient = apiClient.privateLists;
+    const sharedListApiClient = apiClient.sharedLists;
 
     const store = useStore();
     const list = ref([] as List[]);
@@ -119,11 +115,11 @@ export default defineComponent({
     const user: User = fetchUser() as User;
 
     function getPrivateList(currentUser: User): Promise<List[]> {
-      return privateListRepository.getUserList(currentUser.id);
+      return privateListApiClient.getUserList(currentUser.id);
     }
 
     function getSharedList(currentUser: User): Promise<SharedList[]> {
-      return sharedListRepository.getUserList(currentUser.id);
+      return sharedListApiClient.getUserList(currentUser.id);
     }
 
     async function openModal() {
@@ -145,27 +141,28 @@ export default defineComponent({
       event.target.complete();
     }
 
-    async function joinToList(resp: string) {
-      const exits = await sharedListRepository.checkList(resp);
-      if (!exits) {
-        const toast = await toastController.create({
-          message: "This list or user not exists.",
-          duration: 2000,
+    function joinToList(resp: string) {
+      sharedListApiClient
+        .checkList(resp)
+        .then(async () => {
+          const added = await sharedListApiClient.addUser(resp, user.id);
+          if (!added) {
+            const toast = await toastController.create({
+              message: "You already belong to this list.",
+              duration: 2000,
+            });
+            await toast.present();
+            return;
+          }
+        })
+        .catch(async () => {
+          const toast = await toastController.create({
+            message: "This list or user not exists.",
+            duration: 2000,
+          });
+          await toast.present();
+          console.log("list doesn't exists");
         });
-        await toast.present();
-        console.log("list doesn't exists");
-
-        return;
-      }
-      const added = await sharedListRepository.addUser(resp, user.id);
-      if (!added) {
-        const toast = await toastController.create({
-          message: "You already belong to this list.",
-          duration: 2000,
-        });
-        await toast.present();
-        return;
-      }
     }
 
     function openScanner() {
@@ -247,8 +244,6 @@ export default defineComponent({
       type,
       isModalOpen,
       editing,
-      privateListRepository,
-      sharedListRepository,
       doRefresh,
       openModal,
       openJoinOptions,

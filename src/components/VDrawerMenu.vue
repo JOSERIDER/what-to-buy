@@ -8,12 +8,12 @@
   >
     <ion-header class="flex items-center justify-around p-4">
       <div>
-        <h3>{{ user.name }}</h3>
-        <ion-label color="medium">{{ user.email }}</ion-label>
+        <h3>{{ user?.name }}</h3>
+        <ion-label color="medium">{{ user?.email }}</ion-label>
       </div>
       <ion-img
         class="w-14 h-14 rounded-full"
-        :src="user.image ? user.image : require('@/assets/resources/user.png')"
+        :src="user?.image ? user.image : require('@/assets/resources/user.png')"
       ></ion-img>
     </ion-header>
     <ion-content>

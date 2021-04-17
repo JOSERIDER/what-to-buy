@@ -32,11 +32,11 @@ import { at, key } from "ionicons/icons";
 import { alertController } from "@ionic/vue";
 import useVuelidate from "@vuelidate/core";
 import { email, required } from "@vuelidate/validators";
-import { repositories, repositoryTypes } from "@/repository/RepositoryFactory";
 import { useRouter } from "vue-router";
 import { useStore } from "@/store/store";
 import { ActionTypes } from "@/store/action-types";
-import { auth } from "@/repository/Client/firebaseClient";
+import apiClient from "@/api-client";
+import { auth } from "@/models/http-client/client/firebase.config";
 
 export default {
   components: {
@@ -44,7 +44,7 @@ export default {
     AuthCard,
   },
   setup() {
-    const userRepository = repositories[repositoryTypes.USER_REPOSITORY];
+    const userApiClient = apiClient.users;
     const router = useRouter();
     const store = useStore();
 
@@ -84,7 +84,7 @@ export default {
       auth
         .signInWithEmailAndPassword(state.email, state.password)
         .then(user => {
-          userRepository.getUser(user.user.uid).then(async user => {
+          userApiClient.get(user.user?.uid as string).then(async user => {
             if (!user) {
               await presentAlert("Error", "User not fount in our dataBase");
               return;

@@ -27,11 +27,10 @@
 
 <script lang="ts">
 import { IonList, IonListHeader, IonLabel, IonButton } from "@ionic/vue";
-import { defineComponent, PropType } from "vue";
+import { defineComponent } from "vue";
 import DashboardListItem from "@/components/DashboardListItem.vue";
 import VEmptyView from "@/components/VEmptyView.vue";
-import { PrivateListRepositoryInterface } from "@/repository/PrivateList/PrivateListRepositoryInterface";
-import { SharedListRepositoryInterface } from "@/repository/SharedList/SharedListRepositoryInterface";
+import apiClient from "@/api-client";
 
 export default defineComponent({
   name: "DashboardList",
@@ -45,14 +44,6 @@ export default defineComponent({
       type: Array,
       required: true,
     },
-    privateRepository: {
-      type: Object as PropType<PrivateListRepositoryInterface>,
-      required: true,
-    },
-    sharedRepository: {
-      type: Object as PropType<SharedListRepositoryInterface>,
-      required: true,
-    },
   },
   methods: {
     edit() {
@@ -61,9 +52,9 @@ export default defineComponent({
     },
     remove(listId) {
       if (this.listType === "Private") {
-        this.privateRepository.delete(listId);
+        apiClient.privateLists.delete(listId);
       } else {
-        this.sharedRepository.delete(listId);
+        apiClient.sharedLists.delete(listId);
       }
     },
   },
