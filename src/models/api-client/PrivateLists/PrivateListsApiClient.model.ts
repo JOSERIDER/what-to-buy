@@ -3,6 +3,12 @@ import { List } from "@/models/List";
 import { PrivateListsApiClientUrlInterface } from "@/models/api-client/PrivateLists/PrivateListsApiClientUrl.interface";
 import { HttpClient, HttpRequestParamsInterface } from "@/models/http-client";
 
+/**
+ * @name PrivateListsApiClientModel
+ * @description Api client for privateList domain that implements PrivateListsApiClientModelInterface.
+ * @constructor
+ * @param urls - Represent the urls that client accepts.
+ */
 export class PrivateListsApiClientModel
   implements PrivateListsApiClientModelInterface {
   private readonly urls!: PrivateListsApiClientUrlInterface;
@@ -30,7 +36,7 @@ export class PrivateListsApiClientModel
     return HttpClient.delete(params);
   }
 
-  getList(id: string): Promise<List> {
+  get(id: string): Promise<List> {
     const params: HttpRequestParamsInterface = {
       url: this.urls.privateLists,
       documentId: id,

@@ -3,6 +3,12 @@ import { Product } from "@/models/Product";
 import { HttpClient, HttpRequestParamsInterface } from "@/models/http-client";
 import { ProductsApiClientUrlInterface } from "@/models/api-client/Products/ProductsApiClientUrl.interface";
 
+/**
+ * @name ProductsApiClientModel
+ * @description Api client for product domain that implements ProductsApiClientModelInterface.
+ * @constructor
+ *    @param urls - Urls that api client client accepts.
+ */
 export class ProductsApiClientModel implements ProductsApiClientModelInterface {
   private readonly urls!: ProductsApiClientUrlInterface;
 
@@ -29,7 +35,7 @@ export class ProductsApiClientModel implements ProductsApiClientModelInterface {
     return HttpClient.delete(params);
   }
 
-  getProduct(id: string): Promise<Product> {
+  get(id: string): Promise<Product> {
     const params: HttpRequestParamsInterface = {
       url: this.urls.products,
       documentId: id,

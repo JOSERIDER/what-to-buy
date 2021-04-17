@@ -1,8 +1,8 @@
 import { User } from "@/models/Users";
 
 /**
- * @Name UsersApiClientModel
- * @Description Interface for user api client.
+ * @name UsersApiClientModel
+ * @description Interface for user api client.
  */
 export interface UsersApiClientModelInterface {
   get(id: string): Promise<User>;

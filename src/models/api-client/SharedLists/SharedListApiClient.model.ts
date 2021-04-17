@@ -3,6 +3,12 @@ import { SharedListsApiClientUrlInterface } from "@/models/api-client/SharedList
 import { SharedList } from "@/models/SharedList";
 import { HttpClient, HttpRequestParamsInterface } from "@/models/http-client";
 
+/**
+ * @Name SharedListApiClientModel
+ * @Description Api client for sharedList domain that implements SharedListApiClientModel.
+ * @constructor
+ * @param urls - Represent the urls that client accepts.
+ */
 export class SharedListApiClientModel
   implements SharedListsApiClientModelInterface {
   private readonly urls!: SharedListsApiClientUrlInterface;

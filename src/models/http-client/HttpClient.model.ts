@@ -3,8 +3,8 @@ import { HttpRequestParamsInterface } from "@/models/http-client/HttpRequestPara
 import { firestore, auth } from "./client/firebase.config";
 
 /**
- * @Name HttpClientModel
- * @Description Wrap the Http functionality to centralize all request with the same provider as axios or Firebase.
+ * @name HttpClientModel
+ * @description Wrap the Http functionality to centralize all request with the same provider as axios or Firebase.
  */
 export class HttpClientModel implements HttpClientInterface {
   get<T>(params: HttpRequestParamsInterface): Promise<T> {

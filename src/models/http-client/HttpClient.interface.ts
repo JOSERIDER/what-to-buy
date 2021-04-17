@@ -1,8 +1,8 @@
 import { HttpRequestParamsInterface } from "@/models/http-client/HttpRequestParams.interface";
 
 /**
- * @Name HttpClientInterface
- * @Description Wrapper for HttpClient
+ * @name HttpClientInterface
+ * @description Wrapper for HttpClient
  */
 export interface HttpClientInterface {
   get<T>(params: HttpRequestParamsInterface): Promise<T>;

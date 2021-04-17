@@ -4,8 +4,8 @@ import { UsersApiClientUrlInterface } from "@/models/api-client/users/UsersApiCl
 import { HttpClient, HttpRequestParamsInterface } from "@/models/http-client";
 
 /**
- * @Name UsersApiClientModel
- * @Description Api client for users domain that implements the UsersApiClientModelInterface.
+ * @name UsersApiClientModel
+ * @description Api client for users domain that implements the UsersApiClientModelInterface.
  */
 export class UsersApiClientModel implements UsersApiClientModelInterface {
   private readonly urls!: UsersApiClientUrlInterface;
