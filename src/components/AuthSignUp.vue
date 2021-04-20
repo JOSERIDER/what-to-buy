@@ -51,11 +51,11 @@ import useVuelidate from "@vuelidate/core";
 import { email, minLength, required } from "@vuelidate/validators";
 import { User, UserBuild } from "@/models/Users";
 import { SharedList, SharedListBuild } from "@/models/SharedList";
-import { useStore } from "@/store/store";
-import { ActionTypes } from "@/store/action-types";
 import VInput from "@/components/VInput.vue";
-import apiClient from "@/api-client";
-import { auth } from "@/models/http-client/client/firebase.config";
+import apiClient, { firebaseAuth } from "@/api-client";
+import { useUserStore } from "@/store/user";
+import { MutationType } from "@/models/store";
+import firebase from "firebase";
 
 export default {
   components: {
@@ -67,7 +67,7 @@ export default {
     const sharedListApiClient = apiClient.sharedLists;
 
     const router = useRouter();
-    const store = useStore();
+    const userProfileStore = useUserStore();
 
     const state = reactive({
       name: "",
@@ -93,17 +93,18 @@ export default {
     ) {
       userApiClient.create(user).then(() => {
         sharedListApiClient.create(sharedList).then(async () => {
-          await store.dispatch(ActionTypes.SET_USER, user);
+          firebaseAuth.currentUser?.updateProfile({
+            displayName: user.name,
+          });
+
+          await userProfileStore.action(MutationType.user.setUser, user);
           await router.push({ name: "Dashboard" });
         });
       });
     }
 
-    function signUp() {
-      v$.value.$validate();
-      if (v$.value.$error) return;
-
-      auth
+    function createUser() {
+      firebaseAuth
         .createUserWithEmailAndPassword(state.email, state.password)
         .then((user: any) => {
           const sharedList: SharedList = SharedListBuild.build(
@@ -120,6 +121,14 @@ export default {
 
           saveUserAndUserListOnFirestore(newUser, sharedList);
         });
+    }
+
+    function signUp() {
+      v$.value.$validate();
+      if (v$.value.$error) return;
+      firebaseAuth
+        .setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+        .then(() => createUser());
     }
 
     return {

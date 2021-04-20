@@ -33,10 +33,9 @@ import { alertController } from "@ionic/vue";
 import useVuelidate from "@vuelidate/core";
 import { email, required } from "@vuelidate/validators";
 import { useRouter } from "vue-router";
-import { useStore } from "@/store/store";
-import { ActionTypes } from "@/store/action-types";
-import apiClient from "@/api-client";
-import { auth } from "@/models/http-client/client/firebase.config";
+import apiClient, { firebaseAuth } from "@/api-client";
+import { useUserStore } from "@/store/user";
+import { MutationType } from "@/models/store";
 
 export default {
   components: {
@@ -46,7 +45,7 @@ export default {
   setup() {
     const userApiClient = apiClient.users;
     const router = useRouter();
-    const store = useStore();
+    const userStore = useUserStore();
 
     const state = reactive({
       email: "",
@@ -81,7 +80,7 @@ export default {
       v$.value.$validate();
       if (v$.value.$error) return;
 
-      auth
+      firebaseAuth
         .signInWithEmailAndPassword(state.email, state.password)
         .then(user => {
           userApiClient.get(user.user?.uid as string).then(async user => {
@@ -89,8 +88,8 @@ export default {
               await presentAlert("Error", "User not fount in our dataBase");
               return;
             }
-            await store.dispatch(ActionTypes.SET_USER, user);
-            await router.push("/");
+            await userStore.action(MutationType.user.setUser, user);
+            await router.push({ name: "Dashboard" });
           });
         });
     }

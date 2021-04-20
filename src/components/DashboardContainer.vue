@@ -51,7 +51,6 @@
 <script lang="ts">
 import DashboardList from "@/components/DashboardList.vue";
 import DashBoardModalCreateList from "@/components/DashboardModalCreateList.vue";
-import { useStore } from "@/store/store";
 import {
   IonButton,
   IonHeader,
@@ -78,6 +77,7 @@ import { SharedList } from "@/models/SharedList";
 import { List } from "@/models/List";
 import { BarcodeScanner } from "@ionic-native/barcode-scanner/ngx";
 import apiClient from "@/api-client";
+import { useUserStore } from "@/store/user";
 
 export default defineComponent({
   name: "DashboardContainer",
@@ -101,7 +101,7 @@ export default defineComponent({
     const privateListApiClient = apiClient.privateLists;
     const sharedListApiClient = apiClient.sharedLists;
 
-    const store = useStore();
+    const userStore = useUserStore();
     const list = ref([] as List[]);
     const type = ref("Private");
     const editing = ref(false);
@@ -109,17 +109,17 @@ export default defineComponent({
     const barcodeScanner: BarcodeScanner = new BarcodeScanner();
 
     function fetchUser() {
-      return store.getters.loggedUser;
+      return userStore.state.user;
     }
 
     const user: User = fetchUser() as User;
 
     function getPrivateList(currentUser: User): Promise<List[]> {
-      return privateListApiClient.getUserList(currentUser.id);
+      return privateListApiClient.getUserList(currentUser.id as string);
     }
 
     function getSharedList(currentUser: User): Promise<SharedList[]> {
-      return sharedListApiClient.getUserList(currentUser.id);
+      return sharedListApiClient.getUserList(currentUser.id as string);
     }
 
     async function openModal() {
@@ -145,7 +145,10 @@ export default defineComponent({
       sharedListApiClient
         .checkList(resp)
         .then(async () => {
-          const added = await sharedListApiClient.addUser(resp, user.id);
+          const added = await sharedListApiClient.addUser(
+            resp,
+            user.id as string
+          );
           if (!added) {
             const toast = await toastController.create({
               message: "You already belong to this list.",

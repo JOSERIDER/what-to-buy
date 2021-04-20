@@ -73,11 +73,11 @@ import {
   logOutOutline,
   shareOutline,
 } from "ionicons/icons";
-import { useStore } from "@/store/store";
 import { defineComponent, ref } from "vue";
 import { User } from "@/models/Users";
-import { ActionTypes } from "@/store/action-types";
 import { useRouter } from "vue-router";
+import { useUserStore } from "@/store/user";
+import { MutationType } from "@/models/store";
 
 export default defineComponent({
   name: "VDrawerMenu",
@@ -93,8 +93,8 @@ export default defineComponent({
     IonLabel,
   },
   setup() {
-    const store = useStore();
-    const user: User = store.getters.loggedUser as User;
+    const userProfileStore = useUserStore();
+    const user: User = userProfileStore.state.user;
     const router = useRouter();
     const selectedIndex = ref(0);
     const appPages = [
@@ -121,7 +121,7 @@ export default defineComponent({
     ];
 
     async function logout() {
-      await store.dispatch(ActionTypes.REMOVE_USER);
+      await userProfileStore.action(MutationType.user.removeUser);
       await router.push("/auth");
     }
     const path: string = router.currentRoute.value.path;

@@ -42,8 +42,8 @@ import {
 } from "@ionic/vue";
 import { defineComponent } from "vue";
 import { User } from "@/models/Users";
-import { useStore } from "@/store/store";
 import { SocialSharing } from "@ionic-native/social-sharing/ngx";
+import { useUserStore } from "@/store/user";
 
 export default defineComponent({
   components: {
@@ -62,9 +62,9 @@ export default defineComponent({
   },
   name: "Share",
   setup() {
-    const store = useStore();
+    const userStore = useUserStore();
     const socialSharing: SocialSharing = new SocialSharing();
-    const user: User = store.getters.loggedUser as User;
+    const user: User = userStore.state.user;
 
     function share() {
       socialSharing.share(

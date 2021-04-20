@@ -3,7 +3,7 @@ import App from "./App.vue";
 import router from "./router";
 import { IonicVue } from "@ionic/vue";
 import Particles from "particles.js";
-
+import { rootStore } from "./store";
 /* Core CSS required for Ionic components.ts to work properly */
 import "@ionic/vue/css/core.css";
 
@@ -27,6 +27,7 @@ import "@/assets/css/tailwind.css";
 
 const app = createApp(App)
   .use(IonicVue)
+  .use(rootStore)
   .use(router)
   .use(Particles);
 

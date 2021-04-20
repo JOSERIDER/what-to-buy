@@ -48,17 +48,25 @@ import VInput from "@/components/VInput.vue";
 import { computed, defineComponent, reactive } from "vue";
 import { minLength, required } from "@vuelidate/validators";
 import useVuelidate from "@vuelidate/core";
-
-import { useStore } from "@/store/store";
 import { User } from "@/models/Users";
 import { ListBuild } from "@/models/List";
 import { modalController } from "@ionic/vue";
 import apiClient from "@/api-client";
+import { useUserStore } from "@/store/user";
 
 export default defineComponent({
   name: "DashBoardModalCreateList",
+  components: {
+    VInput,
+    IonHeader,
+    IonToolbar,
+    IonTitle,
+    IonContent,
+    IonText,
+    IonButton,
+  },
   setup() {
-    const user: User = useStore().getters.loggedUser as User;
+    const user: User = useUserStore().state.user;
     const privateListApiClient = apiClient.privateLists;
 
     const state = reactive({
@@ -80,20 +88,11 @@ export default defineComponent({
       await v$.value.$validate();
       if (v$.value.$error) return;
       await privateListApiClient
-        .create(ListBuild.build(user.id, state.name))
+        .create(ListBuild.build(user.id as string, state.name as string))
         .then(async () => await close());
     }
 
     return { state, v$, createList, close };
-  },
-  components: {
-    VInput,
-    IonHeader,
-    IonToolbar,
-    IonTitle,
-    IonContent,
-    IonText,
-    IonButton,
   },
 });
 </script>
