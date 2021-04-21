@@ -10,7 +10,7 @@ export class ColorBuilder {
   ];
 
   public static getRandomColor() {
-    const color = Math.round(Math.random() * this.colors.length);
+    const color = Math.round(Math.random() * this.colors.length) - 1;
     return this.colors[color];
   }
 }

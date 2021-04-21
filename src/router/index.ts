@@ -2,9 +2,10 @@ import { createRouter, createWebHistory } from "@ionic/vue-router";
 import { RouteRecordRaw } from "vue-router";
 import Dashboard from "../views/Dashboard.vue";
 import Auth from "../views/Auth.vue";
-import { useStore } from "@/store/store";
-import { ActionTypes } from "@/store/action-types";
 import Share from "@/views/Share.vue";
+import { User } from "@/models/Users";
+import { useUserStore } from "@/store/user";
+import { MutationType } from "@/models/store";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -34,8 +35,9 @@ const router = createRouter({
 });
 
 router.beforeEach(async (to, from, next) => {
-  const store = useStore();
-  const user = await store.dispatch(ActionTypes.GET_USER);
+  const userStore = useUserStore();
+  await userStore.action(MutationType.user.getUser);
+  const user: User = userStore.state.user;
 
   if (to.name === "Auth" && user === null) {
     next();

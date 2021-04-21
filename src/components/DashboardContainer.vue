@@ -2,7 +2,7 @@
   <ion-header :translucent="true">
     <ion-toolbar>
       <ion-menu-button slot="start"> </ion-menu-button>
-      <ion-segment @ionChange="type = $event.detail.value" value="Private">
+      <ion-segment @ionChange="changeType($event.detail.value)" value="Private">
         <ion-segment-button value="Private">
           <ion-label>Private</ion-label>
         </ion-segment-button>
@@ -10,9 +10,6 @@
           <ion-label>Shared</ion-label>
         </ion-segment-button>
       </ion-segment>
-      <ion-button fill="clear" slot="end" color="primary">
-        <ion-icon :icon="icons.shared" size="large"></ion-icon>
-      </ion-button>
     </ion-toolbar>
   </ion-header>
 
@@ -41,8 +38,7 @@
     <DashboardList
       @create-list="openModal()"
       @join-list="openJoinOptions()"
-      @edit-list="editing = !editing"
-      :list="list"
+      :list="lists"
       :list-type="type"
     />
   </ion-content>
@@ -51,9 +47,7 @@
 <script lang="ts">
 import DashboardList from "@/components/DashboardList.vue";
 import DashBoardModalCreateList from "@/components/DashboardModalCreateList.vue";
-import { useStore } from "@/store/store";
 import {
-  IonButton,
   IonHeader,
   IonIcon,
   IonLabel,
@@ -71,12 +65,12 @@ import {
   toastController,
   alertController,
 } from "@ionic/vue";
-import { shareOutline, chevronDownCircleOutline, add } from "ionicons/icons";
-import { defineComponent, ref, watch } from "vue";
-import { User } from "@/models/Users";
-import { SharedList } from "@/models/SharedList";
-import { List } from "@/models/List";
+import { chevronDownCircleOutline, add } from "ionicons/icons";
+import { computed, defineComponent, ref, watch } from "vue";
 import { BarcodeScanner } from "@ionic-native/barcode-scanner/ngx";
+import { useUserStore } from "@/store/user";
+import { useListsStore } from "@/store/lists";
+import { ActionType } from "@/models/store";
 import apiClient from "@/api-client";
 
 export default defineComponent({
@@ -85,7 +79,6 @@ export default defineComponent({
     DashboardList,
     IonHeader,
     IonToolbar,
-    IonButton,
     IonIcon,
     IonSegment,
     IonLabel,
@@ -98,29 +91,30 @@ export default defineComponent({
     IonMenuButton,
   },
   async setup() {
-    const privateListApiClient = apiClient.privateLists;
-    const sharedListApiClient = apiClient.sharedLists;
-
-    const store = useStore();
-    const list = ref([] as List[]);
-    const type = ref("Private");
-    const editing = ref(false);
+    const listsStore = useListsStore();
+    const userStore = useUserStore();
     const isModalOpen = ref(false);
     const barcodeScanner: BarcodeScanner = new BarcodeScanner();
 
-    function fetchUser() {
-      return store.getters.loggedUser;
-    }
+    const user = computed(() => {
+      return userStore.state.user;
+    });
 
-    const user: User = fetchUser() as User;
+    const type = computed(() => {
+      return listsStore.state.type;
+    });
 
-    function getPrivateList(currentUser: User): Promise<List[]> {
-      return privateListApiClient.getUserList(currentUser.id);
-    }
+    const lists = computed(() => {
+      return listsStore.state.lists;
+    });
 
-    function getSharedList(currentUser: User): Promise<SharedList[]> {
-      return sharedListApiClient.getUserList(currentUser.id);
-    }
+    const loading = computed(() => {
+      return listsStore.state.loading;
+    });
+
+    const editing = computed(() => {
+      return listsStore.state.editing;
+    });
 
     async function openModal() {
       const modal = await modalController.create({
@@ -129,23 +123,31 @@ export default defineComponent({
       await modal.present();
     }
 
-    async function fetchList(type: string, currentUser: User) {
-      list.value =
-        type === "Private"
-          ? await getPrivateList(currentUser)
-          : await getSharedList(currentUser);
+    function changeType(type) {
+      listsStore.action(ActionType.lists.changeType, type);
+      listsStore.action(ActionType.lists.fetchLists);
+      if (editing.value) {
+        listsStore.action(ActionType.lists.editLists);
+      }
+    }
+
+    function fetchList() {
+      listsStore.action(ActionType.lists.fetchLists);
     }
 
     async function doRefresh(event: any) {
-      await fetchList(type.value, user);
+      await fetchList();
       event.target.complete();
     }
 
     function joinToList(resp: string) {
-      sharedListApiClient
+      apiClient.sharedLists
         .checkList(resp)
         .then(async () => {
-          const added = await sharedListApiClient.addUser(resp, user.id);
+          const added = await apiClient.sharedLists.addUser(
+            resp,
+            user.value.id as string
+          );
           if (!added) {
             const toast = await toastController.create({
               message: "You already belong to this list.",
@@ -177,6 +179,7 @@ export default defineComponent({
           await toast.present();
         });
     }
+
     async function insertCode() {
       const alert = await alertController.create({
         header: "Insert list code",
@@ -226,29 +229,25 @@ export default defineComponent({
       await actionSheet.present();
     }
 
-    watch(type, async type => {
-      await fetchList(type, user);
-    });
-
-    watch(list, list => {
-      if (list.length === 0) {
-        editing.value = false;
+    watch(lists, lists => {
+      if (lists.length === 0) {
+        listsStore.action(ActionType.lists.editLists);
       }
     });
 
-    await fetchList(type.value, user);
+    await fetchList();
 
     return {
-      list,
-      user,
+      lists,
       type,
       isModalOpen,
       editing,
+      loading,
       doRefresh,
       openModal,
       openJoinOptions,
+      changeType,
       icons: {
-        shared: shareOutline,
         circleOutline: chevronDownCircleOutline,
         add,
       },

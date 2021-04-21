@@ -1,9 +1,9 @@
 export interface User {
-  id: string;
-  email: string;
-  name: string;
-  mySharedList: string;
-  qrUrl: string;
+  id?: string;
+  email?: string;
+  name?: string;
+  mySharedList?: string;
+  qrUrl?: string;
   image?: string;
 }
 
