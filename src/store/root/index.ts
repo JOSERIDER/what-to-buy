@@ -2,6 +2,7 @@ import { createStore, StoreOptions } from "vuex";
 import { RootStateInterface, RootStoreModel } from "@/models/store";
 import { initialRootState } from "@/store/root/InitialState";
 import { userState } from "@/store/user/module";
+import { listState } from "@/store/lists/module";
 
 /**
  * Vuex options to create a modularize store.
@@ -9,7 +10,8 @@ import { userState } from "@/store/user/module";
 const storeOptions: StoreOptions<RootStateInterface> = {
   state: initialRootState,
   modules: {
-    userProfileState: userState,
+    userState: userState,
+    listsState: listState,
   },
 };
 

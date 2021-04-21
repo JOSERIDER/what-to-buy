@@ -12,6 +12,8 @@
 import { IonApp, IonRouterOutlet } from "@ionic/vue";
 import { defineComponent } from "vue";
 import VDrawerMenu from "@/components/VDrawerMenu.vue";
+import { useUserStore } from "@/store/user";
+import { MutationType } from "@/models/store";
 
 export default defineComponent({
   name: "App",
@@ -19,6 +21,10 @@ export default defineComponent({
     VDrawerMenu,
     IonApp,
     IonRouterOutlet,
+  },
+  async created() {
+    const userStore = useUserStore();
+    await userStore.action(MutationType.user.getUser);
   },
 });
 </script>

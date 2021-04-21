@@ -51,8 +51,9 @@ import useVuelidate from "@vuelidate/core";
 import { User } from "@/models/Users";
 import { ListBuild } from "@/models/List";
 import { modalController } from "@ionic/vue";
-import apiClient from "@/api-client";
 import { useUserStore } from "@/store/user";
+import { useListsStore } from "@/store/lists";
+import { ActionType } from "@/models/store";
 
 export default defineComponent({
   name: "DashBoardModalCreateList",
@@ -67,7 +68,7 @@ export default defineComponent({
   },
   setup() {
     const user: User = useUserStore().state.user;
-    const privateListApiClient = apiClient.privateLists;
+    const listsStore = useListsStore();
 
     const state = reactive({
       name: "",
@@ -87,9 +88,12 @@ export default defineComponent({
     async function createList() {
       await v$.value.$validate();
       if (v$.value.$error) return;
-      await privateListApiClient
-        .create(ListBuild.build(user.id as string, state.name as string))
-        .then(async () => await close());
+
+      const newList = ListBuild.build(user.id as string, state.name as string);
+      await listsStore.action(ActionType.lists.createList, newList);
+      //TODO: REMOVE THIS IF LIST IS REACTIVE.
+      await listsStore.action(ActionType.lists.fetchLists);
+      await close();
     }
 
     return { state, v$, createList, close };

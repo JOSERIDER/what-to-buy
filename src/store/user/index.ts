@@ -3,14 +3,10 @@ import { dispatchModuleAction, rootStore } from "@/store";
 
 const userStore = {
   get state(): UserStateInterface {
-    return rootStore.state.userProfileState;
+    return rootStore.state.userState;
   },
   async action<T>(actionName: string, params?: T) {
-    await dispatchModuleAction(
-      StoreModuleName.userProfileState,
-      actionName,
-      params
-    );
+    await dispatchModuleAction(StoreModuleName.userState, actionName, params);
   },
 };
 

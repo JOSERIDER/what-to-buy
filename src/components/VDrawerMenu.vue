@@ -73,8 +73,7 @@ import {
   logOutOutline,
   shareOutline,
 } from "ionicons/icons";
-import { defineComponent, ref } from "vue";
-import { User } from "@/models/Users";
+import { computed, defineComponent, ref } from "vue";
 import { useRouter } from "vue-router";
 import { useUserStore } from "@/store/user";
 import { MutationType } from "@/models/store";
@@ -93,8 +92,7 @@ export default defineComponent({
     IonLabel,
   },
   setup() {
-    const userProfileStore = useUserStore();
-    const user: User = userProfileStore.state.user;
+    const userStore = useUserStore();
     const router = useRouter();
     const selectedIndex = ref(0);
     const appPages = [
@@ -120,8 +118,12 @@ export default defineComponent({
       },
     ];
 
+    const user = computed(() => {
+      return userStore.state.user;
+    });
+
     async function logout() {
-      await userProfileStore.action(MutationType.user.removeUser);
+      await userStore.action(MutationType.user.removeUser);
       await router.push("/auth");
     }
     const path: string = router.currentRoute.value.path;

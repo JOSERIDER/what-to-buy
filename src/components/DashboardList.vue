@@ -5,10 +5,10 @@
       <ion-button
         v-if="listType === 'Private' && list.length > 0"
         @click="edit()"
-        >{{ deleting ? "Editing" : "Edit" }}</ion-button
+        >{{ editing ? "Done" : "Edit" }}</ion-button
       >
       <ion-button
-        v-if="listType === 'Shared' && list.length > 0"
+        v-if="list.length > 0 && listType === 'Shared'"
         @click="$emit('join-list')"
         >Join to other list</ion-button
       >
@@ -20,7 +20,6 @@
       v-for="item in list"
       :key="item.listCode"
       :list="item"
-      :deleting="deleting"
     />
   </ion-list>
 </template>
@@ -30,7 +29,8 @@ import { IonList, IonListHeader, IonLabel, IonButton } from "@ionic/vue";
 import { defineComponent } from "vue";
 import DashboardListItem from "@/components/DashboardListItem.vue";
 import VEmptyView from "@/components/VEmptyView.vue";
-import apiClient from "@/api-client";
+import { useListsStore } from "@/store/lists";
+import { ActionType } from "@/models/store";
 
 export default defineComponent({
   name: "DashboardList",
@@ -47,21 +47,21 @@ export default defineComponent({
   },
   methods: {
     edit() {
-      this.deleting = !this.deleting;
-      this.$emit("edit-list");
+      this.listsStore.action(ActionType.lists.editLists);
     },
-    remove(listId) {
-      if (this.listType === "Private") {
-        apiClient.privateLists.delete(listId);
-      } else {
-        apiClient.sharedLists.delete(listId);
-      }
+    async remove(listId) {
+      await this.listsStore.action(ActionType.lists.deleteList, listId);
+      //TODO: REMOVE THIS IF LIST IS REACTIVE.
+      await this.listsStore.action(ActionType.lists.fetchLists);
     },
   },
-  data() {
-    return {
-      deleting: false,
-    };
+  computed: {
+    listsStore() {
+      return useListsStore();
+    },
+    editing() {
+      return useListsStore().state.editing;
+    },
   },
   components: {
     DashboardListItem,
