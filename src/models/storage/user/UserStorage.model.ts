@@ -1,7 +1,7 @@
 import { UserStorageInterface } from "@/models/storage/user/UserStorage.interface";
-import { User } from "@/models/Users";
 import { Storage } from "@ionic/storage";
 import { UserStorageKeysInterface } from "@/models/storage/user/UserStorageKeys.interface";
+import { User } from "@/models/domain/user";
 
 /**
  * Model class to wrap user storage actions that implements UserStorageInterface.

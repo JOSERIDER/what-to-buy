@@ -1,7 +1,7 @@
 import { SharedListsApiClientModelInterface } from "@/models/api-client/SharedLists/SharedListsApiClientModelInterface";
 import { SharedListsApiClientUrlInterface } from "@/models/api-client/SharedLists/SharedListsApiClientUrl.interface";
-import { SharedList } from "@/models/SharedList";
 import { HttpClient, HttpRequestParamsInterface } from "@/models/http-client";
+import { SharedList } from "@/models/domain/sharedList";
 
 /**
  * @Name SharedListApiClientModel

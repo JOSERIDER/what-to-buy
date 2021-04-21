@@ -49,13 +49,13 @@ import { at, key, listOutline, personOutline } from "ionicons/icons";
 import AuthCard from "@/components/AuthCard.vue";
 import useVuelidate from "@vuelidate/core";
 import { email, minLength, required } from "@vuelidate/validators";
-import { User, UserBuild } from "@/models/Users";
-import { SharedList, SharedListBuild } from "@/models/SharedList";
 import VInput from "@/components/VInput.vue";
 import { useUserStore } from "@/store/user";
 import { ActionType } from "@/models/store";
 import { useAuthsStore } from "@/store/auth";
 import { useListsStore } from "@/store/lists";
+import { User, UserBuild } from "@/models/domain/user";
+import { SharedList, SharedListBuild } from "@/models/domain/sharedList";
 
 export default {
   components: {

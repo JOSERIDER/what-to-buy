@@ -8,8 +8,8 @@ import { initialState } from "@/store/lists/InitialState";
 import privateListsApiClient from "@/api-client/PrivateLists";
 import { useUserStore } from "@/store/user";
 import sharedListsApiClient from "@/api-client/SharedLists";
-import { List } from "@/models/List";
-import { SharedList } from "@/models/SharedList";
+import { List } from "@/models/domain/list";
+import { SharedList } from "@/models/domain/sharedList";
 
 export const mutations: MutationTree<ListsStateInterface> = {
   updateLists(state: ListsStateInterface, lists: List[]) {

@@ -1,7 +1,7 @@
 import { PrivateListsApiClientModelInterface } from "@/models/api-client/PrivateLists/PrivateListsApiClientModelInterface";
-import { List } from "@/models/List";
 import { PrivateListsApiClientUrlInterface } from "@/models/api-client/PrivateLists/PrivateListsApiClientUrl.interface";
 import { HttpClient, HttpRequestParamsInterface } from "@/models/http-client";
+import { List } from "@/models/domain/list";
 
 /**
  * @name PrivateListsApiClientModel

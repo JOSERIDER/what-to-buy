@@ -1,9 +1,9 @@
-import { SharedList } from "@/models/SharedList";
-
 /**
  * @name SharedListsApiClientModelInterface
  * @description Interface of sharedList api client.
  */
+import { SharedList } from "@/models/domain/sharedList";
+
 export interface SharedListsApiClientModelInterface {
   /**
    * Obtain a list by given id.

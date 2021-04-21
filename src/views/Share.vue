@@ -41,9 +41,9 @@ import {
   IonToolbar,
 } from "@ionic/vue";
 import { defineComponent } from "vue";
-import { User } from "@/models/Users";
 import { SocialSharing } from "@ionic-native/social-sharing/ngx";
 import { useUserStore } from "@/store/user";
+import { User } from "@/models/domain/user";
 
 export default defineComponent({
   components: {

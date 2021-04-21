@@ -1,7 +1,7 @@
 import { UsersApiClientModelInterface } from "./UsersApiClient.interface";
-import { User } from "@/models/Users";
 import { UsersApiClientUrlInterface } from "@/models/api-client/users/UsersApiClientUrl.interface";
 import { HttpClient, HttpRequestParamsInterface } from "@/models/http-client";
+import { User } from "@/models/domain/user/UserDomain.interface";
 
 /**
  * @name UsersApiClientModel

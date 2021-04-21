@@ -38,8 +38,9 @@
 import { PropType } from "vue";
 import { IonBadge, IonButton, IonCard, IonIcon, IonItem } from "@ionic/vue";
 import { chevronForwardOutline, trashOutline } from "ionicons/icons";
-import { List } from "@/models/List";
 import { useListsStore } from "@/store/lists";
+import { List } from "@/models/domain/list";
+
 export default {
   name: "DashboardListItem",
   emits: ["delete-item", "view-list"],

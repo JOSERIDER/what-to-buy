@@ -5,10 +5,10 @@ import {
   RootStateInterface,
   UserStateInterface,
 } from "@/models/store";
-import { User } from "@/models/Users";
 import { initialState } from "@/store/user/InitialState";
 import storageClient from "@/storage-client";
 import usersApiClient from "@/api-client/users";
+import { User } from "@/models/domain/user";
 
 export const mutations: MutationTree<UserStateInterface> = {
   loadingUser(state: UserStateInterface) {

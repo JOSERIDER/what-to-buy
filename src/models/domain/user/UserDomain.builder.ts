@@ -1,16 +1,19 @@
-export interface User {
-  id?: string;
-  email?: string;
-  name?: string;
-  mySharedList?: string;
-  qrUrl?: string;
-  image?: string;
-}
+import { User } from "@/models/domain/user/UserDomain.interface";
 
+/**
+ * Class to encapsulate the logic and responsibility to build a User object.
+ * */
 export class UserBuild {
   private static qrURL = (id: string) =>
     `https://api.qrserver.com/v1/create-qr-code/?data=${id}&size=200x200`;
 
+  /**
+   * Build a User object.
+   * @param id - User id.
+   * @param email - User email.
+   * @param name - User name.
+   * @param mySharedList - List code of shared list that user is the owner.
+   */
   public static build(
     id: string,
     email: string,

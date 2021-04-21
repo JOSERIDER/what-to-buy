@@ -3,9 +3,9 @@ import { RouteRecordRaw } from "vue-router";
 import Dashboard from "../views/Dashboard.vue";
 import Auth from "../views/Auth.vue";
 import Share from "@/views/Share.vue";
-import { User } from "@/models/Users";
 import { useUserStore } from "@/store/user";
 import { MutationType } from "@/models/store";
+import { User } from "@/models/domain/user";
 
 const routes: Array<RouteRecordRaw> = [
   {

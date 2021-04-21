@@ -1,9 +1,9 @@
-import { Product } from "@/models/Product";
-
 /**
  * @Name ProductsApiClientModelInterface
  * @Description Interface for ProductsApiClientModelInterface.
  */
+import { Product } from "@/models/domain/product";
+
 export interface ProductsApiClientModelInterface {
   /**
    * Obtain a product by given id.

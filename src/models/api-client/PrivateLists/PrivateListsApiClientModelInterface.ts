@@ -1,9 +1,9 @@
-import { List } from "@/models/List";
-
 /**
  * @name PrivateListsApiClientModelInterface
  * @description Interface for privateList client.
  */
+import { List } from "@/models/domain/list";
+
 export interface PrivateListsApiClientModelInterface {
   /**
    * Obtain the specific list by list id.

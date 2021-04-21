@@ -1,7 +1,7 @@
 import { ProductsApiClientModelInterface } from "@/models/api-client/Products/ProductsApiClientModelInterface";
-import { Product } from "@/models/Product";
 import { HttpClient, HttpRequestParamsInterface } from "@/models/http-client";
 import { ProductsApiClientUrlInterface } from "@/models/api-client/Products/ProductsApiClientUrl.interface";
+import { Product } from "@/models/domain/product";
 
 /**
  * @name ProductsApiClientModel

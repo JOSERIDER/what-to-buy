@@ -1,12 +1,17 @@
 import { ColorBuilder } from "@/utils/ColorBuilder";
 import { IdBuilder } from "@/utils/IdBuilder";
-import { List } from "@/models/List";
+import { SharedList } from "@/models/domain/sharedList/SharedListDomain.interface";
 
-export interface SharedList extends List {
-  users: string[];
-}
-
+/**
+ * Class to build a SharedList object.
+ */
 export class SharedListBuild {
+  /**
+   * Build a SharedList object with given arguments.
+   * @param admin - user that is the owner.
+   * @param name - name of list.
+   * @return The SharedList object.
+   */
   public static build(admin: string, name: string): SharedList {
     const color = ColorBuilder.getRandomColor();
     const listCode = IdBuilder.createIdentifier();

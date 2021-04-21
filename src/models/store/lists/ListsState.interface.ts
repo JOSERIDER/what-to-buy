@@ -1,4 +1,4 @@
-import { List } from "@/models/List";
+import { List } from "@/models/domain/list";
 
 /**
  * Interface that represent the lists store.

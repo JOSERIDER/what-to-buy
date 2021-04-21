@@ -1,4 +1,4 @@
-import { User } from "@/models/Users";
+import { User } from "@/models/domain/user";
 
 /**
  * Interface to wrap storage methods of user.

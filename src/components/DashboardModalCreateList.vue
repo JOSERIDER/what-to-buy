@@ -48,12 +48,12 @@ import VInput from "@/components/VInput.vue";
 import { computed, defineComponent, reactive } from "vue";
 import { minLength, required } from "@vuelidate/validators";
 import useVuelidate from "@vuelidate/core";
-import { User } from "@/models/Users";
-import { ListBuild } from "@/models/List";
 import { modalController } from "@ionic/vue";
 import { useUserStore } from "@/store/user";
 import { useListsStore } from "@/store/lists";
 import { ActionType } from "@/models/store";
+import { User } from "@/models/domain/user";
+import { ListBuild } from "@/models/domain/list";
 
 export default defineComponent({
   name: "DashBoardModalCreateList",
