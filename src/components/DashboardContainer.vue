@@ -108,6 +108,10 @@ export default defineComponent({
       return listsStore.state.lists;
     });
 
+    const loading = computed(() => {
+      return listsStore.state.loading;
+    });
+
     const editing = computed(() => {
       return listsStore.state.editing;
     });
@@ -238,6 +242,7 @@ export default defineComponent({
       type,
       isModalOpen,
       editing,
+      loading,
       doRefresh,
       openModal,
       openJoinOptions,

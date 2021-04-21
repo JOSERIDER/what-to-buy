@@ -33,9 +33,10 @@ import { alertController } from "@ionic/vue";
 import useVuelidate from "@vuelidate/core";
 import { email, required } from "@vuelidate/validators";
 import { useRouter } from "vue-router";
-import apiClient, { firebaseAuth } from "@/api-client";
+import apiClient from "@/api-client";
 import { useUserStore } from "@/store/user";
-import { MutationType } from "@/models/store";
+import { ActionType, MutationType } from "@/models/store";
+import { useAuthsStore } from "@/store/auth";
 
 export default {
   components: {
@@ -46,6 +47,7 @@ export default {
     const userApiClient = apiClient.users;
     const router = useRouter();
     const userStore = useUserStore();
+    const authStore = useAuthsStore();
 
     const state = reactive({
       email: "",
@@ -76,21 +78,24 @@ export default {
       return alert.present();
     }
 
-    function login() {
-      v$.value.$validate();
+    async function login() {
+      await v$.value.$validate();
       if (v$.value.$error) return;
 
-      firebaseAuth
-        .signInWithEmailAndPassword(state.email, state.password)
-        .then(user => {
-          userApiClient.get(user.user?.uid as string).then(async user => {
-            if (!user) {
-              await presentAlert("Error", "User not fount in our dataBase");
-              return;
-            }
-            await userStore.action(MutationType.user.setUser, user);
-            await router.push({ name: "Dashboard" });
-          });
+      await authStore.action(ActionType.auth.login, {
+        email: state.email,
+        password: state.password,
+      });
+
+      userApiClient
+        .get(authStore.state.user.user?.uid as string)
+        .then(async user => {
+          if (!user) {
+            await presentAlert("Error", "User not fount in our dataBase");
+            return;
+          }
+          await userStore.action(MutationType.user.setUser, user);
+          await router.push({ name: "Dashboard" });
         });
     }
 

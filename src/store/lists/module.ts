@@ -9,6 +9,7 @@ import privateListsApiClient from "@/api-client/PrivateLists";
 import { useUserStore } from "@/store/user";
 import sharedListsApiClient from "@/api-client/SharedLists";
 import { List } from "@/models/List";
+import { SharedList } from "@/models/SharedList";
 
 export const mutations: MutationTree<ListsStateInterface> = {
   updateLists(state: ListsStateInterface, lists: List[]) {
@@ -68,6 +69,11 @@ export const actions: ActionTree<ListsStateInterface, RootStateInterface> = {
   },
   editLists({ commit }) {
     commit(MutationType.lists.editLists);
+  },
+  async createUserSharedList({ commit }, sharedList: SharedList) {
+    commit(MutationType.lists.loadingLists);
+    await sharedListsApiClient.create(sharedList);
+    commit(MutationType.lists.loadedLists);
   },
 };
 

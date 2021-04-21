@@ -8,3 +8,4 @@ export * from "./root/RootStore.model";
 //Module exports
 export * from "./user";
 export * from "./lists";
+export * from "./autn";

@@ -1,5 +1,6 @@
 import { Module, MutationTree, ActionTree, GetterTree } from "vuex";
 import {
+  ActionType,
   MutationType,
   RootStateInterface,
   UserStateInterface,
@@ -7,6 +8,7 @@ import {
 import { User } from "@/models/Users";
 import { initialState } from "@/store/user/InitialState";
 import storageClient from "@/storage-client";
+import usersApiClient from "@/api-client/users";
 
 export const mutations: MutationTree<UserStateInterface> = {
   loadingUser(state: UserStateInterface) {
@@ -46,6 +48,12 @@ export const actions: ActionTree<UserStateInterface, RootStateInterface> = {
     await userStorage.remove();
 
     commit(MutationType.user.removeUser);
+    commit(MutationType.user.loadedUser);
+  },
+  async createUser({ commit, dispatch }, user: User) {
+    commit(MutationType.user.loadingUser);
+    await usersApiClient.create(user);
+    dispatch(ActionType.user.setUser, user);
     commit(MutationType.user.loadedUser);
   },
 };

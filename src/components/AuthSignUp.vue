@@ -52,10 +52,10 @@ import { email, minLength, required } from "@vuelidate/validators";
 import { User, UserBuild } from "@/models/Users";
 import { SharedList, SharedListBuild } from "@/models/SharedList";
 import VInput from "@/components/VInput.vue";
-import apiClient, { firebaseAuth } from "@/api-client";
 import { useUserStore } from "@/store/user";
-import { MutationType } from "@/models/store";
-import firebase from "firebase";
+import { ActionType } from "@/models/store";
+import { useAuthsStore } from "@/store/auth";
+import { useListsStore } from "@/store/lists";
 
 export default {
   components: {
@@ -63,11 +63,10 @@ export default {
     AuthCard,
   },
   setup() {
-    const userApiClient = apiClient.users;
-    const sharedListApiClient = apiClient.sharedLists;
-
+    const listsStore = useListsStore();
+    const authStore = useAuthsStore();
     const router = useRouter();
-    const userProfileStore = useUserStore();
+    const userStore = useUserStore();
 
     const state = reactive({
       name: "",
@@ -87,48 +86,38 @@ export default {
 
     const v$ = useVuelidate(rules, state);
 
-    function saveUserAndUserListOnFirestore(
-      user: User,
-      sharedList: SharedList
-    ) {
-      userApiClient.create(user).then(() => {
-        sharedListApiClient.create(sharedList).then(async () => {
-          firebaseAuth.currentUser?.updateProfile({
-            displayName: user.name,
-          });
-
-          await userProfileStore.action(MutationType.user.setUser, user);
-          await router.push({ name: "Dashboard" });
-        });
-      });
+    async function createUser(listCode: string) {
+      const user: User = UserBuild.build(
+        authStore.state.user.user.uid,
+        state.email,
+        state.name,
+        listCode
+      );
+      await userStore.action(ActionType.user.createUser, user);
     }
 
-    function createUser() {
-      firebaseAuth
-        .createUserWithEmailAndPassword(state.email, state.password)
-        .then((user: any) => {
-          const sharedList: SharedList = SharedListBuild.build(
-            user.user.uid,
-            state.listName
-          );
+    async function saveUserAndSharedList() {
+      const sharedList: SharedList = SharedListBuild.build(
+        authStore.state.user.user.uid,
+        state.listName
+      );
+      await createUser(sharedList.listCode);
 
-          const newUser: User = UserBuild.build(
-            user.user.uid,
-            state.email,
-            state.name,
-            sharedList.listCode
-          );
-
-          saveUserAndUserListOnFirestore(newUser, sharedList);
-        });
+      await listsStore.action(
+        ActionType.lists.createUserSharedList,
+        sharedList
+      );
     }
 
-    function signUp() {
-      v$.value.$validate();
+    async function signUp() {
+      await v$.value.$validate();
       if (v$.value.$error) return;
-      firebaseAuth
-        .setPersistence(firebase.auth.Auth.Persistence.LOCAL)
-        .then(() => createUser());
+      await authStore.action(ActionType.auth.signUp, {
+        email: state.email,
+        password: state.password,
+      });
+      await saveUserAndSharedList();
+      await router.push({ name: "Dashboard" });
     }
 
     return {

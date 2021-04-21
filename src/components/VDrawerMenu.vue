@@ -76,7 +76,8 @@ import {
 import { computed, defineComponent, ref } from "vue";
 import { useRouter } from "vue-router";
 import { useUserStore } from "@/store/user";
-import { MutationType } from "@/models/store";
+import { ActionType } from "@/models/store";
+import { useAuthsStore } from "@/store/auth";
 
 export default defineComponent({
   name: "VDrawerMenu",
@@ -93,6 +94,7 @@ export default defineComponent({
   },
   setup() {
     const userStore = useUserStore();
+    const authStore = useAuthsStore();
     const router = useRouter();
     const selectedIndex = ref(0);
     const appPages = [
@@ -123,7 +125,8 @@ export default defineComponent({
     });
 
     async function logout() {
-      await userStore.action(MutationType.user.removeUser);
+      await userStore.action(ActionType.user.removeUser);
+      await authStore.action(ActionType.auth.logout);
       await router.push("/auth");
     }
     const path: string = router.currentRoute.value.path;
