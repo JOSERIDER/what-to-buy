@@ -4,7 +4,7 @@ import { BarcodeScanner } from "@ionic-native/barcode-scanner/ngx";
 /**
  * Wrap the scanner funcionality to abstract the componet use the plugin directly.
  */
-export class ScannerImp implements BarcodeScannerInterface {
+export class BarcodeScannerImp implements BarcodeScannerInterface {
   private readonly scanner: BarcodeScanner;
 
   constructor() {

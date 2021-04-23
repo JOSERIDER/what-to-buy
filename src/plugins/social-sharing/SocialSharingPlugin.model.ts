@@ -1,7 +1,7 @@
 import { SocialSharingModelInterface } from "@/models/modules/social-sharing";
 import { SocialSharing } from "@ionic-native/social-sharing/ngx";
 
-export class SocialSharingPlugin implements SocialSharingModelInterface {
+export class SocialSharingPluginImp implements SocialSharingModelInterface {
   private readonly socialSharing: SocialSharing;
 
   constructor() {

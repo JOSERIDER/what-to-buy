@@ -38,16 +38,18 @@
         type="password"
       />
     </template>
-    <template #button-text>Sign up</template>
+    <template v-if="!loading" #button-text>Sign up</template>
+    <template v-else #button-text><VSpinnerButtonLoading /></template>
   </AuthCard>
 </template>
 
 <script lang="ts">
+import AuthCard from "@/components/AuthCard.vue";
+import useVuelidate from "@vuelidate/core";
+import VSpinnerButtonLoading from "@/components/VSpinnerButtonLoading.vue";
 import { computed, reactive } from "vue";
 import { useRouter } from "vue-router";
 import { at, key, listOutline, personOutline } from "ionicons/icons";
-import AuthCard from "@/components/AuthCard.vue";
-import useVuelidate from "@vuelidate/core";
 import { email, minLength, required } from "@vuelidate/validators";
 import VInput from "@/components/VInput.vue";
 import { useUserStore } from "@/store/user";
@@ -61,6 +63,7 @@ export default {
   components: {
     VInput,
     AuthCard,
+    VSpinnerButtonLoading,
   },
   setup() {
     const listsStore = useListsStore();
@@ -82,6 +85,10 @@ export default {
         password: { required, minLength: minLength(5) },
         listName: {},
       };
+    });
+
+    const loading = computed(() => {
+      return userStore.state.isLoading || authStore.state.loading;
     });
 
     const v$ = useVuelidate(rules, state);
@@ -124,6 +131,7 @@ export default {
       s: state,
       v$,
       signUp,
+      loading,
       email: at,
       list: listOutline,
       password: key,
