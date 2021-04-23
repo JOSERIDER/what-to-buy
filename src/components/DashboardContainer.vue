@@ -67,11 +67,11 @@ import {
 } from "@ionic/vue";
 import { chevronDownCircleOutline, add } from "ionicons/icons";
 import { computed, defineComponent, ref, watch } from "vue";
-import { BarcodeScanner } from "@ionic-native/barcode-scanner/ngx";
 import { useUserStore } from "@/store/user";
 import { useListsStore } from "@/store/lists";
 import { ActionType } from "@/models/store";
 import apiClient from "@/api-client";
+import barcodeScanner from "@/module-client/barcode-scanner";
 
 export default defineComponent({
   name: "DashboardContainer",
@@ -94,7 +94,6 @@ export default defineComponent({
     const listsStore = useListsStore();
     const userStore = useUserStore();
     const isModalOpen = ref(false);
-    const barcodeScanner: BarcodeScanner = new BarcodeScanner();
 
     const user = computed(() => {
       return userStore.state.user;
@@ -170,7 +169,7 @@ export default defineComponent({
     function openScanner() {
       barcodeScanner
         .scan()
-        .then(resp => joinToList(resp.text))
+        .then(resp => joinToList(resp))
         .catch(async () => {
           const toast = await toastController.create({
             message: "Scanner no available.",

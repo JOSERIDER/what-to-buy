@@ -20,13 +20,15 @@
         type="password"
       />
     </template>
-    <template #button-text>Login</template>
+    <template v-if="!loading" #button-text>Login</template>
+    <template v-else #button-text><VSpinnerButtonLoading /></template>
   </AuthCard>
 </template>
 
 <script lang="ts">
 import AuthCard from "@/components/AuthCard.vue";
 import VInput from "@/components/VInput.vue";
+import VSpinnerButtonLoading from "@/components/VSpinnerButtonLoading.vue";
 import { computed, reactive } from "vue";
 import { at, key } from "ionicons/icons";
 import { alertController } from "@ionic/vue";
@@ -42,6 +44,7 @@ export default {
   components: {
     VInput,
     AuthCard,
+    VSpinnerButtonLoading,
   },
   setup() {
     const userApiClient = apiClient.users;
@@ -64,6 +67,10 @@ export default {
           required,
         },
       };
+    });
+
+    const loading = computed(() => {
+      return userStore.state.isLoading || authStore.state.loading;
     });
 
     const v$ = useVuelidate(rules, state);
@@ -99,7 +106,7 @@ export default {
         });
     }
 
-    return { v$, state, login, email: at, password: key };
+    return { v$, state, loading, login, email: at, password: key };
   },
 };
 </script>
