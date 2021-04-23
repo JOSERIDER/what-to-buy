@@ -41,9 +41,10 @@ import {
   IonToolbar,
 } from "@ionic/vue";
 import { defineComponent } from "vue";
-import { User } from "@/models/Users";
-import { useStore } from "@/store/store";
-import { SocialSharing } from "@ionic-native/social-sharing/ngx";
+import { useUserStore } from "@/store/user";
+import { User } from "@/models/domain/user";
+import { SocialSharingModelInterface } from "@/models/modules/social-sharing";
+import socialSharing from "@/module-client/social-sharing";
 
 export default defineComponent({
   components: {
@@ -62,12 +63,12 @@ export default defineComponent({
   },
   name: "Share",
   setup() {
-    const store = useStore();
-    const socialSharing: SocialSharing = new SocialSharing();
-    const user: User = store.getters.loggedUser as User;
+    const userStore = useUserStore();
+    const sharePlugin: SocialSharingModelInterface = socialSharing;
+    const user: User = userStore.state.user;
 
     function share() {
-      socialSharing.share(
+      sharePlugin.share(
         `This is the shared list code of ${user.name}.\nPaste the following code on WhatToBy App to join to list:\n\n${user.mySharedList}`
       );
     }

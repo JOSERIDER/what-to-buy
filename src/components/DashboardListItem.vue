@@ -1,5 +1,5 @@
 <template>
-  <ion-card class="my-4" :button="!deleting">
+  <ion-card class="my-4" :button="!editing">
     <div
       class="w-4 h-full absolute float-left"
       :style="{ background: list.color }"
@@ -9,7 +9,7 @@
       <div class="flex items-center w-full">
         <h2 class="w-2/3">{{ list.name }}</h2>
 
-        <div v-if="deleting" class="flex items-center w-1/3 justify-end">
+        <div v-if="editing" class="flex items-center w-1/3 justify-end">
           <ion-button
             fill="clear"
             slot="end"
@@ -38,7 +38,9 @@
 import { PropType } from "vue";
 import { IonBadge, IonButton, IonCard, IonIcon, IonItem } from "@ionic/vue";
 import { chevronForwardOutline, trashOutline } from "ionicons/icons";
-import { List } from "@/models/List";
+import { useListsStore } from "@/store/lists";
+import { List } from "@/models/domain/list";
+
 export default {
   name: "DashboardListItem",
   emits: ["delete-item", "view-list"],
@@ -55,14 +57,15 @@ export default {
       trash: trashOutline,
     };
   },
+  computed: {
+    editing() {
+      return useListsStore().state.editing;
+    },
+  },
   props: {
     list: {
       type: Object as PropType<List>,
       required: true,
-    },
-    deleting: {
-      type: Boolean,
-      default: false,
     },
   },
 };

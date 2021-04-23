@@ -48,19 +48,27 @@ import VInput from "@/components/VInput.vue";
 import { computed, defineComponent, reactive } from "vue";
 import { minLength, required } from "@vuelidate/validators";
 import useVuelidate from "@vuelidate/core";
-
-import { useStore } from "@/store/store";
-import { User } from "@/models/Users";
-import { ListBuild } from "@/models/List";
-import { repositories, repositoryTypes } from "@/repository/RepositoryFactory";
 import { modalController } from "@ionic/vue";
+import { useUserStore } from "@/store/user";
+import { useListsStore } from "@/store/lists";
+import { ActionType } from "@/models/store";
+import { User } from "@/models/domain/user";
+import { ListBuild } from "@/models/domain/list";
 
 export default defineComponent({
   name: "DashBoardModalCreateList",
+  components: {
+    VInput,
+    IonHeader,
+    IonToolbar,
+    IonTitle,
+    IonContent,
+    IonText,
+    IonButton,
+  },
   setup() {
-    const user: User = useStore().getters.loggedUser as User;
-    const privateListRepository =
-      repositories[repositoryTypes.PRIVATE_LIST_REPOSITORY];
+    const user: User = useUserStore().state.user;
+    const listsStore = useListsStore();
 
     const state = reactive({
       name: "",
@@ -80,20 +88,15 @@ export default defineComponent({
     async function createList() {
       await v$.value.$validate();
       if (v$.value.$error) return;
-      privateListRepository.create(ListBuild.build(user.id, state.name));
+
+      const newList = ListBuild.build(user.id as string, state.name as string);
+      await listsStore.action(ActionType.lists.createList, newList);
+      //TODO: REMOVE THIS IF LIST IS REACTIVE.
+      await listsStore.action(ActionType.lists.fetchLists);
       await close();
     }
 
     return { state, v$, createList, close };
-  },
-  components: {
-    VInput,
-    IonHeader,
-    IonToolbar,
-    IonTitle,
-    IonContent,
-    IonText,
-    IonButton,
   },
 });
 </script>

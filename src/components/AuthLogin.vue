@@ -20,33 +20,37 @@
         type="password"
       />
     </template>
-    <template #button-text>Login</template>
+    <template v-if="!loading" #button-text>Login</template>
+    <template v-else #button-text><VSpinnerButtonLoading /></template>
   </AuthCard>
 </template>
 
 <script lang="ts">
 import AuthCard from "@/components/AuthCard.vue";
 import VInput from "@/components/VInput.vue";
+import VSpinnerButtonLoading from "@/components/VSpinnerButtonLoading.vue";
 import { computed, reactive } from "vue";
 import { at, key } from "ionicons/icons";
 import { alertController } from "@ionic/vue";
 import useVuelidate from "@vuelidate/core";
 import { email, required } from "@vuelidate/validators";
-import { repositories, repositoryTypes } from "@/repository/RepositoryFactory";
 import { useRouter } from "vue-router";
-import { useStore } from "@/store/store";
-import { ActionTypes } from "@/store/action-types";
-import { auth } from "@/repository/Client/firebaseClient";
+import apiClient from "@/api-client";
+import { useUserStore } from "@/store/user";
+import { ActionType, MutationType } from "@/models/store";
+import { useAuthsStore } from "@/store/auth";
 
 export default {
   components: {
     VInput,
     AuthCard,
+    VSpinnerButtonLoading,
   },
   setup() {
-    const userRepository = repositories[repositoryTypes.USER_REPOSITORY];
+    const userApiClient = apiClient.users;
     const router = useRouter();
-    const store = useStore();
+    const userStore = useUserStore();
+    const authStore = useAuthsStore();
 
     const state = reactive({
       email: "",
@@ -65,6 +69,10 @@ export default {
       };
     });
 
+    const loading = computed(() => {
+      return userStore.state.isLoading || authStore.state.loading;
+    });
+
     const v$ = useVuelidate(rules, state);
 
     async function presentAlert(header: string, message: string) {
@@ -77,25 +85,28 @@ export default {
       return alert.present();
     }
 
-    function login() {
-      v$.value.$validate();
+    async function login() {
+      await v$.value.$validate();
       if (v$.value.$error) return;
 
-      auth
-        .signInWithEmailAndPassword(state.email, state.password)
-        .then(user => {
-          userRepository.getUser(user.user.uid).then(async user => {
-            if (!user) {
-              await presentAlert("Error", "User not fount in our dataBase");
-              return;
-            }
-            await store.dispatch(ActionTypes.SET_USER, user);
-            await router.push("/");
-          });
+      await authStore.action(ActionType.auth.login, {
+        email: state.email,
+        password: state.password,
+      });
+
+      userApiClient
+        .get(authStore.state.user.user?.uid as string)
+        .then(async user => {
+          if (!user) {
+            await presentAlert("Error", "User not fount in our dataBase");
+            return;
+          }
+          await userStore.action(MutationType.user.setUser, user);
+          await router.push({ name: "Dashboard" });
         });
     }
 
-    return { v$, state, login, email: at, password: key };
+    return { v$, state, loading, login, email: at, password: key };
   },
 };
 </script>
