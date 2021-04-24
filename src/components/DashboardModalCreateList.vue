@@ -29,7 +29,10 @@
       </p>
 
       <div class="flex w-full justify-center mt-4">
-        <ion-button @click="createList" fill="clear">Create list</ion-button>
+        <ion-button v-if="!loading" @click="createList" fill="clear"
+          >Create list</ion-button
+        >
+        <VSpinner v-else />
       </div>
     </div>
   </ion-content>
@@ -37,6 +40,7 @@
 
 <script lang="ts">
 import {
+  alertController,
   IonButton,
   IonContent,
   IonHeader,
@@ -45,7 +49,7 @@ import {
   IonToolbar,
 } from "@ionic/vue";
 import VInput from "@/components/VInput.vue";
-import { computed, defineComponent, reactive } from "vue";
+import { computed, defineComponent, reactive, watch } from "vue";
 import { minLength, required } from "@vuelidate/validators";
 import useVuelidate from "@vuelidate/core";
 import { modalController } from "@ionic/vue";
@@ -54,10 +58,12 @@ import { useListsStore } from "@/store/lists";
 import { ActionType } from "@/models/store";
 import { User } from "@/models/domain/user";
 import { ListBuild } from "@/models/domain/list";
+import VSpinner from "@/components/VSpinner.vue";
 
 export default defineComponent({
   name: "DashBoardModalCreateList",
   components: {
+    VSpinner,
     VInput,
     IonHeader,
     IonToolbar,
@@ -79,6 +85,32 @@ export default defineComponent({
         name: { required, minLength: minLength(3) },
       };
     });
+
+    const error = computed(() => {
+      return listsStore.state.error;
+    });
+
+    const loading = computed(() => {
+      return listsStore.state.loading;
+    });
+
+    async function presentAlert(header: string, message: string) {
+      const alert = await alertController.create({
+        header,
+        message,
+        buttons: ["OK"],
+      });
+      return alert.present();
+    }
+
+    watch(error, async error => {
+      if (error) {
+        await presentAlert("Ups...", error);
+      }
+
+      await listsStore.action(ActionType.lists.resetError);
+    });
+
     const v$ = useVuelidate(rules, state);
 
     async function close() {
@@ -91,12 +123,14 @@ export default defineComponent({
 
       const newList = ListBuild.build(user.id as string, state.name as string);
       await listsStore.action(ActionType.lists.createList, newList);
+
+      if (error.value) return;
       //TODO: REMOVE THIS IF LIST IS REACTIVE.
       await listsStore.action(ActionType.lists.fetchLists);
       await close();
     }
 
-    return { state, v$, createList, close };
+    return { state, v$, loading, createList, close };
   },
 });
 </script>

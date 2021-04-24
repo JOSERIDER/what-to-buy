@@ -4,4 +4,5 @@
 export interface AuthStateInterface {
   loading: boolean;
   user: any;
+  error: string;
 }

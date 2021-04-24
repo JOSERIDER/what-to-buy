@@ -7,4 +7,5 @@ import { AuthStateInterface } from "@/models/store/autn";
 export const initialState: AuthStateInterface = {
   loading: false,
   user: null,
+  error: "",
 };

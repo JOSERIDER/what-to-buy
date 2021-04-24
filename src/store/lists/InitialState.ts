@@ -9,4 +9,5 @@ export const initialState: ListsStateInterface = {
   loading: false,
   type: "Private",
   editing: false,
+  error: "",
 };

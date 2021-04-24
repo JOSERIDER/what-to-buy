@@ -23,4 +23,9 @@ export interface ListsStateInterface {
    * Indicate if lists are editing.
    */
   editing: boolean;
+
+  /**
+   * Contains the error was produced.
+   */
+  error: string;
 }

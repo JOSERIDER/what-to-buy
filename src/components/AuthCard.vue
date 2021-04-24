@@ -1,7 +1,7 @@
 <template>
   <div class="h-full">
     <div class="flexbox relative z-10 cardStyle cardBackground">
-      <form @submit.prevent="$emit('submit')">
+      <form @submit.prevent="$emit(buttonEnabled ? 'submit' : '')">
         <slot name="form"></slot>
         <ion-button
           type="submit"
@@ -23,6 +23,9 @@ export default {
   emits: ["submit"],
   components: {
     IonButton,
+  },
+  props: {
+    buttonEnabled: Boolean,
   },
   name: "AuthCard",
 };
