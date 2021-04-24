@@ -34,7 +34,13 @@ export class HttpClientModel implements HttpClientInterface {
           const list = response.docs.map(doc => doc.data() as T);
           resolve(list);
         })
-        .catch(error => reject(error));
+        .catch(error => {
+          console.error(error);
+          reject({
+            message:
+              "Something went wrong, with our server or network connection.",
+          });
+        });
     });
   }
 

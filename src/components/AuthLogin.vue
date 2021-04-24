@@ -1,5 +1,5 @@
 <template>
-  <AuthCard @submit="login">
+  <AuthCard :button-enabled="!loading" @submit="login">
     <template #form>
       <!-- Email -->
       <VInput

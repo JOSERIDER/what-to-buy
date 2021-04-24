@@ -37,6 +37,7 @@
 
 <script lang="ts">
 import {
+  alertController,
   IonButton,
   IonContent,
   IonHeader,
@@ -45,7 +46,7 @@ import {
   IonToolbar,
 } from "@ionic/vue";
 import VInput from "@/components/VInput.vue";
-import { computed, defineComponent, reactive } from "vue";
+import { computed, defineComponent, reactive, watch } from "vue";
 import { minLength, required } from "@vuelidate/validators";
 import useVuelidate from "@vuelidate/core";
 import { modalController } from "@ionic/vue";
@@ -79,6 +80,28 @@ export default defineComponent({
         name: { required, minLength: minLength(3) },
       };
     });
+
+    const error = computed(() => {
+      return listsStore.state.error;
+    });
+
+    async function presentAlert(header: string, message: string) {
+      const alert = await alertController.create({
+        header,
+        message,
+        buttons: ["OK"],
+      });
+      return alert.present();
+    }
+
+    watch(error, async error => {
+      if (error) {
+        await presentAlert("Ups...", error);
+      }
+
+      await listsStore.action(ActionType.lists.resetError);
+    });
+
     const v$ = useVuelidate(rules, state);
 
     async function close() {
@@ -91,6 +114,8 @@ export default defineComponent({
 
       const newList = ListBuild.build(user.id as string, state.name as string);
       await listsStore.action(ActionType.lists.createList, newList);
+
+      if (error.value) return;
       //TODO: REMOVE THIS IF LIST IS REACTIVE.
       await listsStore.action(ActionType.lists.fetchLists);
       await close();

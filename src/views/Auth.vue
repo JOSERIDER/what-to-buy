@@ -57,7 +57,7 @@ export default {
 
     watch(authError, async error => {
       if (error) {
-        await presentAlert("Something is wrong", error);
+        await presentAlert("Something went wrong", error);
       }
 
       await authStore.action(ActionType.auth.resetError);

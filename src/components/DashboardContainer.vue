@@ -37,8 +37,15 @@
       :list="lists"
       :list-type="type"
     />
-    <VSpinner v-if="isListEmpty && loading" />
-    <VEmptyView class="text-center mt-44" v-show="isListEmpty && !loading" />
+    <VErrorView
+      @try-again="fetchList"
+      class="mt-28"
+      v-if="listsError"
+      :message="listsError"
+    />
+
+    <VSpinner v-else-if="isListEmpty && loading" />
+    <VEmptyView class="text-center mt-44" v-else-if="isListEmpty && !loading" />
   </ion-content>
 </template>
 
@@ -47,6 +54,8 @@ import DashboardList from "@/components/DashboardList.vue";
 import DashBoardModalCreateList from "@/components/DashboardModalCreateList.vue";
 import VEmptyView from "@/components/VEmptyView.vue";
 import VSpinner from "@/components/VSpinner.vue";
+import VRefresher from "@/components/VRefresher.vue";
+import VErrorView from "@/components/VErrorView.vue";
 import {
   IonHeader,
   IonIcon,
@@ -71,7 +80,6 @@ import { useListsStore } from "@/store/lists";
 import { ActionType } from "@/models/store";
 import apiClient from "@/api-client";
 import barcodeScanner from "@/module-client/barcode-scanner";
-import VRefresher from "@/components/VRefresher.vue";
 
 export default defineComponent({
   name: "DashboardContainer",
@@ -80,6 +88,7 @@ export default defineComponent({
     VSpinner,
     DashboardList,
     VEmptyView,
+    VErrorView,
     IonHeader,
     IonToolbar,
     IonIcon,
@@ -118,6 +127,10 @@ export default defineComponent({
 
     const editing = computed(() => {
       return listsStore.state.editing;
+    });
+
+    const listsError = computed(() => {
+      return listsStore.state.error;
     });
 
     async function openModal() {
@@ -248,10 +261,12 @@ export default defineComponent({
       editing,
       loading,
       isListEmpty,
+      listsError,
       doRefresh,
       openModal,
       openJoinOptions,
       changeType,
+      fetchList,
       icons: {
         circleOutline: chevronDownCircleOutline,
         add,
