@@ -48,7 +48,7 @@ import {
   IonTitle,
   IonToolbar,
 } from "@ionic/vue";
-import VInput from "@/components/VInput.vue";
+import VInput from "@/components/ui/VInput.vue";
 import { computed, defineComponent, reactive, watch } from "vue";
 import { minLength, required } from "@vuelidate/validators";
 import useVuelidate from "@vuelidate/core";
@@ -58,7 +58,7 @@ import { useListsStore } from "@/store/lists";
 import { ActionType } from "@/models/store";
 import { User } from "@/models/domain/user";
 import { ListBuild } from "@/models/domain/list";
-import VSpinner from "@/components/VSpinner.vue";
+import VSpinner from "@/components/ui/VSpinner.vue";
 
 export default defineComponent({
   name: "DashBoardModalCreateList",

@@ -22,8 +22,8 @@
 </template>
 
 <script lang="ts">
-import AuthLogin from "@/components/AuthLogin.vue";
-import AuthSignUp from "@/components/AuthSignUp.vue";
+import AuthLogin from "@/components/auth/AuthLogin.vue";
+import AuthSignUp from "@/components/auth/AuthSignUp.vue";
 import { IonContent, IonSlides, IonSlide, alertController } from "@ionic/vue";
 import TheParticles from "@/components/TheParticles.vue";
 import { computed, watch } from "vue";

@@ -11,7 +11,7 @@
 <script lang="ts">
 import { IonApp, IonRouterOutlet } from "@ionic/vue";
 import { defineComponent } from "vue";
-import VDrawerMenu from "@/components/VDrawerMenu.vue";
+import VDrawerMenu from "@/components/ui/VDrawerMenu.vue";
 import { useUserStore } from "@/store/user";
 import { ActionType, MutationType } from "@/models/store";
 import { firebaseAuth } from "@/api-client";

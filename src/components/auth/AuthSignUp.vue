@@ -44,14 +44,14 @@
 </template>
 
 <script lang="ts">
-import AuthCard from "@/components/AuthCard.vue";
+import AuthCard from "@/components/auth/AuthCard.vue";
 import useVuelidate from "@vuelidate/core";
-import VSpinnerButtonLoading from "@/components/VSpinnerButtonLoading.vue";
+import VSpinnerButtonLoading from "@/components/ui/VSpinnerButtonLoading.vue";
 import { computed, reactive } from "vue";
 import { useRouter } from "vue-router";
 import { at, key, listOutline, personOutline } from "ionicons/icons";
 import { email, minLength, required } from "@vuelidate/validators";
-import VInput from "@/components/VInput.vue";
+import VInput from "@/components/ui/VInput.vue";
 import { ActionType } from "@/models/store";
 import { useAuthsStore } from "@/store/auth";
 

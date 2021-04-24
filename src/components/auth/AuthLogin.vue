@@ -26,9 +26,9 @@
 </template>
 
 <script lang="ts">
-import AuthCard from "@/components/AuthCard.vue";
-import VInput from "@/components/VInput.vue";
-import VSpinnerButtonLoading from "@/components/VSpinnerButtonLoading.vue";
+import AuthCard from "@/components/auth/AuthCard.vue";
+import VInput from "@/components/ui/VInput.vue";
+import VSpinnerButtonLoading from "@/components/ui/VSpinnerButtonLoading.vue";
 import { computed, reactive } from "vue";
 import { at, key } from "ionicons/icons";
 import useVuelidate from "@vuelidate/core";

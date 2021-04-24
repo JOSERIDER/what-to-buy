@@ -10,7 +10,7 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import DashboardContainer from "@/components/DashboardContainer.vue";
+import DashboardContainer from "@/components/dashboard/DashboardContainer.vue";
 import { IonPage } from "@ionic/vue";
 
 export default defineComponent({
