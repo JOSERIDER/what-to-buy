@@ -2,7 +2,7 @@
   <ion-header :translucent="true">
     <ion-toolbar>
       <ion-menu-button slot="start"> </ion-menu-button>
-      <ion-segment @ionChange="changeType($event.detail.value)" value="Private">
+      <ion-segment @ionChange="changeType($event.detail.value)" :value="type">
         <ion-segment-button value="Private">
           <ion-label>Private</ion-label>
         </ion-segment-button>
@@ -13,16 +13,12 @@
     </ion-toolbar>
   </ion-header>
 
-  <ion-content :fullscreen="true">
-    <ion-refresher slot="fixed" @ionRefresh="doRefresh($event)">
-      <ion-refresher-content
-        :pulling-icon="icons.circleOutline"
-        pulling-text="Pull to refresh"
-        refreshing-spinner="circles"
-        refreshing-text="Refreshing..."
-      >
-      </ion-refresher-content>
-    </ion-refresher>
+  <ion-content :fullscreen="false">
+    <VRefresher
+      v-if="lists.length > 0"
+      @do-refresh="doRefresh($event)"
+      :icons="icons"
+    />
     <ion-fab
       v-if="!editing && type === 'Private'"
       class="mb-14"
@@ -41,20 +37,22 @@
       :list="lists"
       :list-type="type"
     />
+    <VSpinner v-if="isListEmpty && loading" />
+    <VEmptyView class="text-center mt-44" v-show="isListEmpty && !loading" />
   </ion-content>
 </template>
 
 <script lang="ts">
 import DashboardList from "@/components/DashboardList.vue";
 import DashBoardModalCreateList from "@/components/DashboardModalCreateList.vue";
+import VEmptyView from "@/components/VEmptyView.vue";
+import VSpinner from "@/components/VSpinner.vue";
 import {
   IonHeader,
   IonIcon,
   IonLabel,
   IonSegment,
   IonSegmentButton,
-  IonRefresher,
-  IonRefresherContent,
   IonToolbar,
   modalController,
   IonContent,
@@ -65,6 +63,7 @@ import {
   toastController,
   alertController,
 } from "@ionic/vue";
+
 import { chevronDownCircleOutline, add } from "ionicons/icons";
 import { computed, defineComponent, ref, watch } from "vue";
 import { useUserStore } from "@/store/user";
@@ -72,19 +71,21 @@ import { useListsStore } from "@/store/lists";
 import { ActionType } from "@/models/store";
 import apiClient from "@/api-client";
 import barcodeScanner from "@/module-client/barcode-scanner";
+import VRefresher from "@/components/VRefresher.vue";
 
 export default defineComponent({
   name: "DashboardContainer",
   components: {
+    VRefresher,
+    VSpinner,
     DashboardList,
+    VEmptyView,
     IonHeader,
     IonToolbar,
     IonIcon,
     IonSegment,
     IonLabel,
     IonSegmentButton,
-    IonRefresher,
-    IonRefresherContent,
     IonContent,
     IonFab,
     IonFabButton,
@@ -111,6 +112,10 @@ export default defineComponent({
       return listsStore.state.loading;
     });
 
+    const isListEmpty = computed(() => {
+      return listsStore.state.lists.length === 0;
+    });
+
     const editing = computed(() => {
       return listsStore.state.editing;
     });
@@ -130,8 +135,8 @@ export default defineComponent({
       }
     }
 
-    function fetchList() {
-      listsStore.action(ActionType.lists.fetchLists);
+    async function fetchList() {
+      await listsStore.action(ActionType.lists.fetchLists);
     }
 
     async function doRefresh(event: any) {
@@ -242,6 +247,7 @@ export default defineComponent({
       isModalOpen,
       editing,
       loading,
+      isListEmpty,
       doRefresh,
       openModal,
       openJoinOptions,
@@ -254,5 +260,3 @@ export default defineComponent({
   },
 });
 </script>
-
-<style scoped></style>

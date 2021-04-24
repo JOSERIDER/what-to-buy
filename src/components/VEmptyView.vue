@@ -1,5 +1,5 @@
 <template>
-  <div class="flex m-4 h-full flex-col justify-center items-center">
+  <div class="flex m-4 flex-col justify-center items-center">
     <ion-img
       :src="require('@/assets/resources/dashboard-add-list.svg')"
       class="w-16 h-16"

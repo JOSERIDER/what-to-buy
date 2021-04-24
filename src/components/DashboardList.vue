@@ -13,14 +13,15 @@
         >Join to other list</ion-button
       >
     </ion-list-header>
-    <VEmptyView v-if="list.length === 0" />
-    <DashboardListItem
-      v-else
-      @delete-item="remove($event)"
-      v-for="item in list"
-      :key="item.listCode"
-      :list="item"
-    />
+
+    <div v-if="list.length > 0">
+      <DashboardListItem
+        @delete-item="remove($event)"
+        v-for="item in list"
+        :key="item.listCode"
+        :list="item"
+      />
+    </div>
   </ion-list>
 </template>
 
@@ -28,7 +29,6 @@
 import { IonList, IonListHeader, IonLabel, IonButton } from "@ionic/vue";
 import { defineComponent } from "vue";
 import DashboardListItem from "@/components/DashboardListItem.vue";
-import VEmptyView from "@/components/VEmptyView.vue";
 import { useListsStore } from "@/store/lists";
 import { ActionType } from "@/models/store";
 
@@ -65,7 +65,6 @@ export default defineComponent({
   },
   components: {
     DashboardListItem,
-    VEmptyView,
     IonList,
     IonListHeader,
     IonLabel,
