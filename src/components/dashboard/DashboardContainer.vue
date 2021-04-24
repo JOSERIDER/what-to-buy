@@ -50,12 +50,12 @@
 </template>
 
 <script lang="ts">
-import DashboardList from "@/components/DashboardList.vue";
-import DashBoardModalCreateList from "@/components/DashboardModalCreateList.vue";
-import VEmptyView from "@/components/VEmptyView.vue";
-import VSpinner from "@/components/VSpinner.vue";
-import VRefresher from "@/components/VRefresher.vue";
-import VErrorView from "@/components/VErrorView.vue";
+import DashboardList from "@/components/dashboard/DashboardList.vue";
+import DashBoardModalCreateList from "@/components/dashboard/DashboardModalCreateList.vue";
+import VEmptyView from "@/components/ui/VEmptyView.vue";
+import VSpinner from "@/components/ui/VSpinner.vue";
+import VRefresher from "@/components/ui/VRefresher.vue";
+import VErrorView from "@/components/ui/VErrorView.vue";
 import {
   IonHeader,
   IonIcon,

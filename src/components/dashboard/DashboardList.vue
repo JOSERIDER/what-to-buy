@@ -28,7 +28,7 @@
 <script lang="ts">
 import { IonList, IonListHeader, IonLabel, IonButton } from "@ionic/vue";
 import { defineComponent } from "vue";
-import DashboardListItem from "@/components/DashboardListItem.vue";
+import DashboardListItem from "@/components/dashboard/DashboardListItem.vue";
 import { useListsStore } from "@/store/lists";
 import { ActionType } from "@/models/store";
 

@@ -32,7 +32,7 @@ export default {
 </script>
 
 <style scoped>
-@import "../assets/style/auth.css";
+@import "../../assets/style/auth.css";
 
 .flexbox {
   width: 90vw;
