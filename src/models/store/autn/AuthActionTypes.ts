@@ -4,4 +4,5 @@ export namespace AuthActionTypes {
   export const logout = "logout";
   export const setUser = "setUser";
   export const userLoaded = "userLoaded";
+  export const resetError = "resetError";
 }
