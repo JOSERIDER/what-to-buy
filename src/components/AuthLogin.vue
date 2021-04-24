@@ -31,12 +31,9 @@ import VInput from "@/components/VInput.vue";
 import VSpinnerButtonLoading from "@/components/VSpinnerButtonLoading.vue";
 import { computed, reactive } from "vue";
 import { at, key } from "ionicons/icons";
-import { alertController } from "@ionic/vue";
 import useVuelidate from "@vuelidate/core";
 import { email, required } from "@vuelidate/validators";
 import { useRouter } from "vue-router";
-import apiClient from "@/api-client";
-import { useUserStore } from "@/store/user";
 import { ActionType } from "@/models/store";
 import { useAuthsStore } from "@/store/auth";
 
@@ -47,9 +44,7 @@ export default {
     VSpinnerButtonLoading,
   },
   setup() {
-    const userApiClient = apiClient.users;
     const router = useRouter();
-    const userStore = useUserStore();
     const authStore = useAuthsStore();
 
     const state = reactive({
@@ -73,27 +68,6 @@ export default {
       return authStore.state.loading;
     });
 
-    const authError = computed(() => {
-      return authStore.state.error;
-    });
-
-    async function presentAlert(header: string, message: string) {
-      const alert = await alertController.create({
-        header,
-        message,
-        buttons: ["OK"],
-      });
-      return alert.present();
-    }
-
-    watch(authError, async error => {
-      if (error) {
-        await presentAlert("Something is wrong", error);
-      }
-
-      await authStore.action(ActionType.auth.resetError);
-    });
-
     const v$ = useVuelidate(rules, state);
 
     async function login() {
@@ -106,20 +80,9 @@ export default {
         password: state.password,
       });
 
-      if (authError.value) return;
+      if (authStore.state.error) return;
 
-      userApiClient
-        .get(authStore.state.user.user?.uid as string)
-        .then(async user => {
-          if (!user) {
-            await presentAlert("Error", "User not fount in our dataBase");
-            return;
-          }
-          await userStore.action(ActionType.user.setUser, user);
-
-          await authStore.action(ActionType.auth.userLoaded);
-          await router.push({ name: "Dashboard" });
-        });
+      await router.push({ name: "Dashboard" });
     }
 
     return { v$, state, loading, login, email: at, password: key };

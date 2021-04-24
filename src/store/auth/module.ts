@@ -1,10 +1,11 @@
 import { ActionTree, GetterTree, Module, MutationTree } from "vuex";
-import { MutationType, RootStateInterface } from "@/models/store";
+import { ActionType, MutationType, RootStateInterface } from "@/models/store";
 
 import { AuthStateInterface } from "@/models/store/autn";
 import { initialState } from "@/store/auth/InitialState";
-import { firebaseAuth } from "@/api-client";
+import apiClient, { firebaseAuth } from "@/api-client";
 import firebase from "firebase";
+import { useUserStore } from "@/store/user";
 
 export const mutations: MutationTree<AuthStateInterface> = {
   loading(state: AuthStateInterface) {
@@ -25,8 +26,10 @@ export const mutations: MutationTree<AuthStateInterface> = {
 };
 
 export const actions: ActionTree<AuthStateInterface, RootStateInterface> = {
-  async login({ commit }, { email, password }) {
+  async login({ commit, state }, { email, password }) {
     commit(MutationType.auth.loading);
+    const userApiClient = apiClient.users;
+    const userStore = useUserStore();
 
     try {
       await firebaseAuth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
@@ -36,6 +39,11 @@ export const actions: ActionTree<AuthStateInterface, RootStateInterface> = {
       );
 
       commit(MutationType.auth.setUser, user);
+
+      const userDB = await userApiClient.get(state.user.user?.uid as string);
+
+      await userStore.action(ActionType.user.setUser, userDB);
+      commit(MutationType.auth.loaded);
     } catch (error) {
       commit(MutationType.auth.loaded);
       commit(MutationType.auth.setError, error.message);

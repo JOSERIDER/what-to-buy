@@ -15,7 +15,7 @@ export class HttpClientModel implements HttpClientInterface {
         .get()
         .then(response => {
           if (!response.exists) {
-            reject({ message: "Data doesn't exists" });
+            reject({ message: "This resource doesn't exists" });
             return;
           }
           resolve(response.data() as T);
