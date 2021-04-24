@@ -52,12 +52,8 @@ import { useRouter } from "vue-router";
 import { at, key, listOutline, personOutline } from "ionicons/icons";
 import { email, minLength, required } from "@vuelidate/validators";
 import VInput from "@/components/VInput.vue";
-import { useUserStore } from "@/store/user";
 import { ActionType } from "@/models/store";
 import { useAuthsStore } from "@/store/auth";
-import { useListsStore } from "@/store/lists";
-import { User, UserBuild } from "@/models/domain/user";
-import { SharedList, SharedListBuild } from "@/models/domain/sharedList";
 
 export default {
   components: {
@@ -66,10 +62,8 @@ export default {
     VSpinnerButtonLoading,
   },
   setup() {
-    const listsStore = useListsStore();
     const authStore = useAuthsStore();
     const router = useRouter();
-    const userStore = useUserStore();
 
     const state = reactive({
       name: "",
@@ -93,38 +87,20 @@ export default {
 
     const v$ = useVuelidate(rules, state);
 
-    async function createUser(listCode: string) {
-      const user: User = UserBuild.build(
-        authStore.state.user.user.uid,
-        state.email,
-        state.name,
-        listCode
-      );
-      await userStore.action(ActionType.user.createUser, user);
-    }
-
-    async function saveUserAndSharedList() {
-      const sharedList: SharedList = SharedListBuild.build(
-        authStore.state.user.user.uid,
-        state.listName
-      );
-      await createUser(sharedList.listCode);
-
-      await listsStore.action(
-        ActionType.lists.createUserSharedList,
-        sharedList
-      );
-    }
-
     async function signUp() {
       await v$.value.$validate();
+
       if (v$.value.$error) return;
+
       await authStore.action(ActionType.auth.signUp, {
         email: state.email,
         password: state.password,
+        listName: state.listName,
+        userName: state.name,
       });
-      await saveUserAndSharedList();
-      await authStore.action(ActionType.auth.userLoaded);
+
+      if (authStore.state.error) return;
+
       await router.push({ name: "Dashboard" });
     }
 
