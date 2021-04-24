@@ -44,7 +44,7 @@
       :message="listsError"
     />
 
-    <VSpinner v-else-if="isListEmpty && loading" />
+    <VSpinner v-else-if="isListEmpty && loading" class="mt-44" />
     <VEmptyView class="text-center mt-44" v-else-if="isListEmpty && !loading" />
   </ion-content>
 </template>

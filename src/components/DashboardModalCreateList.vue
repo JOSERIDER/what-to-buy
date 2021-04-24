@@ -29,7 +29,10 @@
       </p>
 
       <div class="flex w-full justify-center mt-4">
-        <ion-button @click="createList" fill="clear">Create list</ion-button>
+        <ion-button v-if="!loading" @click="createList" fill="clear"
+          >Create list</ion-button
+        >
+        <VSpinner v-else />
       </div>
     </div>
   </ion-content>
@@ -55,10 +58,12 @@ import { useListsStore } from "@/store/lists";
 import { ActionType } from "@/models/store";
 import { User } from "@/models/domain/user";
 import { ListBuild } from "@/models/domain/list";
+import VSpinner from "@/components/VSpinner.vue";
 
 export default defineComponent({
   name: "DashBoardModalCreateList",
   components: {
+    VSpinner,
     VInput,
     IonHeader,
     IonToolbar,
@@ -83,6 +88,10 @@ export default defineComponent({
 
     const error = computed(() => {
       return listsStore.state.error;
+    });
+
+    const loading = computed(() => {
+      return listsStore.state.loading;
     });
 
     async function presentAlert(header: string, message: string) {
@@ -121,7 +130,7 @@ export default defineComponent({
       await close();
     }
 
-    return { state, v$, createList, close };
+    return { state, v$, loading, createList, close };
   },
 });
 </script>

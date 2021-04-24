@@ -1,5 +1,5 @@
 <template>
-  <div class="flex justify-center mt-44">
+  <div class="flex justify-center">
     <ion-spinner :name="name"></ion-spinner>
   </div>
 </template>
