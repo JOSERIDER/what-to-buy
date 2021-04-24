@@ -73,11 +73,12 @@ export default {
       return authStore.state.loading;
     });
 
-    const v$ = useVuelidate(rules, state);
+    const authError = computed(() => {
+      return authStore.state.error;
+    });
 
     async function presentAlert(header: string, message: string) {
       const alert = await alertController.create({
-        cssClass: "my-custom-class",
         header,
         message,
         buttons: ["OK"],
@@ -85,14 +86,27 @@ export default {
       return alert.present();
     }
 
+    watch(authError, async error => {
+      if (error) {
+        await presentAlert("Something is wrong", error);
+      }
+
+      await authStore.action(ActionType.auth.resetError);
+    });
+
+    const v$ = useVuelidate(rules, state);
+
     async function login() {
       await v$.value.$validate();
+
       if (v$.value.$error) return;
 
       await authStore.action(ActionType.auth.login, {
         email: state.email,
         password: state.password,
       });
+
+      if (authError.value) return;
 
       userApiClient
         .get(authStore.state.user.user?.uid as string)
@@ -103,7 +117,6 @@ export default {
           }
           await userStore.action(ActionType.user.setUser, user);
 
-          await authStore.action(ActionType.auth.userLoaded);
           await authStore.action(ActionType.auth.userLoaded);
           await router.push({ name: "Dashboard" });
         });

@@ -19,25 +19,43 @@ export const mutations: MutationTree<AuthStateInterface> = {
   removeUser(state: AuthStateInterface) {
     state.user = null;
   },
+  setError(state: AuthStateInterface, error: string) {
+    state.error = error;
+  },
 };
 
 export const actions: ActionTree<AuthStateInterface, RootStateInterface> = {
   async login({ commit }, { email, password }) {
     commit(MutationType.auth.loading);
-    await firebaseAuth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
 
-    const user = await firebaseAuth.signInWithEmailAndPassword(email, password);
-    commit(MutationType.auth.setUser, user);
+    try {
+      await firebaseAuth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+      const user = await firebaseAuth.signInWithEmailAndPassword(
+        email,
+        password
+      );
+
+      commit(MutationType.auth.setUser, user);
+    } catch (error) {
+      commit(MutationType.auth.loaded);
+      commit(MutationType.auth.setError, error.message);
+    }
   },
   async signUp({ commit }, { email, password }) {
     commit(MutationType.auth.loading);
-    await firebaseAuth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
 
-    const user = await firebaseAuth.createUserWithEmailAndPassword(
-      email,
-      password
-    );
-    commit(MutationType.auth.setUser, user);
+    try {
+      await firebaseAuth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+      const user = await firebaseAuth.createUserWithEmailAndPassword(
+        email,
+        password
+      );
+
+      commit(MutationType.auth.setUser, user);
+    } catch (error) {
+      commit(MutationType.auth.loaded);
+      commit(MutationType.auth.setError, error.message);
+    }
   },
   async logout({ commit }) {
     commit(MutationType.auth.loading);
@@ -50,6 +68,9 @@ export const actions: ActionTree<AuthStateInterface, RootStateInterface> = {
   },
   userLoaded({ commit }) {
     commit(MutationType.auth.loaded);
+  },
+  resetError({ commit }) {
+    commit(MutationType.auth.setError, "");
   },
 };
 
