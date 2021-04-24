@@ -28,7 +28,6 @@ export const actions: ActionTree<AuthStateInterface, RootStateInterface> = {
 
     const user = await firebaseAuth.signInWithEmailAndPassword(email, password);
     commit(MutationType.auth.setUser, user);
-    commit(MutationType.auth.loaded);
   },
   async signUp({ commit }, { email, password }) {
     commit(MutationType.auth.loading);
@@ -39,7 +38,6 @@ export const actions: ActionTree<AuthStateInterface, RootStateInterface> = {
       password
     );
     commit(MutationType.auth.setUser, user);
-    commit(MutationType.auth.loaded);
   },
   async logout({ commit }) {
     commit(MutationType.auth.loading);
@@ -49,6 +47,9 @@ export const actions: ActionTree<AuthStateInterface, RootStateInterface> = {
   },
   setUser({ commit }, user: any) {
     commit(MutationType.auth.setUser, user);
+  },
+  userLoaded({ commit }) {
+    commit(MutationType.auth.loaded);
   },
 };
 

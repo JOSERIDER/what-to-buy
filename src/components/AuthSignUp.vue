@@ -88,7 +88,7 @@ export default {
     });
 
     const loading = computed(() => {
-      return userStore.state.isLoading || authStore.state.loading;
+      return authStore.state.loading;
     });
 
     const v$ = useVuelidate(rules, state);
@@ -124,6 +124,7 @@ export default {
         password: state.password,
       });
       await saveUserAndSharedList();
+      await authStore.action(ActionType.auth.userLoaded);
       await router.push({ name: "Dashboard" });
     }
 

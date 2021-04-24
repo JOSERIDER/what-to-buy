@@ -3,4 +3,5 @@ export namespace AuthActionTypes {
   export const signUp = "signUp";
   export const logout = "logout";
   export const setUser = "setUser";
+  export const userLoaded = "userLoaded";
 }

@@ -37,7 +37,7 @@ import { email, required } from "@vuelidate/validators";
 import { useRouter } from "vue-router";
 import apiClient from "@/api-client";
 import { useUserStore } from "@/store/user";
-import { ActionType, MutationType } from "@/models/store";
+import { ActionType } from "@/models/store";
 import { useAuthsStore } from "@/store/auth";
 
 export default {
@@ -70,7 +70,7 @@ export default {
     });
 
     const loading = computed(() => {
-      return userStore.state.isLoading || authStore.state.loading;
+      return authStore.state.loading;
     });
 
     const v$ = useVuelidate(rules, state);
@@ -101,7 +101,10 @@ export default {
             await presentAlert("Error", "User not fount in our dataBase");
             return;
           }
-          await userStore.action(MutationType.user.setUser, user);
+          await userStore.action(ActionType.user.setUser, user);
+
+          await authStore.action(ActionType.auth.userLoaded);
+          await authStore.action(ActionType.auth.userLoaded);
           await router.push({ name: "Dashboard" });
         });
     }
