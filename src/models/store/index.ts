@@ -9,3 +9,4 @@ export * from "./root/RootStore.model";
 export * from "./user";
 export * from "./lists";
 export * from "./autn";
+export * from "./list-detail";

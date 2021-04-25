@@ -1,8 +1,9 @@
 import { createRouter, createWebHistory } from "@ionic/vue-router";
 import { RouteRecordRaw } from "vue-router";
 import Dashboard from "../views/Dashboard.vue";
-import Auth from "../views/Auth.vue";
+import Auth from "@/views/Auth.vue";
 import Share from "@/views/Share.vue";
+import ListDetail from "@/views/ListDetail.vue";
 import { useUserStore } from "@/store/user";
 import { MutationType } from "@/models/store";
 import { User } from "@/models/domain/user";
@@ -16,6 +17,12 @@ const routes: Array<RouteRecordRaw> = [
     path: "/dashboard",
     name: "Dashboard",
     component: Dashboard,
+  },
+  {
+    path: "/list-detail/:listId/:listType",
+    name: "ListDetail",
+    component: ListDetail,
+    props: true,
   },
   {
     path: "/auth",

@@ -36,4 +36,11 @@ export interface ProductsApiClientModelInterface {
    * @param id - Id of product to be deleted.
    */
   delete(id: string): Promise<void>;
+
+  /**
+   * Obtains the products by an array
+   * @param productsId = Id of products to be obtained.
+   * @return An array that contains all products on the param array.
+   */
+  getProductsById(productsId: string[]): Promise<Product[]>;
 }

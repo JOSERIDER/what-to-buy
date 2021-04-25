@@ -5,6 +5,7 @@
 export interface HttpRequestParamsInterface {
   url: string;
   documentId?: string;
+  // {path, filter, value}
   query?: any;
   payload?: any;
 }

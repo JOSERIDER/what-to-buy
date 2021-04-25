@@ -1,4 +1,4 @@
-import { UserStateInterface } from "@/models/store";
+import { ListDetailStateInterface, UserStateInterface } from "@/models/store";
 import { ListsStateInterface } from "@/models/store";
 import { AuthStateInterface } from "@/models/store";
 
@@ -10,4 +10,5 @@ export interface RootStoreInterface {
   userState: UserStateInterface;
   listsState: ListsStateInterface;
   authState: AuthStateInterface;
+  listDetailState: ListDetailStateInterface;
 }
