@@ -5,6 +5,7 @@ import { initialState } from "@/store/list-detail/initialState";
 import apiClient from "@/api-client";
 import { Product } from "@/models/domain/product";
 import { List } from "@/models/domain/list";
+import { SharedList } from "@/models/domain/sharedList";
 
 export const mutations: MutationTree<ListDetailStateInterface> = {
   setProducts(state: ListDetailStateInterface, products: Product[]) {
@@ -16,8 +17,8 @@ export const mutations: MutationTree<ListDetailStateInterface> = {
   },
 
   incrementQuantity(state: ListDetailStateInterface, product: Product) {
-    (state.products.find(p => p.id === product.id) as Product).quantity =
-      (product?.quantity || 0) + 1;
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    (state.products.find(p => p.id === product.id) as Product).quantity!! += 1;
   },
 
   decrementQuantity(state: ListDetailStateInterface, product: Product) {
@@ -35,6 +36,29 @@ export const mutations: MutationTree<ListDetailStateInterface> = {
 
   setList(state: ListDetailStateInterface, list: List) {
     state.list = list;
+  },
+
+  deleteProduct(state: ListDetailStateInterface, productId: string) {
+    const index = state.products.findIndex(p => p.id === productId);
+    state.products.splice(index, 1);
+  },
+
+  updateList(state: ListDetailStateInterface) {
+    const aux: any[] = [];
+    state.products.forEach(product => {
+      const dataProduct = { cant: product.quantity, idProduct: product.id };
+      aux.push(dataProduct);
+    });
+
+    state.list.products = aux;
+  },
+
+  resetStore(state: ListDetailStateInterface) {
+    state.list = {} as List;
+    state.products = [];
+    state.error = "";
+    state.summary = 0;
+    state.loading = false;
   },
 };
 
@@ -97,7 +121,10 @@ export const actions: ActionTree<
     commit(MutationType.ListDetail.incrementQuantity, product);
   },
 
-  decrementQuantity({ commit }, product: Product) {
+  decrementQuantity({ commit, dispatch }, product: Product) {
+    if ((product.quantity || 0) < 1) {
+      dispatch(ActionType.listDetail.deleteProduct, product.id);
+    }
     commit(MutationType.ListDetail.decrementQuantity, product);
   },
 
@@ -110,6 +137,33 @@ export const actions: ActionTree<
     summary = Math.round(summary * 100) / 100;
 
     commit(MutationType.ListDetail.setSummary, summary);
+  },
+
+  deleteProduct({ commit }, productId: string) {
+    commit(MutationType.ListDetail.deleteProduct, productId);
+  },
+
+  async updateList({ commit, state }, type: string) {
+    try {
+      commit(MutationType.ListDetail.setLoading, true);
+      commit(MutationType.ListDetail.updateList);
+      if (type === "Private") {
+        await apiClient.privateLists.update(state.list.listCode, state.list);
+      } else {
+        await apiClient.sharedLists.update(
+          state.list.listCode,
+          state.list as SharedList
+        );
+      }
+    } catch (error) {
+      commit(MutationType.ListDetail.setError, error.message);
+    } finally {
+      commit(MutationType.ListDetail.setLoading, false);
+    }
+  },
+
+  resetStore({ commit }) {
+    commit(MutationType.ListDetail.resetStore);
   },
 };
 

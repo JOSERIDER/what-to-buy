@@ -54,7 +54,7 @@ import {
   IonToolbar,
 } from "@ionic/vue";
 import ListDetailItem from "@/components/listDetail/ListDetailItem.vue";
-import { computed, defineComponent, watch } from "vue";
+import { computed, defineComponent, onUnmounted, watch } from "vue";
 import { useListDetailState } from "@/store/list-detail";
 import { Product } from "@/models/domain/product";
 import { ActionType } from "@/models/store";
@@ -118,20 +118,18 @@ export default defineComponent({
       return listDetailStore.state.products.length === 0;
     });
 
-    watch(products, () =>
-      listDetailStore.action(ActionType.listDetail.updateSummary)
-    );
-
     watch(list, () =>
       listDetailStore.action(ActionType.listDetail.fetchProducts)
     );
 
     function incrementQuantity(product: Product) {
       listDetailStore.action(ActionType.listDetail.incrementQuantity, product);
+      listDetailStore.action(ActionType.listDetail.updateSummary);
     }
 
     function decrementQuantity(product: Product) {
       listDetailStore.action(ActionType.listDetail.decrementQuantity, product);
+      listDetailStore.action(ActionType.listDetail.updateSummary);
     }
 
     function fetchProducts() {
@@ -140,6 +138,13 @@ export default defineComponent({
         listType: props.listType,
       });
     }
+
+    onUnmounted(async () => {
+      await listDetailStore.action(
+        ActionType.listDetail.updateList,
+        props.listType
+      );
+    });
 
     fetchProducts();
 

@@ -6,4 +6,7 @@ export namespace ListDetailMutationTypes {
   export const setSummary = "setSummary";
   export const setError = "setError";
   export const setList = "setList";
+  export const deleteProduct = "deleteProduct";
+  export const updateList = "updateList";
+  export const resetStore = "resetStore";
 }
