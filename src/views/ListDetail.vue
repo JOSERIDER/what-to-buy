@@ -8,10 +8,10 @@
       <ion-button
         slot="end"
         color="primary"
-        @click="openPopover($event)"
+        @click="addProduct($event)"
         fill="clear"
       >
-        <ion-icon name="add" size="large"></ion-icon>
+        <ion-icon :icon="add" size="large"></ion-icon>
       </ion-button>
     </ion-toolbar>
   </ion-header>
@@ -19,7 +19,10 @@
   <ion-content>
     <VErrorView v-if="error" :message="error" />
 
-    <ListDetailEmptyView v-else-if="isEmptyList && !loading" />
+    <ListDetailEmptyView
+      @add-product="addProduct($event)"
+      v-else-if="isEmptyList && !loading"
+    />
 
     <ListDetailAmountHeader
       v-else-if="!isEmptyList && !loading"
@@ -52,9 +55,11 @@ import {
   IonList,
   IonTitle,
   IonToolbar,
+  popoverController,
 } from "@ionic/vue";
 import ListDetailItem from "@/components/listDetail/ListDetailItem.vue";
 import { computed, defineComponent, onUnmounted, watch } from "vue";
+import { add} from "ionicons/icons";
 import { useListDetailState } from "@/store/list-detail";
 import { Product } from "@/models/domain/product";
 import { ActionType } from "@/models/store";
@@ -62,6 +67,7 @@ import ListDetailEmptyView from "@/components/listDetail/ListDetailEmptyView.vue
 import ListDetailAmountHeader from "@/components/listDetail/ListDetailAmountHeader.vue";
 import VErrorView from "@/components/ui/VErrorView.vue";
 import VSpinner from "@/components/ui/VSpinner.vue";
+import ListDetailAddProductPopover from "../components/listDetail/ListDetailAddProductPopover.vue";
 
 export default defineComponent({
   name: "ListDetail",
@@ -139,6 +145,24 @@ export default defineComponent({
       });
     }
 
+    async function openPopover(ev: Event) {
+      const popover = await popoverController.create({
+        component: ListDetailAddProductPopover,
+        componentProps: { listId: props.listId },
+        event: ev,
+        mode: "ios",
+        translucent: false,
+      });
+      await popover.present();
+
+      const { role } = await popover.onDidDismiss();
+      console.log("onDidDismiss resolved with role", role);
+    }
+
+    function addProduct(event) {
+      openPopover(event);
+    }
+
     onUnmounted(async () => {
       await listDetailStore.action(
         ActionType.listDetail.updateList,
@@ -155,6 +179,8 @@ export default defineComponent({
       error,
       loading,
       isEmptyList,
+      add,
+      addProduct,
       incrementQuantity,
       decrementQuantity,
     };

@@ -8,7 +8,7 @@
     <ion-text color="medium" class="mt-4 font-normal text-center">
       <h2>Nothing here, why don't you add a new product?</h2>
     </ion-text>
-    <ion-button class="mt-5" @click="$emit('try-again')" color="light"
+    <ion-button class="mt-5" @click="$emit('add-product')" color="light"
       >Add product</ion-button
     >
   </div>
