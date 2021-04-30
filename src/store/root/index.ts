@@ -6,6 +6,7 @@ import { listState } from "@/store/lists/module";
 import { authState } from "@/store/auth/module";
 import { listDetailState } from "@/store/list-detail/module";
 import { productsState } from "@/store/products/module";
+import { productsSelectionState } from "@/store/products-selection/module";
 
 /**
  * Vuex options to create a modularize store.
@@ -18,6 +19,7 @@ const storeOptions: StoreOptions<RootStateInterface> = {
     authState: authState,
     listDetailState: listDetailState,
     productsState: productsState,
+    productsSelection: productsSelectionState,
   },
 };
 

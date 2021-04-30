@@ -1,4 +1,8 @@
-import { ListDetailStateInterface, UserStateInterface } from "@/models/store";
+import {
+  ListDetailStateInterface,
+  ProductsSelectionStateInterface,
+  UserStateInterface,
+} from "@/models/store";
 import { ListsStateInterface } from "@/models/store";
 import { AuthStateInterface } from "@/models/store";
 import { ProductsStateInterface } from "@/models/store/products";
@@ -13,4 +17,5 @@ export interface RootStoreInterface {
   authState: AuthStateInterface;
   listDetailState: ListDetailStateInterface;
   productsState: ProductsStateInterface;
+  productsSelectionState: ProductsSelectionStateInterface;
 }

@@ -11,3 +11,4 @@ export * from "./lists";
 export * from "./autn";
 export * from "./list-detail";
 export * from "./products";
+export * from "./products-selection";

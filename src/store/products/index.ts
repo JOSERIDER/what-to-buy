@@ -14,4 +14,4 @@ const productsStore = {
   },
 };
 
-export const useProductStore = () => productsStore;
+export const useProductsStore = () => productsStore;

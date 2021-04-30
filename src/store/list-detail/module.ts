@@ -6,7 +6,7 @@ import apiClient from "@/api-client";
 import { Product } from "@/models/domain/product";
 import { List } from "@/models/domain/list";
 import { SharedList } from "@/models/domain/sharedList";
-import { useProductStore } from "@/store/products";
+import { useProductsStore } from "@/store/products";
 
 export const mutations: MutationTree<ListDetailStateInterface> = {
   setProducts(state: ListDetailStateInterface, products: Product[]) {
@@ -70,7 +70,7 @@ export const actions: ActionTree<
   async fetchProducts({ commit, state, dispatch }) {
     try {
       commit(MutationType.ListDetail.setLoading, true);
-      const productsStore = useProductStore();
+      const productsStore = useProductsStore();
 
       if (!state.list.products) return;
 
