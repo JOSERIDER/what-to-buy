@@ -58,4 +58,13 @@ export class ProductsApiClientModel implements ProductsApiClientModelInterface {
 
     return HttpClient.update(params);
   }
+
+  getProductsById(productsId: string[]): Promise<Product[]> {
+    const params: HttpRequestParamsInterface = {
+      url: this.urls.products,
+      query: { path: "id", filter: "in", value: productsId },
+    };
+
+    return HttpClient.getWithQuery(params);
+  }
 }
