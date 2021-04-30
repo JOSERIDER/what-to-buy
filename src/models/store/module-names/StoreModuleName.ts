@@ -6,4 +6,5 @@ export namespace StoreModuleName {
   export const listsState = "listsState";
   export const authState = "authState";
   export const listDetailState = "listDetailState";
+  export const productsState = "productsState";
 }
