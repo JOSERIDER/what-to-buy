@@ -9,4 +9,5 @@ export namespace ListDetailMutationTypes {
   export const deleteProduct = "deleteProduct";
   export const updateList = "updateList";
   export const resetStore = "resetStore";
+  export const addProduct = "addProduct";
 }

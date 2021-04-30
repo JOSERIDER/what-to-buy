@@ -4,7 +4,7 @@
       <ion-buttons slot="start">
         <ion-back-button defaultHref="/" text="Back"></ion-back-button>
       </ion-buttons>
-      <ion-title>{{ list.name ? list.name : "loading..." }}</ion-title>
+      <ion-title>{{ loading ? "loading..." : list.name }}</ion-title>
       <ion-button
         slot="end"
         color="primary"
@@ -55,10 +55,9 @@ import {
   IonList,
   IonTitle,
   IonToolbar,
-  popoverController,
 } from "@ionic/vue";
 import ListDetailItem from "@/components/listDetail/ListDetailItem.vue";
-import { computed, defineComponent, onUnmounted, watch } from "vue";
+import { computed, defineComponent, watch } from "vue";
 import { add } from "ionicons/icons";
 import { useListDetailStore } from "@/store/list-detail";
 import { Product } from "@/models/domain/product";
@@ -68,6 +67,7 @@ import ListDetailAmountHeader from "@/components/listDetail/ListDetailAmountHead
 import VErrorView from "@/components/ui/VErrorView.vue";
 import VSpinner from "@/components/ui/VSpinner.vue";
 import ListDetailAddProductPopover from "../components/listDetail/ListDetailAddProductPopover.vue";
+import useIonicService from "@/use/useIonicService";
 
 export default defineComponent({
   name: "ListDetail",
@@ -124,6 +124,8 @@ export default defineComponent({
       return listDetailStore.state.products.length === 0;
     });
 
+    const { popover } = useIonicService();
+
     watch(list, () =>
       listDetailStore.action(ActionType.listDetail.fetchProducts)
     );
@@ -146,29 +148,18 @@ export default defineComponent({
     }
 
     async function openPopover(ev: Event) {
-      const popover = await popoverController.create({
+      await popover({
         component: ListDetailAddProductPopover,
         componentProps: { listId: props.listId },
         event: ev,
         mode: "ios",
         translucent: false,
       });
-      await popover.present();
-
-      const { role } = await popover.onDidDismiss();
-      console.log("onDidDismiss resolved with role", role);
     }
 
     function addProduct(event) {
       openPopover(event);
     }
-
-    onUnmounted(async () => {
-      await listDetailStore.action(
-        ActionType.listDetail.updateList,
-        props.listType
-      );
-    });
 
     fetchProducts();
 

@@ -3,7 +3,7 @@
     <ion-grid fixed>
       <ion-row
         class="button ion-justify-content-center ion-margin-bottom"
-        @click="scan()"
+        @click="scanBarcode()"
       >
         <ion-col size="3">
           <ion-icon size="large" color="primary" :icon="icon.scan"></ion-icon>
@@ -13,7 +13,10 @@
         </ion-col>
       </ion-row>
 
-      <ion-row class="button ion-justify-content-center" @click="find()">
+      <ion-row
+        class="button ion-justify-content-center"
+        @click="selectProducts()"
+      >
         <ion-col size="3">
           <ion-icon size="large" color="primary" :icon="icon.search"></ion-icon>
         </ion-col>
@@ -25,25 +28,63 @@
   </ion-content>
 </template>
 
-<script>
-import { IonCol, IonRow } from "@ionic/vue";
+<script lang="ts">
+import { IonCol, IonRow, popoverController } from "@ionic/vue";
 import { scan, searchOutline } from "ionicons/icons";
+import useScanner from "@/use/useScanner";
+import apiClient from "@/api-client";
+import { defineComponent } from "vue";
+import { useListDetailStore } from "@/store/list-detail";
+import { ActionType } from "@/models/store";
+import useIonicService from "@/use/useIonicService";
+import { useRouter } from "vue-router";
 
-export default {
+export default defineComponent({
   name: "ListDetailAddProductPopover",
   components: {
     IonRow,
     IonCol,
   },
-  data() {
+  setup() {
+    const listDetailStore = useListDetailStore();
+    const router = useRouter();
+    const { toast } = useIonicService();
+
+    function addProduct(productId: string) {
+      apiClient.products
+        .get(productId)
+        .then(product =>
+          listDetailStore.action(ActionType.listDetail.addProduct, product)
+        )
+        .catch(() =>
+          //TODO: NAVIGATE TO CREATE PRODUCT WITH PRODUCT ID.
+          toast({
+            message: "This product doesn't exits, add it first.",
+            duration: 2000,
+          })
+        );
+    }
+
+    function scanBarcode() {
+      useScanner(resp => addProduct(resp));
+      popoverController.dismiss();
+    }
+
+    function selectProducts() {
+      popoverController.dismiss();
+      router.push(`${router.currentRoute.value.path}/add-product`);
+    }
+
     return {
+      scanBarcode,
+      selectProducts,
       icon: {
-        scan,
+        scan: scan,
         search: searchOutline,
       },
     };
   },
-};
+});
 </script>
 
 <style scoped>

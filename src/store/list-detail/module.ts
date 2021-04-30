@@ -61,6 +61,10 @@ export const mutations: MutationTree<ListDetailStateInterface> = {
     state.summary = 0;
     state.loading = false;
   },
+
+  addProduct(state: ListDetailStateInterface, product: Product) {
+    state.products.push(product);
+  },
 };
 
 export const actions: ActionTree<
@@ -170,6 +174,22 @@ export const actions: ActionTree<
 
   resetStore({ commit }) {
     commit(MutationType.ListDetail.resetStore);
+  },
+
+  addProduct({ commit, state, dispatch }, product: Product) {
+    const productIndex = state.products.findIndex(p => p.id === product.id);
+
+    if (productIndex !== -1) {
+      commit(MutationType.ListDetail.incrementQuantity, product);
+      dispatch(ActionType.listDetail.updateSummary);
+      return;
+    }
+    if (!product.quantity) {
+      product.quantity = 1;
+    }
+
+    dispatch(ActionType.listDetail.updateSummary);
+    commit(MutationType.ListDetail.addProduct, product);
   },
 };
 

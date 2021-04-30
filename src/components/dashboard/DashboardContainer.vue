@@ -57,29 +57,27 @@ import VSpinner from "@/components/ui/VSpinner.vue";
 import VRefresher from "@/components/ui/VRefresher.vue";
 import VErrorView from "@/components/ui/VErrorView.vue";
 import {
+  IonContent,
+  IonFab,
+  IonFabButton,
   IonHeader,
   IonIcon,
   IonLabel,
+  IonMenuButton,
   IonSegment,
   IonSegmentButton,
   IonToolbar,
   modalController,
-  IonContent,
-  IonFab,
-  IonFabButton,
-  IonMenuButton,
-  actionSheetController,
-  toastController,
-  alertController,
 } from "@ionic/vue";
 
-import { chevronDownCircleOutline, add } from "ionicons/icons";
+import { add, chevronDownCircleOutline } from "ionicons/icons";
 import { computed, defineComponent, ref, watch } from "vue";
 import { useUserStore } from "@/store/user";
 import { useListsStore } from "@/store/lists";
 import { ActionType } from "@/models/store";
 import apiClient from "@/api-client";
-import barcodeScanner from "@/module-client/barcode-scanner";
+import useIonicService from "@/use/useIonicService";
+import useScanner from "@/use/useScanner";
 
 export default defineComponent({
   name: "DashboardContainer",
@@ -133,6 +131,8 @@ export default defineComponent({
       return listsStore.state.error;
     });
 
+    const { actionSheet, alert, toast } = useIonicService();
+
     async function openModal() {
       const modal = await modalController.create({
         component: DashBoardModalCreateList,
@@ -166,39 +166,27 @@ export default defineComponent({
             user.value.id as string
           );
           if (!added) {
-            const toast = await toastController.create({
+            await toast({
               message: "You already belong to this list.",
               duration: 2000,
             });
-            await toast.present();
             return;
           }
         })
         .catch(async () => {
-          const toast = await toastController.create({
+          await toast({
             message: "This list or user not exists.",
             duration: 2000,
           });
-          await toast.present();
-          console.log("list doesn't exists");
         });
     }
 
     function openScanner() {
-      barcodeScanner
-        .scan()
-        .then(resp => joinToList(resp))
-        .catch(async () => {
-          const toast = await toastController.create({
-            message: "Scanner no available.",
-            duration: 2000,
-          });
-          await toast.present();
-        });
+      useScanner(resp => joinToList(resp));
     }
 
     async function insertCode() {
-      const alert = await alertController.create({
+      await alert({
         header: "Insert list code",
         inputs: [
           {
@@ -222,11 +210,10 @@ export default defineComponent({
           },
         ],
       });
-      return alert.present();
     }
 
     async function openJoinOptions() {
-      const actionSheet = await actionSheetController.create({
+      await actionSheet({
         header: "Join to list",
         buttons: [
           {
@@ -243,7 +230,6 @@ export default defineComponent({
           },
         ],
       });
-      await actionSheet.present();
     }
 
     watch(lists, lists => {
