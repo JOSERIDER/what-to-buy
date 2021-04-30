@@ -14,4 +14,4 @@ const listDetailStore = {
   },
 };
 
-export const useListDetailState = () => listDetailStore;
+export const useListDetailStore = () => listDetailStore;

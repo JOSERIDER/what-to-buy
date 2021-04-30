@@ -59,8 +59,8 @@ import {
 } from "@ionic/vue";
 import ListDetailItem from "@/components/listDetail/ListDetailItem.vue";
 import { computed, defineComponent, onUnmounted, watch } from "vue";
-import { add} from "ionicons/icons";
-import { useListDetailState } from "@/store/list-detail";
+import { add } from "ionicons/icons";
+import { useListDetailStore } from "@/store/list-detail";
 import { Product } from "@/models/domain/product";
 import { ActionType } from "@/models/store";
 import ListDetailEmptyView from "@/components/listDetail/ListDetailEmptyView.vue";
@@ -98,7 +98,7 @@ export default defineComponent({
     },
   },
   setup(props) {
-    const listDetailStore = useListDetailState();
+    const listDetailStore = useListDetailStore();
 
     const summary = computed(() => {
       return listDetailStore.state.summary;

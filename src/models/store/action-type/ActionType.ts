@@ -1,7 +1,9 @@
-import { UserActionTypes } from "@/models/store/user/UserActionTypes";
-import { ListsActionTypes } from "@/models/store/lists/ListsActionTypes";
+import { UserActionTypes } from "@/models/store/user";
+import { ListsActionTypes } from "@/models/store/lists";
 import { AuthActionTypes } from "@/models/store/autn";
 import { ListDetailActionTypes } from "@/models/store/list-detail";
+import { ProductsActionTypes } from "@/models/store/products";
+import { productsSelectionActionTypes } from "@/models/store/products-selection";
 
 /**
  * Is the main namespace that export and group the action type specific for each domain.
@@ -11,4 +13,6 @@ export namespace ActionType {
   export const lists = ListsActionTypes;
   export const auth = AuthActionTypes;
   export const listDetail = ListDetailActionTypes;
+  export const products = ProductsActionTypes;
+  export const productsSelection = productsSelectionActionTypes;
 }
