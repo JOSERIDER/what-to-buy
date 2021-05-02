@@ -4,7 +4,7 @@ import Dashboard from "../views/Dashboard.vue";
 import Auth from "@/views/Auth.vue";
 import Share from "@/views/Share.vue";
 import ListDetail from "@/views/ListDetail.vue";
-import ListDetailAddProduct from "@/components/listDetail/ListDetailAddProduct.vue";
+import ProductsSelection from "@/views/ProductsSelection.vue";
 import { useUserStore } from "@/store/user";
 import { MutationType } from "@/models/store";
 import { User } from "@/models/domain/user";
@@ -24,12 +24,11 @@ const routes: Array<RouteRecordRaw> = [
     name: "ListDetail",
     component: ListDetail,
     props: true,
-    children: [
-      {
-        path: "add-product",
-        component: ListDetailAddProduct,
-      },
-    ],
+  },
+  {
+    path: "/products-selection",
+    name: "ProductsSelection",
+    component: ProductsSelection,
   },
   {
     path: "/auth",

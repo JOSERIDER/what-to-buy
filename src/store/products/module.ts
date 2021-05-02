@@ -31,9 +31,9 @@ export const actions: ActionTree<ProductsStateInterface, RootStateInterface> = {
 
       commit(MutationType.products.setProducts, products);
     } catch (error) {
-      commit(MutationType.ListDetail.setError, error.message);
+      commit(MutationType.listDetail.setError, error.message);
     } finally {
-      commit(MutationType.ListDetail.setLoading, false);
+      commit(MutationType.listDetail.setLoading, false);
     }
   },
 
@@ -46,9 +46,9 @@ export const actions: ActionTree<ProductsStateInterface, RootStateInterface> = {
 
       await dispatch(ActionType.products.fetchProducts);
     } catch (error) {
-      commit(MutationType.ListDetail.setError, error.message);
+      commit(MutationType.listDetail.setError, error.message);
     } finally {
-      commit(MutationType.ListDetail.setLoading, false);
+      commit(MutationType.listDetail.setLoading, false);
     }
   },
 
@@ -63,9 +63,9 @@ export const actions: ActionTree<ProductsStateInterface, RootStateInterface> = {
 
       commit(MutationType.products.setProducts, products);
     } catch (error) {
-      commit(MutationType.ListDetail.setError, error.message);
+      commit(MutationType.listDetail.setError, error.message);
     } finally {
-      commit(MutationType.ListDetail.setLoading, false);
+      commit(MutationType.listDetail.setLoading, false);
     }
   },
 };

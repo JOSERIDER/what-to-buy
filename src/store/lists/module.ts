@@ -128,7 +128,7 @@ export const getters: GetterTree<ListsStateInterface, RootStateInterface> = {
 
 const namespaced = true;
 const state: ListsStateInterface = initialState;
-export const listState: Module<ListsStateInterface, RootStateInterface> = {
+export const listsState: Module<ListsStateInterface, RootStateInterface> = {
   namespaced,
   state,
   getters,

@@ -72,7 +72,7 @@ export default defineComponent({
 
     function selectProducts() {
       popoverController.dismiss();
-      router.push(`${router.currentRoute.value.path}/add-product`);
+      router.push({ name: "ProductsSelection" });
     }
 
     return {

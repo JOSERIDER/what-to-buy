@@ -45,8 +45,11 @@ export class ProductsApiClientModel implements ProductsApiClientModelInterface {
   }
 
   getProducts(): Promise<Product[]> {
-    //TODO
-    return Promise.resolve([]);
+    const params: HttpRequestParamsInterface = {
+      url: this.urls.products,
+    };
+
+    return HttpClient.getCollection(params);
   }
 
   update(id: string, payload: Product): Promise<void> {

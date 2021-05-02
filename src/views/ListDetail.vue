@@ -57,7 +57,7 @@ import {
   IonToolbar,
 } from "@ionic/vue";
 import ListDetailItem from "@/components/listDetail/ListDetailItem.vue";
-import { computed, defineComponent, watch } from "vue";
+import { computed, defineComponent, onUnmounted, watch } from "vue";
 import { add } from "ionicons/icons";
 import { useListDetailStore } from "@/store/list-detail";
 import { Product } from "@/models/domain/product";
@@ -161,7 +161,16 @@ export default defineComponent({
       openPopover(event);
     }
 
+    onUnmounted(async () => {
+      await listDetailStore.action(
+        ActionType.listDetail.updateList,
+        props.listType
+      );
+    });
+
     fetchProducts();
+
+    listDetailStore.action(ActionType.listDetail.setType, props.listType);
 
     return {
       summary,

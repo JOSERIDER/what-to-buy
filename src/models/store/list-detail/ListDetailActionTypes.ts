@@ -8,4 +8,6 @@ export namespace ListDetailActionTypes {
   export const updateList = "updateList";
   export const resetStore = "resetStore";
   export const addProduct = "addProduct";
+  export const saveSelection = "saveSelection";
+  export const setType = "setType";
 }

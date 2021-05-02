@@ -11,4 +11,5 @@ export const initialState: ListDetailStateInterface = {
   summary: 0,
   error: "",
   list: {} as List,
+  type: "",
 };

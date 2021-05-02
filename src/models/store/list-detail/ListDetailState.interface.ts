@@ -8,4 +8,5 @@ export interface ListDetailStateInterface {
   summary: number;
   error: string;
   list: List | SharedList;
+  type: string;
 }

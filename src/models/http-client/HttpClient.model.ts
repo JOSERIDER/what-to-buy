@@ -24,6 +24,19 @@ export class HttpClientModel implements HttpClientInterface {
     });
   }
 
+  getCollection<T>(params: HttpRequestParamsInterface): Promise<T[]> {
+    return new Promise((resolve, reject) => {
+      firestore
+        .collection(params.url)
+        .get()
+        .then(response => {
+          const docs = response.docs.map(doc => doc.data() as T);
+          resolve(docs);
+        })
+        .catch(error => reject(error));
+    });
+  }
+
   getWithQuery<T>(params: HttpRequestParamsInterface): Promise<T[]> {
     try {
       if (Array.isArray(params.query.value)) {

@@ -10,7 +10,7 @@ const productsSelectionStore = {
   },
   async action<T>(actionName: string, params?: T) {
     await dispatchModuleAction(
-      StoreModuleName.productsState,
+      StoreModuleName.productsSelectionState,
       actionName,
       params
     );

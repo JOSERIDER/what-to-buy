@@ -65,6 +65,9 @@ export const mutations: MutationTree<ListDetailStateInterface> = {
   addProduct(state: ListDetailStateInterface, product: Product) {
     state.products.push(product);
   },
+  setType(state: ListDetailStateInterface, type: string) {
+    state.type = type;
+  },
 };
 
 export const actions: ActionTree<
@@ -73,7 +76,7 @@ export const actions: ActionTree<
 > = {
   async fetchProducts({ commit, state, dispatch }) {
     try {
-      commit(MutationType.ListDetail.setLoading, true);
+      commit(MutationType.listDetail.setLoading, true);
       const productsStore = useProductsStore();
 
       if (!state.list.products) return;
@@ -98,19 +101,19 @@ export const actions: ActionTree<
         return p;
       });
 
-      commit(MutationType.ListDetail.setProducts, products);
+      commit(MutationType.listDetail.setProducts, products);
 
       dispatch(ActionType.listDetail.updateSummary);
     } catch (error) {
-      commit(MutationType.ListDetail.setError, error.message);
+      commit(MutationType.listDetail.setError, error.message);
     } finally {
-      commit(MutationType.ListDetail.setLoading, false);
+      commit(MutationType.listDetail.setLoading, false);
     }
   },
 
   async fetchList({ commit }, { listId, listType }) {
     try {
-      commit(MutationType.ListDetail.setLoading, true);
+      commit(MutationType.listDetail.setLoading, true);
 
       let list: List;
       if (listType === "Private") {
@@ -119,23 +122,23 @@ export const actions: ActionTree<
         list = await apiClient.sharedLists.get(listId);
       }
 
-      commit(MutationType.ListDetail.setList, list);
+      commit(MutationType.listDetail.setList, list);
     } catch (error) {
-      commit(MutationType.ListDetail.setError, error.message);
+      commit(MutationType.listDetail.setError, error.message);
     } finally {
-      commit(MutationType.ListDetail.setLoading, false);
+      commit(MutationType.listDetail.setLoading, false);
     }
   },
 
   incrementQuantity({ commit }, product: Product) {
-    commit(MutationType.ListDetail.incrementQuantity, product);
+    commit(MutationType.listDetail.incrementQuantity, product);
   },
 
   decrementQuantity({ commit, dispatch }, product: Product) {
     if ((product.quantity || 0) < 1) {
       dispatch(ActionType.listDetail.deleteProduct, product.id);
     }
-    commit(MutationType.ListDetail.decrementQuantity, product);
+    commit(MutationType.listDetail.decrementQuantity, product);
   },
 
   updateSummary({ commit, state }) {
@@ -146,18 +149,18 @@ export const actions: ActionTree<
 
     summary = Math.round(summary * 100) / 100;
 
-    commit(MutationType.ListDetail.setSummary, summary);
+    commit(MutationType.listDetail.setSummary, summary);
   },
 
   deleteProduct({ commit }, productId: string) {
-    commit(MutationType.ListDetail.deleteProduct, productId);
+    commit(MutationType.listDetail.deleteProduct, productId);
   },
 
-  async updateList({ commit, state }, type: string) {
+  async updateList({ commit, state }) {
     try {
-      commit(MutationType.ListDetail.setLoading, true);
-      commit(MutationType.ListDetail.updateList);
-      if (type === "Private") {
+      commit(MutationType.listDetail.setLoading, true);
+      commit(MutationType.listDetail.updateList);
+      if (state.type === "Private") {
         await apiClient.privateLists.update(state.list.listCode, state.list);
       } else {
         await apiClient.sharedLists.update(
@@ -166,21 +169,21 @@ export const actions: ActionTree<
         );
       }
     } catch (error) {
-      commit(MutationType.ListDetail.setError, error.message);
+      commit(MutationType.listDetail.setError, error.message);
     } finally {
-      commit(MutationType.ListDetail.setLoading, false);
+      commit(MutationType.listDetail.setLoading, false);
     }
   },
 
   resetStore({ commit }) {
-    commit(MutationType.ListDetail.resetStore);
+    commit(MutationType.listDetail.resetStore);
   },
 
   addProduct({ commit, state, dispatch }, product: Product) {
     const productIndex = state.products.findIndex(p => p.id === product.id);
 
     if (productIndex !== -1) {
-      commit(MutationType.ListDetail.incrementQuantity, product);
+      commit(MutationType.listDetail.incrementQuantity, product);
       dispatch(ActionType.listDetail.updateSummary);
       return;
     }
@@ -189,7 +192,14 @@ export const actions: ActionTree<
     }
 
     dispatch(ActionType.listDetail.updateSummary);
-    commit(MutationType.ListDetail.addProduct, product);
+    commit(MutationType.listDetail.addProduct, product);
+  },
+
+  saveSelection({ commit }, products: Product[]) {
+    commit(MutationType.listDetail.setProducts, products);
+  },
+  setType({ commit }, type: string) {
+    commit(MutationType.listDetail.setType, type);
   },
 };
 
