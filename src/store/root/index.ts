@@ -2,7 +2,7 @@ import { createStore, StoreOptions } from "vuex";
 import { RootStateInterface, RootStoreModel } from "@/models/store";
 import { initialRootState } from "@/store/root/InitialState";
 import { userState } from "@/store/user/module";
-import { listState } from "@/store/lists/module";
+import { listsState } from "@/store/lists/module";
 import { authState } from "@/store/auth/module";
 import { listDetailState } from "@/store/list-detail/module";
 import { productsState } from "@/store/products/module";
@@ -15,11 +15,11 @@ const storeOptions: StoreOptions<RootStateInterface> = {
   state: initialRootState,
   modules: {
     userState: userState,
-    listsState: listState,
+    listsState: listsState,
     authState: authState,
     listDetailState: listDetailState,
     productsState: productsState,
-    productsSelection: productsSelectionState,
+    productsSelectionState: productsSelectionState,
   },
 };
 
