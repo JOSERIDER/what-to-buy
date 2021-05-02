@@ -18,7 +18,6 @@ export const mutations: MutationTree<ListDetailStateInterface> = {
   },
 
   incrementQuantity(state: ListDetailStateInterface, product: Product) {
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     (state.products.find(p => p.id === product.id) as Product).quantity!! += 1;
   },
 
@@ -135,8 +134,9 @@ export const actions: ActionTree<
   },
 
   decrementQuantity({ commit, dispatch }, product: Product) {
-    if ((product.quantity || 0) < 1) {
+    if ((product.quantity || 0) <= 1) {
       dispatch(ActionType.listDetail.deleteProduct, product.id);
+      return;
     }
     commit(MutationType.listDetail.decrementQuantity, product);
   },

@@ -33,7 +33,7 @@
         >
           <ion-col>
             <ion-button
-              @click="decrementQuantity(product.product)"
+              @click="decrementQuantity(product)"
               fill="clear"
               color="dark"
             >
@@ -53,7 +53,7 @@
           </ion-col>
           <ion-col>
             <ion-button
-              @click="incrementQuantity(product.product)"
+              @click="incrementQuantity(product)"
               fill="clear"
               color="dark"
             >
@@ -89,7 +89,6 @@ import {
   addCircleOutline,
 } from "ionicons/icons";
 import { useProductsSelectionStore } from "@/store/products-selection";
-import { Product } from "@/models/domain/product";
 import { ActionType, ProductSelectionType } from "@/models/store";
 import { useRouter } from "vue-router";
 
@@ -130,14 +129,14 @@ export default defineComponent({
       //TODO
     }
 
-    function incrementQuantity(product: Product) {
+    function incrementQuantity(product: ProductSelectionType) {
       productsSelectionStore.action(
         ActionType.productsSelection.incrementQuantity,
         product
       );
     }
 
-    function decrementQuantity(product: Product) {
+    function decrementQuantity(product: ProductSelectionType) {
       productsSelectionStore.action(
         ActionType.productsSelection.decrementQuantity,
         product

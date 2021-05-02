@@ -36,21 +36,30 @@ export const mutations: MutationTree<ProductsSelectionStateInterface> = {
     )!!.selected = !product.selected;
   },
 
-  unselectProduct(state: ProductsSelectionStateInterface, productId: string) {
+  unselectProduct(
+    state: ProductsSelectionStateInterface,
+    product: ProductSelectionType
+  ) {
     state.products.find(
-      product => product.product?.id === productId
+      p => p.product?.id === product.product?.id
     )!!.selected = false;
   },
 
-  incrementQuantity(state: ProductsSelectionStateInterface, product: Product) {
+  incrementQuantity(
+    state: ProductsSelectionStateInterface,
+    product: ProductSelectionType
+  ) {
     (state.products.find(
-      p => p.product?.id === product.id
+      p => p.product?.id === product.product?.id
     ) as any).product.quantity += 1;
   },
 
-  decrementQuantity(state: ProductsSelectionStateInterface, product: Product) {
+  decrementQuantity(
+    state: ProductsSelectionStateInterface,
+    product: ProductSelectionType
+  ) {
     (state.products.find(
-      p => p.product?.id === product.id
+      p => p.product?.id === product.product?.id
     ) as any).product.quantity -= 1;
   },
 };
@@ -91,11 +100,15 @@ export const actions: ActionTree<
     commit(MutationType.productsSelection.selectProduct, product);
   },
 
-  incrementQuantity({ commit }, product: Product) {
+  incrementQuantity({ commit }, product: ProductSelectionType) {
     commit(MutationType.productsSelection.incrementQuantity, product);
   },
 
-  decrementQuantity({ commit }, product: Product) {
+  decrementQuantity({ commit }, product: ProductSelectionType) {
+    if ((product.product?.quantity || 0) <= 1) {
+      commit(MutationType.productsSelection.unselectProduct, product);
+      return;
+    }
     commit(MutationType.productsSelection.decrementQuantity, product);
   },
 
