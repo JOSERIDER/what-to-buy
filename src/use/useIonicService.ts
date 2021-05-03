@@ -31,9 +31,10 @@ export default function useIonicService() {
     await actionSheet.present();
   }
 
-  async function alert({ header, buttons, inputs }) {
+  async function alert({ header, buttons, message, inputs }) {
     const alert = await alertController.create({
       header,
+      message,
       inputs,
       buttons,
     });

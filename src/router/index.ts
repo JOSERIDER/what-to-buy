@@ -8,6 +8,7 @@ import ProductsSelection from "@/views/ProductsSelection.vue";
 import { useUserStore } from "@/store/user";
 import { MutationType } from "@/models/store";
 import { User } from "@/models/domain/user";
+import { useListDetailStore } from "@/store/list-detail";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -29,6 +30,14 @@ const routes: Array<RouteRecordRaw> = [
     path: "/products-selection",
     name: "ProductsSelection",
     component: ProductsSelection,
+    beforeEnter: (to, from, next) => {
+      const listDetailStore = useListDetailStore();
+      if (listDetailStore.state.list.admin === undefined) {
+        next({ name: "Dashboard" });
+        return;
+      }
+      next();
+    },
   },
   {
     path: "/auth",

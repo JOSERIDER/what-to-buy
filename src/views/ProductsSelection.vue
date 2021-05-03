@@ -3,7 +3,7 @@
     <ion-toolbar>
       <ion-title>Add products</ion-title>
       <ion-buttons slot="start">
-        <ion-back-button defaultHref="/"></ion-back-button>
+        <ion-back-button @click="goBack()" default-href="/"></ion-back-button>
       </ion-buttons>
       <ion-button slot="end" color="success" @click="save()" fill="clear">
         <ion-icon size="large" :icon="icons.checkmark"></ion-icon>
@@ -91,6 +91,7 @@ import {
 import { useProductsSelectionStore } from "@/store/products-selection";
 import { ActionType, ProductSelectionType } from "@/models/store";
 import { useRouter } from "vue-router";
+import useIonicService from "@/use/useIonicService";
 
 export default defineComponent({
   name: "ListDetailAddProduct",
@@ -113,6 +114,8 @@ export default defineComponent({
     const products = computed(() => {
       return productsSelectionStore.state.products;
     });
+
+    const ionicService = useIonicService();
 
     const error = computed(() => {
       return productsSelectionStore.state.error;
@@ -150,6 +153,25 @@ export default defineComponent({
       );
     }
 
+    async function goBack() {
+      await ionicService.alert({
+        header: "Are you sure ?",
+        message: "If you go back without saving, your changes will lost.",
+        buttons: [
+          {
+            text: "Cancel",
+            role: "cancel",
+            cssClass: "secondary",
+          },
+          {
+            text: "Continue",
+            handler: () => router.go(-1),
+          },
+        ],
+        inputs: [],
+      });
+    }
+
     productsSelectionStore.action(ActionType.productsSelection.fetchProducts);
 
     return {
@@ -160,6 +182,7 @@ export default defineComponent({
       incrementQuantity,
       decrementQuantity,
       selectProduct,
+      goBack,
       icons: {
         ellipse: ellipseOutline,
         checkmarkCircle,

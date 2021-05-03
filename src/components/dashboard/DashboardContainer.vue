@@ -188,6 +188,7 @@ export default defineComponent({
     async function insertCode() {
       await alert({
         header: "Insert list code",
+        message: "",
         inputs: [
           {
             name: "listCode",
