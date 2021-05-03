@@ -83,6 +83,7 @@ export const actions: ActionTree<
 > = {
   async fetchProducts({ commit, state, dispatch }) {
     try {
+      commit(MutationType.listDetail.setError, "");
       commit(MutationType.listDetail.setLoading, true);
       const productsStore = useProductsStore();
 

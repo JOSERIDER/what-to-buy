@@ -62,6 +62,7 @@ export const actions: ActionTree<
 > = {
   async fetchProducts({ commit }) {
     try {
+      commit(MutationType.productsSelection.setError, "");
       commit(MutationType.productsSelection.setLoading, true);
 
       const productsStore = useProductsStore();
@@ -76,7 +77,7 @@ export const actions: ActionTree<
 
       commit(MutationType.productsSelection.setProducts, products);
     } catch (error) {
-      commit(MutationType.productsSelection.setError, error);
+      commit(MutationType.productsSelection.setError, error.message);
     } finally {
       commit(MutationType.productsSelection.setLoading, false);
     }
@@ -93,7 +94,7 @@ export const actions: ActionTree<
 
       commit(MutationType.productsSelection.setProducts, products);
     } catch (error) {
-      commit(MutationType.productsSelection.setError, error);
+      commit(MutationType.productsSelection.setError, error.message);
     } finally {
       commit(MutationType.productsSelection.setLoading, false);
     }
