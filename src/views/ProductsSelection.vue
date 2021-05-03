@@ -1,34 +1,39 @@
 <template>
-  <ion-header>
-    <ion-toolbar>
-      <ion-title>Add products</ion-title>
-      <ion-buttons slot="start">
-        <ion-back-button @click="goBack()" default-href="/"></ion-back-button>
-      </ion-buttons>
-      <ion-button slot="end" color="success" @click="save()" fill="clear">
-        <ion-icon size="large" :icon="icons.checkmark"></ion-icon>
-      </ion-button>
-    </ion-toolbar>
-  </ion-header>
+  <ion-page>
+    <ion-header>
+      <ion-toolbar>
+        <ion-title>Add products</ion-title>
+        <ion-buttons slot="start">
+          <ion-back-button @click="goBack()" default-href="/"></ion-back-button>
+        </ion-buttons>
+        <ion-button slot="end" color="success" @click="save()" fill="clear">
+          <ion-icon size="large" :icon="icons.checkmark"></ion-icon>
+        </ion-button>
+      </ion-toolbar>
+    </ion-header>
 
-  <ion-content :fullscreen="true">
-    <ion-searchbar
-      placeholder="Search by name"
-      inputmode="text"
-      @ionChange="onSearchChange($event.detail.value)"
-    ></ion-searchbar>
-    <ion-list>
-      <ProductSelectionListItem
-        v-for="product in products"
-        :key="product.id"
-        :product="product"
-        @onDecrementQuantity="decrementQuantity(product)"
-        @onIncrementQuantity="incrementQuantity(product)"
-        @onSelectProduct="selectProduct(product)"
-        @onUnselectProduct="unselectProduct(product)"
-      />
-    </ion-list>
-  </ion-content>
+    <ion-content :fullscreen="false" class="p-4">
+      <ion-searchbar
+        placeholder="Search by name"
+        inputmode="text"
+        @ionChange="onSearchChange($event.detail.value)"
+      ></ion-searchbar>
+      <VErrorView @try-again="fetchProducts" v-if="error" :message="error" />
+      <VSpinner v-else-if="loading" />
+      <ProductsEmptyView v-else-if="products.length === 0" />
+      <ion-list v-else>
+        <ProductSelectionListItem
+          v-for="product in products"
+          :key="product.id"
+          :product="product"
+          @onDecrementQuantity="decrementQuantity(product)"
+          @onIncrementQuantity="incrementQuantity(product)"
+          @onSelectProduct="selectProduct(product)"
+          @onUnselectProduct="unselectProduct(product)"
+        />
+      </ion-list>
+    </ion-content>
+  </ion-page>
 </template>
 
 <script lang="ts">
@@ -41,6 +46,7 @@ import {
   IonTitle,
   IonToolbar,
   IonSearchbar,
+  IonPage,
 } from "@ionic/vue";
 import { checkmark } from "ionicons/icons";
 import { useProductsSelectionStore } from "@/store/products-selection";
@@ -49,11 +55,17 @@ import { useRouter } from "vue-router";
 import useIonicService from "@/use/useIonicService";
 import ProductSelectionListItem from "@/components/productSelection/ProductSelectionListItem.vue";
 import { Product } from "@/models/domain/product";
+import VSpinner from "@/components/ui/VSpinner.vue";
+import VErrorView from "@/components/ui/VErrorView.vue";
+import ProductsEmptyView from "@/components/products/ProductsEmptyView.vue";
 
 export default defineComponent({
   name: "ListDetailAddProduct",
   components: {
+    ProductsEmptyView,
+    VSpinner,
     ProductSelectionListItem,
+    VErrorView,
     IonHeader,
     IonToolbar,
     IonTitle,
@@ -61,6 +73,7 @@ export default defineComponent({
     IonButton,
     IonList,
     IonSearchbar,
+    IonPage,
   },
   setup() {
     const productsSelectionStore = useProductsSelectionStore();
@@ -73,6 +86,10 @@ export default defineComponent({
 
     const error = computed(() => {
       return productsSelectionStore.state.error;
+    });
+
+    const loading = computed(() => {
+      return productsSelectionStore.state.loading;
     });
 
     function fetchProducts() {
@@ -146,7 +163,9 @@ export default defineComponent({
     return {
       products,
       error,
+      loading,
       save,
+      fetchProducts,
       unselectProduct,
       onSearchChange,
       incrementQuantity,

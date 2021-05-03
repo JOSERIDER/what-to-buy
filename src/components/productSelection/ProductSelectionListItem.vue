@@ -1,5 +1,5 @@
 <template>
-  <ion-item>
+  <ion-item class="h-14">
     <ion-icon
       size="large"
       :color="isSelected ? 'success' : ''"
