@@ -45,8 +45,24 @@ export class ProductsApiClientModel implements ProductsApiClientModelInterface {
   }
 
   getProducts(): Promise<Product[]> {
-    //TODO
-    return Promise.resolve([]);
+    const params: HttpRequestParamsInterface = {
+      url: this.urls.products,
+      query: { name: "" },
+      orderBy: "name",
+    };
+
+    return HttpClient.getCollections(params);
+  }
+
+  getProductsByName(name: string): Promise<Product[]> {
+    name = ProductsApiClientModel.capitalizeWord(name);
+    const params: HttpRequestParamsInterface = {
+      url: this.urls.products,
+      query: { name },
+      orderBy: "name",
+    };
+
+    return HttpClient.getCollections(params);
   }
 
   update(id: string, payload: Product): Promise<void> {
@@ -57,5 +73,18 @@ export class ProductsApiClientModel implements ProductsApiClientModelInterface {
     };
 
     return HttpClient.update(params);
+  }
+
+  getProductsById(productsId: string[]): Promise<Product[]> {
+    const params: HttpRequestParamsInterface = {
+      url: this.urls.products,
+      query: { path: "id", filter: "in", value: productsId },
+    };
+
+    return HttpClient.getWithQuery(params);
+  }
+
+  private static capitalizeWord(word) {
+    return word.charAt(0).toUpperCase() + word.slice(1);
   }
 }

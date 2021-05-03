@@ -19,6 +19,13 @@ export interface ProductsApiClientModelInterface {
   getProducts(): Promise<Product[]>;
 
   /**
+   * Obtains products that have name like value of param
+   * @param name - value to search products
+   * @return Return an array that contains all products with name as value..
+   */
+  getProductsByName(name: string): Promise<Product[]>;
+
+  /**
    * Create a product on database.
    * @param payload - product object to be created.
    */
@@ -36,4 +43,11 @@ export interface ProductsApiClientModelInterface {
    * @param id - Id of product to be deleted.
    */
   delete(id: string): Promise<void>;
+
+  /**
+   * Obtains the products by an array
+   * @param productsId = Id of products to be obtained.
+   * @return An array that contains all products on the param array.
+   */
+  getProductsById(productsId: string[]): Promise<Product[]>;
 }

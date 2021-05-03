@@ -5,7 +5,7 @@ import {
 } from "@/models/api-client/Products";
 
 const urls: ProductsApiClientUrlInterface = {
-  products: "productos",
+  products: "products",
 };
 
 const productsApiClient: ProductsApiClientModelInterface = new ProductsApiClientModel(

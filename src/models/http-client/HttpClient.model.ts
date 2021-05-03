@@ -24,24 +24,36 @@ export class HttpClientModel implements HttpClientInterface {
     });
   }
 
-  getWithQuery<T>(params: HttpRequestParamsInterface): Promise<T[]> {
+  getCollections<T>(params: HttpRequestParamsInterface): Promise<T[]> {
     return new Promise((resolve, reject) => {
       firestore
         .collection(params.url)
-        .where(params.query.path, params.query.filter, params.query.value)
+        .orderBy(params.orderBy!!)
+        .startAt(params.query.name)
+        .endAt(`${params.query.name}\uf8ff`)
         .get()
         .then(response => {
-          const list = response.docs.map(doc => doc.data() as T);
-          resolve(list);
+          const docs = response.docs.map(doc => doc.data() as T);
+          resolve(docs);
         })
-        .catch(error => {
-          console.error(error);
-          reject({
-            message:
-              "Something went wrong, with our server or network connection.",
-          });
-        });
+        .catch(error => reject(error));
     });
+  }
+
+  getWithQuery<T>(params: HttpRequestParamsInterface): Promise<T[]> {
+    try {
+      if (Array.isArray(params.query.value)) {
+        return this.queryPerformance(params);
+      }
+
+      return this.queryWithWhere(params);
+    } catch (error) {
+      console.error(error);
+
+      return Promise.reject({
+        message: "Something went wrong, with our server or network connection.",
+      });
+    }
   }
 
   async post<T>(params: HttpRequestParamsInterface): Promise<T> {
@@ -84,5 +96,45 @@ export class HttpClientModel implements HttpClientInterface {
 
   auth() {
     return auth;
+  }
+
+  private async queryPerformance<T>(
+    params: HttpRequestParamsInterface
+  ): Promise<T[]> {
+    let i, j, tempArray;
+    const FIREBASE_MAX_VALUES = 10;
+    const aux: any[] = [];
+
+    for (
+      i = 0, j = params.query.value.length;
+      i < j;
+      i += FIREBASE_MAX_VALUES
+    ) {
+      tempArray = params.query.value.slice(i, i + FIREBASE_MAX_VALUES);
+      params.query.value = tempArray;
+      await this.queryWithWhere(params)
+        .then(response => {
+          response.forEach(r => aux.push(r));
+        })
+        .catch(error => {
+          throw error;
+        });
+    }
+
+    return Promise.resolve(aux);
+  }
+
+  private queryWithWhere<T>(params: HttpRequestParamsInterface): Promise<T[]> {
+    return new Promise((resolve, reject) => {
+      firestore
+        .collection(params.url)
+        .where(params.query.path, params.query.filter, params.query.value)
+        .get()
+        .then(response => resolve(response.docs.map(doc => doc.data() as T)))
+        .catch(error => {
+          console.error(error);
+          reject(error);
+        });
+    });
   }
 }

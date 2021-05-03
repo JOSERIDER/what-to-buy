@@ -17,6 +17,7 @@
     <div v-if="list.length > 0">
       <DashboardListItem
         @delete-item="remove($event)"
+        @click="openList(item)"
         v-for="item in list"
         :key="item.listCode"
         :list="item"
@@ -31,6 +32,7 @@ import { defineComponent } from "vue";
 import DashboardListItem from "@/components/dashboard/DashboardListItem.vue";
 import { useListsStore } from "@/store/lists";
 import { ActionType } from "@/models/store";
+import { List } from "@/models/domain/list";
 
 export default defineComponent({
   name: "DashboardList",
@@ -53,6 +55,12 @@ export default defineComponent({
       await this.listsStore.action(ActionType.lists.deleteList, listId);
       //TODO: REMOVE THIS IF LIST IS REACTIVE.
       await this.listsStore.action(ActionType.lists.fetchLists);
+    },
+    openList(item: List) {
+      this.$router.push({
+        name: "ListDetail",
+        params: { listId: item.listCode, listType: this.listType },
+      });
     },
   },
   computed: {
