@@ -2,6 +2,7 @@ export namespace ListDetailMutationTypes {
   export const setProducts = "setProducts";
   export const setLoading = "setLoading";
   export const incrementQuantity = "incrementQuantity";
+  export const updateListDataProduct = "updateListDataProduct";
   export const decrementQuantity = "decrementQuantity";
   export const setSummary = "setSummary";
   export const setError = "setError";

@@ -2,6 +2,7 @@ import { ProductsSelectionStateInterface } from "@/models/store/products-selecti
 
 export const initialState: ProductsSelectionStateInterface = {
   products: [],
+  productsSelected: [],
   loading: false,
   error: "",
 };

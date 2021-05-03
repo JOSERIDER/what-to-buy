@@ -1,12 +1,9 @@
 import { Product } from "@/models/domain/product";
-
-export interface ProductSelectionType {
-  product?: Product;
-  selected?: boolean;
-}
+import { DataProduct } from "@/models/domain/list";
 
 export interface ProductsSelectionStateInterface {
-  products: ProductSelectionType[];
+  products: Product[];
+  productsSelected: DataProduct[];
   loading: boolean;
   error: string;
 }

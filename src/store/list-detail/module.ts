@@ -4,7 +4,7 @@ import { ListDetailStateInterface } from "@/models/store/list-detail";
 import { initialState } from "@/store/list-detail/initialState";
 import apiClient from "@/api-client";
 import { Product } from "@/models/domain/product";
-import { List } from "@/models/domain/list";
+import { DataProduct, List } from "@/models/domain/list";
 import { SharedList } from "@/models/domain/sharedList";
 import { useProductsStore } from "@/store/products";
 
@@ -64,8 +64,16 @@ export const mutations: MutationTree<ListDetailStateInterface> = {
   addProduct(state: ListDetailStateInterface, product: Product) {
     state.products.push(product);
   },
+
   setType(state: ListDetailStateInterface, type: string) {
     state.type = type;
+  },
+
+  updateListDataProduct(
+    state: ListDetailStateInterface,
+    dataProduct: DataProduct[]
+  ) {
+    state.list.products = dataProduct;
   },
 };
 
@@ -195,9 +203,25 @@ export const actions: ActionTree<
     commit(MutationType.listDetail.addProduct, product);
   },
 
-  saveSelection({ commit }, products: Product[]) {
-    commit(MutationType.listDetail.setProducts, products);
+  async saveSelection({ commit, state }, products: DataProduct[]) {
+    commit(MutationType.listDetail.updateListDataProduct, products);
+    try {
+      commit(MutationType.listDetail.setLoading, true);
+      if (state.type === "Private") {
+        await apiClient.privateLists.update(state.list.listCode, state.list);
+      } else {
+        await apiClient.sharedLists.update(
+          state.list.listCode,
+          state.list as SharedList
+        );
+      }
+    } catch (error) {
+      commit(MutationType.listDetail.setError, error.message);
+    } finally {
+      commit(MutationType.listDetail.setLoading, false);
+    }
   },
+
   setType({ commit }, type: string) {
     commit(MutationType.listDetail.setType, type);
   },

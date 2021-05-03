@@ -1,5 +1,6 @@
 export namespace ProductsSelectionMutationTypes {
   export const setProducts = "setProducts";
+  export const setDataProducts = "setDataProducts";
   export const setLoading = "setLoading";
   export const setError = "setError";
   export const selectProduct = "selectProduct";

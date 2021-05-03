@@ -15,16 +15,17 @@
     <ion-searchbar
       placeholder="Search by name"
       inputmode="text"
-      @ionChange="onSearchChange($event)"
+      @ionChange="onSearchChange($event.detail.value)"
     ></ion-searchbar>
     <ion-list>
       <ProductSelectionListItem
         v-for="product in products"
-        :key="product.product.id"
+        :key="product.id"
         :product="product"
         @onDecrementQuantity="decrementQuantity(product)"
         @onIncrementQuantity="incrementQuantity(product)"
         @onSelectProduct="selectProduct(product)"
+        @onUnselectProduct="unselectProduct(product)"
       />
     </ion-list>
   </ion-content>
@@ -43,10 +44,11 @@ import {
 } from "@ionic/vue";
 import { checkmark } from "ionicons/icons";
 import { useProductsSelectionStore } from "@/store/products-selection";
-import { ActionType, ProductSelectionType } from "@/models/store";
+import { ActionType } from "@/models/store";
 import { useRouter } from "vue-router";
 import useIonicService from "@/use/useIonicService";
 import ProductSelectionListItem from "@/components/productSelection/ProductSelectionListItem.vue";
+import { Product } from "@/models/domain/product";
 
 export default defineComponent({
   name: "ListDetailAddProduct",
@@ -63,45 +65,59 @@ export default defineComponent({
   setup() {
     const productsSelectionStore = useProductsSelectionStore();
     const router = useRouter();
+    const ionicService = useIonicService();
 
     const products = computed(() => {
       return productsSelectionStore.state.products;
     });
 
-    const ionicService = useIonicService();
-
     const error = computed(() => {
       return productsSelectionStore.state.error;
     });
+
+    function fetchProducts() {
+      productsSelectionStore.action(ActionType.productsSelection.fetchProducts);
+    }
 
     async function save() {
       await productsSelectionStore.action(
         ActionType.productsSelection.saveSelection
       );
+
       router.go(-1);
     }
 
-    function onSearchChange() {
-      //TODO
+    function onSearchChange(value: string) {
+      productsSelectionStore.action(
+        ActionType.productsSelection.searchProducts,
+        value
+      );
     }
 
-    function incrementQuantity(product: ProductSelectionType) {
+    function incrementQuantity(product: Product) {
       productsSelectionStore.action(
         ActionType.productsSelection.incrementQuantity,
         product
       );
     }
 
-    function decrementQuantity(product: ProductSelectionType) {
+    function decrementQuantity(product: Product) {
       productsSelectionStore.action(
         ActionType.productsSelection.decrementQuantity,
         product
       );
     }
 
-    function selectProduct(product: ProductSelectionType) {
+    function selectProduct(product: Product) {
       productsSelectionStore.action(
         ActionType.productsSelection.selectProduct,
+        product
+      );
+    }
+
+    function unselectProduct(product: Product) {
+      productsSelectionStore.action(
+        ActionType.productsSelection.unselectProduct,
         product
       );
     }
@@ -125,12 +141,13 @@ export default defineComponent({
       });
     }
 
-    productsSelectionStore.action(ActionType.productsSelection.fetchProducts);
+    fetchProducts();
 
     return {
       products,
       error,
       save,
+      unselectProduct,
       onSearchChange,
       incrementQuantity,
       decrementQuantity,
