@@ -1,7 +1,7 @@
 /**
  * Interface that represent the product amount and id.
  */
-interface DataProduct {
+export interface DataProduct {
   cant?: number;
   idProduct?: string;
 }

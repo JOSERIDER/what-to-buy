@@ -68,6 +68,21 @@ export const actions: ActionTree<ProductsStateInterface, RootStateInterface> = {
       commit(MutationType.listDetail.setLoading, false);
     }
   },
+
+  async getProductsByName({ commit }, name: string) {
+    try {
+      commit(MutationType.products.setLoading, true);
+      const productsApiClient = apiClient.products;
+
+      const products = await productsApiClient.getProductsByName(name);
+
+      commit(MutationType.products.setProducts, products);
+    } catch (error) {
+      commit(MutationType.listDetail.setError, error.message);
+    } finally {
+      commit(MutationType.listDetail.setLoading, false);
+    }
+  },
 };
 
 export const getters: GetterTree<

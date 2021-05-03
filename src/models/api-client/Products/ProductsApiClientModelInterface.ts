@@ -19,6 +19,13 @@ export interface ProductsApiClientModelInterface {
   getProducts(): Promise<Product[]>;
 
   /**
+   * Obtains products that have name like value of param
+   * @param name - value to search products
+   * @return Return an array that contains all products with name as value..
+   */
+  getProductsByName(name: string): Promise<Product[]>;
+
+  /**
    * Create a product on database.
    * @param payload - product object to be created.
    */

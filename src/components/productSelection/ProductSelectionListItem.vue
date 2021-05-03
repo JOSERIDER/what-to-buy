@@ -2,13 +2,15 @@
   <ion-item>
     <ion-icon
       size="large"
-      :color="product.selected ? 'success' : ''"
-      :icon="product.selected ? icons.checkmarkCircle : icons.ellipse"
-      @click="$emit('onSelectProduct', product)"
+      :color="isSelected ? 'success' : ''"
+      :icon="isSelected ? icons.checkmarkCircle : icons.ellipse"
+      @click="
+        $emit(isSelected ? 'onUnselectProduct' : 'onSelectProduct', product)
+      "
     ></ion-icon>
-    <ion-label>{{ product.product.name }}</ion-label>
+    <ion-label>{{ product.name }}</ion-label>
     <ion-row
-      v-if="product.selected"
+      v-if="isSelected"
       class="ion-align-items-center ion-align-items-center row"
     >
       <ion-col>
@@ -22,9 +24,7 @@
       </ion-col>
       <ion-col>
         <ion-chip>
-          <ion-label class="ion-text-center chip"
-            >{{ product.product.quantity }}
-          </ion-label>
+          <ion-label class="ion-text-center chip">{{ quantity }} </ion-label>
         </ion-chip>
       </ion-col>
       <ion-col>
@@ -40,9 +40,16 @@
   </ion-item>
 </template>
 <script lang="ts">
-import { IonCol, IonItem, IonLabel, IonRow } from "@ionic/vue";
-import { PropType } from "vue";
-import { ProductSelectionType } from "@/models/store";
+import {
+  IonButton,
+  IonChip,
+  IonCol,
+  IonIcon,
+  IonItem,
+  IonLabel,
+  IonRow,
+} from "@ionic/vue";
+import { computed, defineComponent, PropType } from "vue";
 import {
   addCircleOutline,
   checkmark,
@@ -50,24 +57,52 @@ import {
   ellipseOutline,
   removeCircleOutline,
 } from "ionicons/icons";
+import { Product } from "@/models/domain/product";
+import { useProductsSelectionStore } from "@/store/products-selection";
 
-export default {
+export default defineComponent({
   name: "ProductSelectionListItem",
-  emits: ["onDecrementQuantity", "onSelectProduct", "onIncrementQuantity"],
+  emits: [
+    "onDecrementQuantity",
+    "onSelectProduct",
+    "onIncrementQuantity",
+    "onUnselectProduct",
+  ],
   components: {
     IonCol,
     IonRow,
     IonLabel,
     IonItem,
+    IonChip,
+    IonIcon,
+    IonButton,
   },
   props: {
     product: {
-      type: Object as PropType<ProductSelectionType>,
+      type: Object as PropType<Product>,
       required: true,
     },
   },
-  data() {
+  setup(props) {
+    const productSelectionStore = useProductsSelectionStore();
+
+    const isSelected = computed(() => {
+      return (
+        productSelectionStore.state.productsSelected.findIndex(
+          dataProduct => dataProduct.idProduct === props.product.id
+        ) >= 0
+      );
+    });
+
+    const quantity = computed(() => {
+      return productSelectionStore.state.productsSelected.find(
+        dataProduct => dataProduct.idProduct === props.product.id
+      )?.cant;
+    });
+
     return {
+      isSelected,
+      quantity,
       icons: {
         ellipse: ellipseOutline,
         checkmarkCircle,
@@ -77,5 +112,5 @@ export default {
       },
     };
   },
-};
+});
 </script>

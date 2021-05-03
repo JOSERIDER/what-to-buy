@@ -5,4 +5,5 @@ export namespace productsSelectionActionTypes {
   export const incrementQuantity = "incrementQuantity";
   export const decrementQuantity = "decrementQuantity";
   export const saveSelection = "saveSelection";
+  export const searchProducts = "searchProducts";
 }

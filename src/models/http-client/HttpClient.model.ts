@@ -24,10 +24,13 @@ export class HttpClientModel implements HttpClientInterface {
     });
   }
 
-  getCollection<T>(params: HttpRequestParamsInterface): Promise<T[]> {
+  getCollections<T>(params: HttpRequestParamsInterface): Promise<T[]> {
     return new Promise((resolve, reject) => {
       firestore
         .collection(params.url)
+        .orderBy(params.orderBy!!)
+        .startAt(params.query.name)
+        .endAt(`${params.query.name}\uf8ff`)
         .get()
         .then(response => {
           const docs = response.docs.map(doc => doc.data() as T);
