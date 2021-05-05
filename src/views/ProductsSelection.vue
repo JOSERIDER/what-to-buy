@@ -13,25 +13,38 @@
     </ion-header>
 
     <ion-content :fullscreen="false" class="p-4">
-      <ion-searchbar
-        placeholder="Search by name"
-        inputmode="text"
-        @ionChange="onSearchChange($event.detail.value)"
-      ></ion-searchbar>
-      <VErrorView @try-again="fetchProducts" v-if="error" :message="error" />
-      <VSpinner v-else-if="loading" />
-      <ProductsEmptyView v-else-if="products.length === 0" />
-      <ion-list v-else>
-        <ProductSelectionListItem
-          v-for="product in products"
-          :key="product.id"
-          :product="product"
-          @onDecrementQuantity="decrementQuantity(product)"
-          @onIncrementQuantity="incrementQuantity(product)"
-          @onSelectProduct="selectProduct(product)"
-          @onUnselectProduct="unselectProduct(product)"
-        />
-      </ion-list>
+      <div class="container sm:m-auto">
+        <ion-searchbar
+          placeholder="Search by name"
+          inputmode="text"
+          @ionChange="onSearchChange($event.detail.value)"
+        ></ion-searchbar>
+
+        <div
+          v-if="error || loading || products.length === 0"
+          class="flex flex-row items-center h-full justify-center"
+        >
+          <VErrorView
+            @try-again="fetchProducts"
+            v-if="error"
+            :message="error"
+          />
+          <VSpinner v-else-if="loading" />
+          <ProductsEmptyView v-else-if="products.length === 0" />
+        </div>
+
+        <ion-list v-else>
+          <ProductSelectionListItem
+            v-for="product in products"
+            :key="product.id"
+            :product="product"
+            @onDecrementQuantity="decrementQuantity(product)"
+            @onIncrementQuantity="incrementQuantity(product)"
+            @onSelectProduct="selectProduct(product)"
+            @onUnselectProduct="unselectProduct(product)"
+          />
+        </ion-list>
+      </div>
     </ion-content>
   </ion-page>
 </template>
