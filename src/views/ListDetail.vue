@@ -1,47 +1,59 @@
 <template>
-  <ion-header :style="{ 'background-color': list.color }">
-    <ion-toolbar>
-      <ion-buttons slot="start">
-        <ion-back-button defaultHref="/" text="Back"></ion-back-button>
-      </ion-buttons>
-      <ion-title>{{ loading ? "loading..." : list.name }}</ion-title>
-      <ion-button
-        slot="end"
-        color="primary"
-        @click="addProduct($event)"
-        fill="clear"
-      >
-        <ion-icon :icon="add" size="large"></ion-icon>
-      </ion-button>
-    </ion-toolbar>
-  </ion-header>
+  <ion-page>
+    <ion-header :style="{ 'background-color': list.color }">
+      <ion-toolbar>
+        <ion-buttons slot="start">
+          <ion-back-button defaultHref="/" text="Back"></ion-back-button>
+        </ion-buttons>
+        <ion-title>{{ loading ? "loading..." : list.name }}</ion-title>
+        <ion-button
+          slot="end"
+          color="primary"
+          @click="addProduct($event)"
+          fill="clear"
+        >
+          <ion-icon :icon="add" size="large"></ion-icon>
+        </ion-button>
+      </ion-toolbar>
+    </ion-header>
 
-  <ion-content>
-    <VErrorView v-if="error" :message="error" />
+    <ion-content>
+      <div class="container sm:m-auto">
+        <div
+          v-if="error || isEmptyList || loading"
+          class="flex flex-row items-center h-full justify-center"
+        >
+          <VErrorView v-if="error" :message="error" />
 
-    <ListDetailEmptyView
-      @add-product="addProduct($event)"
-      v-else-if="isEmptyList && !loading"
-    />
+          <ListDetailEmptyView
+            @add-product="addProduct($event)"
+            v-else-if="isEmptyList && !loading"
+          />
 
-    <ListDetailAmountHeader
-      v-else-if="!isEmptyList && !loading"
-      :color="list.color"
-      :summary="summary"
-    />
+          <VSpinner v-if="loading && !error" />
+        </div>
 
-    <VSpinner v-if="loading && !error" />
+        <div>
+          <ListDetailAmountHeader
+            v-if="!isEmptyList && !loading"
+            class="sticky top-0 z-50"
+            :color="list.color"
+            :summary="summary"
+          />
 
-    <ion-list v-else>
-      <ListDetailItem
-        v-for="product in products"
-        :product="product"
-        :key="product.id"
-        @increment-quantity="incrementQuantity($event)"
-        @decrement-quantity="decrementQuantity($event)"
-      />
-    </ion-list>
-  </ion-content>
+          <ion-list v-if="!isEmptyList && !loading" class="z-0 pt-0">
+            <ListDetailItem
+              v-for="product in products"
+              :product="product"
+              :key="product.id"
+              @increment-quantity="incrementQuantity($event)"
+              @decrement-quantity="decrementQuantity($event)"
+            />
+          </ion-list>
+        </div>
+      </div>
+    </ion-content>
+  </ion-page>
 </template>
 
 <script lang="ts">
@@ -53,6 +65,7 @@ import {
   IonHeader,
   IonIcon,
   IonList,
+  IonPage,
   IonTitle,
   IonToolbar,
 } from "@ionic/vue";
@@ -86,6 +99,7 @@ export default defineComponent({
     IonTitle,
     IonIcon,
     IonContent,
+    IonPage,
   },
   props: {
     listId: {
