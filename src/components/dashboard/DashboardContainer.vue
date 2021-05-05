@@ -13,12 +13,35 @@
     </ion-toolbar>
   </ion-header>
 
-  <ion-content :fullscreen="false">
+  <ion-content>
     <VRefresher
-      v-if="lists.length > 0"
+      v-if="!isListEmpty"
       @do-refresh="doRefresh($event)"
       :icons="icons"
     />
+    <div v-if="!isListEmpty">
+      <DashboardList
+        @create-list="openModal()"
+        @join-list="openJoinOptions()"
+        :list="lists"
+        :list-type="type"
+      />
+    </div>
+
+    <div
+      v-else-if="listsError || loading || isListEmpty"
+      class="flex flex-row items-center h-full justify-center"
+    >
+      <VErrorView
+        @try-again="fetchList"
+        v-if="listsError"
+        :message="listsError"
+      />
+
+      <VSpinner v-else-if="isListEmpty && loading" />
+      <VEmptyView class="text-center" v-else-if="isListEmpty && !loading" />
+    </div>
+
     <ion-fab
       v-if="!editing && type === 'Private'"
       class="mb-14"
@@ -31,21 +54,6 @@
         <ion-icon :icon="icons.add"></ion-icon>
       </ion-fab-button>
     </ion-fab>
-    <DashboardList
-      @create-list="openModal()"
-      @join-list="openJoinOptions()"
-      :list="lists"
-      :list-type="type"
-    />
-    <VErrorView
-      @try-again="fetchList"
-      class="mt-28"
-      v-if="listsError"
-      :message="listsError"
-    />
-
-    <VSpinner v-else-if="isListEmpty && loading" class="mt-44" />
-    <VEmptyView class="text-center mt-44" v-else-if="isListEmpty && !loading" />
   </ion-content>
 </template>
 
