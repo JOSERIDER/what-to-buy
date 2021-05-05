@@ -17,7 +17,7 @@
     <div v-if="list.length > 0">
       <DashboardListItem
         @delete-item="remove($event)"
-        @click="openList(item)"
+        @click="!editing ? openList(item) : ''"
         v-for="item in list"
         :key="item.listCode"
         :list="item"
