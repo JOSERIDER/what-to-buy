@@ -5,6 +5,7 @@ import Auth from "@/views/Auth.vue";
 import Share from "@/views/Share.vue";
 import ListDetail from "@/views/ListDetail.vue";
 import ProductsSelection from "@/views/ProductsSelection.vue";
+import Products from "@/views/Products.vue";
 import { useUserStore } from "@/store/user";
 import { MutationType } from "@/models/store";
 import { User } from "@/models/domain/user";
@@ -43,6 +44,11 @@ const routes: Array<RouteRecordRaw> = [
     path: "/auth",
     name: "Auth",
     component: Auth,
+  },
+  {
+    path: "/products",
+    name: "Products",
+    component: Products,
   },
   {
     path: "/share",

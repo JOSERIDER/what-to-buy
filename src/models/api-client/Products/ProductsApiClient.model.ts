@@ -2,6 +2,7 @@ import { ProductsApiClientModelInterface } from "@/models/api-client/Products/Pr
 import { HttpClient, HttpRequestParamsInterface } from "@/models/http-client";
 import { ProductsApiClientUrlInterface } from "@/models/api-client/Products/ProductsApiClientUrl.interface";
 import { Product } from "@/models/domain/product";
+import { ProductFilterInterface } from "@/models/store";
 
 /**
  * @name ProductsApiClientModel
@@ -86,5 +87,14 @@ export class ProductsApiClientModel implements ProductsApiClientModelInterface {
 
   private static capitalizeWord(word) {
     return word.charAt(0).toUpperCase() + word.slice(1);
+  }
+
+  getFilterProducts(filter: ProductFilterInterface): Promise<Product[]> {
+    const params: HttpRequestParamsInterface = {
+      url: this.urls.products,
+      query: { ...filter },
+    };
+
+    return HttpClient.getCollections(params);
   }
 }

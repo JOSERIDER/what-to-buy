@@ -3,6 +3,7 @@
  * @Description Interface for ProductsApiClientModelInterface.
  */
 import { Product } from "@/models/domain/product";
+import { ProductFilterInterface } from "@/models/store";
 
 export interface ProductsApiClientModelInterface {
   /**
@@ -24,6 +25,13 @@ export interface ProductsApiClientModelInterface {
    * @return Return an array that contains all products with name as value..
    */
   getProductsByName(name: string): Promise<Product[]>;
+
+  /**
+   *
+   * Obtains products that pass the filtering criteria.
+   * @param filter - filtering criteria
+   */
+  getFilterProducts(filter: ProductFilterInterface): Promise<Product[]>;
 
   /**
    * Create a product on database.

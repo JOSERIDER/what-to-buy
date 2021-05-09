@@ -2,6 +2,7 @@ import { ActionTree, GetterTree, Module, MutationTree } from "vuex";
 import {
   ActionType,
   MutationType,
+  ProductFilterInterface,
   ProductsStateInterface,
   RootStateInterface,
 } from "@/models/store";
@@ -18,6 +19,12 @@ export const mutations: MutationTree<ProductsStateInterface> = {
   },
   setError(state: ProductsStateInterface, error: string) {
     state.error = error;
+  },
+  setFilterState(
+    state: ProductsStateInterface,
+    filter: ProductFilterInterface
+  ) {
+    state.filter = filter;
   },
 };
 
@@ -75,6 +82,25 @@ export const actions: ActionTree<ProductsStateInterface, RootStateInterface> = {
       const productsApiClient = apiClient.products;
 
       const products = await productsApiClient.getProductsByName(name);
+
+      commit(MutationType.products.setProducts, products);
+    } catch (error) {
+      commit(MutationType.listDetail.setError, error.message);
+    } finally {
+      commit(MutationType.listDetail.setLoading, false);
+    }
+  },
+
+  setFilter({ commit }, filter: ProductFilterInterface) {
+    commit(MutationType.products.setFilterState, filter);
+  },
+
+  async fetchFilterProducts({ commit, state }) {
+    try {
+      commit(MutationType.products.setLoading, true);
+      const productsApiClient = apiClient.products;
+
+      const products = await productsApiClient.getFilterProducts(state.filter);
 
       commit(MutationType.products.setProducts, products);
     } catch (error) {
