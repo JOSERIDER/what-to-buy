@@ -14,17 +14,25 @@ export const mutations: MutationTree<ProductsStateInterface> = {
   setProducts(state: ProductsStateInterface, products: Product[]) {
     state.products = products;
   },
+
   setLoading(state: ProductsStateInterface, isLoading: boolean) {
     state.loading = isLoading;
   },
+
   setError(state: ProductsStateInterface, error: string) {
     state.error = error;
   },
+
   setFilterState(
     state: ProductsStateInterface,
     filter: ProductFilterInterface
   ) {
     state.filter = filter;
+    state.filter.name = state.name;
+  },
+
+  setName(state: ProductsStateInterface, name: string) {
+    state.name = name;
   },
 };
 
@@ -79,6 +87,7 @@ export const actions: ActionTree<ProductsStateInterface, RootStateInterface> = {
   async getProductsByName({ commit }, name: string) {
     try {
       commit(MutationType.products.setLoading, true);
+      commit(MutationType.products.setName, name);
       const productsApiClient = apiClient.products;
 
       const products = await productsApiClient.getProductsByName(name);

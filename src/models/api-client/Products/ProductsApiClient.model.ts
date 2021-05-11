@@ -95,6 +95,6 @@ export class ProductsApiClientModel implements ProductsApiClientModelInterface {
       query: { ...filter },
     };
 
-    return HttpClient.getCollections(params);
+    return HttpClient.getFilterCollections(params);
   }
 }

@@ -184,7 +184,7 @@ export default defineComponent({
         minPrice: lowerPrice.value,
         maxPrice: upperPrice.value,
         category: currentCategory.value,
-        name: "",
+        name: productsStore.state.name,
       };
 
       await productsStore.action(ActionType.products.setFilter, filters);
@@ -197,8 +197,8 @@ export default defineComponent({
       currentCategory.value = filterState.value.category;
       lowerPrice.value = filterState.value.minPrice;
       upperPrice.value = filterState.value.maxPrice;
-      rangeState.min = filterState.value.minPrice;
-      rangeState.max = filterState.value.maxPrice;
+      rangeState.min = 0;
+      rangeState.max = 100;
     }
 
     setInitialFilter();

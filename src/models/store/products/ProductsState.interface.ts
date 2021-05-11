@@ -9,6 +9,7 @@ export interface ProductFilterInterface {
 
 export interface ProductsStateInterface {
   products: Product[];
+  name: string;
   filter: ProductFilterInterface;
   loading: boolean;
   error: string;

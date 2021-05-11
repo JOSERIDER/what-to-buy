@@ -40,6 +40,41 @@ export class HttpClientModel implements HttpClientInterface {
     });
   }
 
+  getFilterCollections<T>(params: HttpRequestParamsInterface): Promise<T[]> {
+    const category = params.query.category.value;
+    const baseProductsFilterQuery = firestore
+      .collection(params.url)
+      .where("keyWords", "array-contains", params.query.name)
+      .where("price", ">=", params.query.minPrice)
+      .where("price", "<=", params.query.maxPrice);
+
+    if (category == -1) {
+      return new Promise((resolve, reject) => {
+        baseProductsFilterQuery
+          .orderBy("price")
+          .orderBy("name")
+          .get()
+          .then(response => {
+            const docs = response.docs.map(doc => doc.data() as T);
+            resolve(docs);
+          })
+          .catch(error => reject(error));
+      });
+    }
+    return new Promise((resolve, reject) => {
+      baseProductsFilterQuery
+        .where("category", "==", params.query.category.text)
+        .orderBy("price")
+        .orderBy("name")
+        .get()
+        .then(response => {
+          const docs = response.docs.map(doc => doc.data() as T);
+          resolve(docs);
+        })
+        .catch(error => reject(error));
+    });
+  }
+
   getWithQuery<T>(params: HttpRequestParamsInterface): Promise<T[]> {
     try {
       if (Array.isArray(params.query.value)) {
