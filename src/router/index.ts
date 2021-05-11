@@ -2,10 +2,6 @@ import { createRouter, createWebHistory } from "@ionic/vue-router";
 import { RouteRecordRaw } from "vue-router";
 import Dashboard from "../views/Dashboard.vue";
 import Auth from "@/views/Auth.vue";
-import Share from "@/views/Share.vue";
-import ListDetail from "@/views/ListDetail.vue";
-import ProductsSelection from "@/views/ProductsSelection.vue";
-import Products from "@/views/Products.vue";
 import { useUserStore } from "@/store/user";
 import { MutationType } from "@/models/store";
 import { User } from "@/models/domain/user";
@@ -22,15 +18,20 @@ const routes: Array<RouteRecordRaw> = [
     component: Dashboard,
   },
   {
+    path: "/auth",
+    name: "Auth",
+    component: Auth,
+  },
+  {
     path: "/list-detail/:listId/:listType",
     name: "ListDetail",
-    component: ListDetail,
+    component: () => import("@/views/ListDetail.vue"),
     props: true,
   },
   {
     path: "/products-selection",
     name: "ProductsSelection",
-    component: ProductsSelection,
+    component: () => import("@/views/ProductsSelection.vue"),
     beforeEnter: (to, from, next) => {
       const listDetailStore = useListDetailStore();
       if (listDetailStore.state.list.admin === undefined) {
@@ -41,19 +42,19 @@ const routes: Array<RouteRecordRaw> = [
     },
   },
   {
-    path: "/auth",
-    name: "Auth",
-    component: Auth,
-  },
-  {
     path: "/products",
     name: "Products",
-    component: Products,
+    component: () => import("@/views/Products.vue"),
   },
   {
     path: "/share",
     name: "Share",
-    component: Share,
+    component: () => import("@/views/Share.vue"),
+  },
+  {
+    path: "/add-product",
+    name: "AddProduct",
+    component: () => import("@/views/AddProduct.vue"),
   },
 ];
 

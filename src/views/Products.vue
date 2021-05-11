@@ -12,7 +12,7 @@
           >
             <ion-icon size="large" :icon="icons.filter"></ion-icon>
           </ion-button>
-          <ion-button color="primary" @click="openFilterPopover" fill="clear">
+          <ion-button color="primary" @click="addProduct" fill="clear">
             <ion-icon size="large" :icon="icons.add"></ion-icon>
           </ion-button>
         </ion-buttons>
@@ -76,6 +76,7 @@ import VErrorView from "@/components/ui/VErrorView.vue";
 import ProductsFilterPopover from "@/components/products/ProductsFilterPopover.vue";
 import { add, filter } from "ionicons/icons";
 import useIonicService from "@/use/useIonicService";
+import router from "@/router";
 
 export default defineComponent({
   name: "Products",
@@ -120,8 +121,8 @@ export default defineComponent({
       productsStore.action(ActionType.products.fetchProducts);
     }
 
-    function save() {
-      //TODO
+    function addProduct() {
+      router.push({ name: "AddProduct" });
     }
 
     function openFilterPopover(event) {
@@ -142,7 +143,7 @@ export default defineComponent({
       products,
       onSearchChange,
       fetchProducts,
-      save,
+      addProduct,
       openFilterPopover,
       icons: { filter, add },
     };
