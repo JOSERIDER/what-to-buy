@@ -240,6 +240,11 @@ export default defineComponent({
         return;
       }
 
+      if (currentCategory.value.value === -1) {
+        await toast({ message: "Please, select a category", duration: 1500 });
+        return;
+      }
+
       await productsStore.action(ActionType.products.setLoading, true);
       //Check if the product already exists on database.
       const productExists = await productApiClient.checkProduct(
@@ -252,6 +257,7 @@ export default defineComponent({
           message: "This product already exists on database",
           duration: 2000,
         });
+
         return;
       }
 
@@ -260,8 +266,9 @@ export default defineComponent({
       await router.push({ name: "Products" });
     }
 
-    currentCategory.value = { text: "Choose an option" };
+    currentCategory.value = { text: "Choose an option", value: -1 };
 
+    categories.splice(0, 1);
     return {
       state,
       loading,
