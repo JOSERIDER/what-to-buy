@@ -30,9 +30,10 @@ export class HttpClientModel implements HttpClientInterface {
   ): Promise<T[]> {
     return new Promise((resolve, reject) => {
       console.log(store.state.lastQuery);
-      const query = firestore
+      firestore
         .collection(params.url)
         .orderBy(params.orderBy!!)
+        .where("keyWords", "array-contains", params.query.name)
         .limit(10)
         .startAfter(store.state.lastQuery)
         .get()

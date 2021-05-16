@@ -2,7 +2,7 @@ import { ProductsApiClientModelInterface } from "@/models/api-client/Products/Pr
 import { HttpClient, HttpRequestParamsInterface } from "@/models/http-client";
 import { ProductsApiClientUrlInterface } from "@/models/api-client/Products/ProductsApiClientUrl.interface";
 import { Product } from "@/models/domain/product";
-import { ActionType, ProductFilterInterface } from "@/models/store";
+import { ProductFilterInterface } from "@/models/store";
 import { useProductsStore } from "@/store/products";
 
 /**
