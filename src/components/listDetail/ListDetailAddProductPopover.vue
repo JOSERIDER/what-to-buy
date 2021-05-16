@@ -37,7 +37,7 @@ import { defineComponent } from "vue";
 import { useListDetailStore } from "@/store/list-detail";
 import { ActionType } from "@/models/store";
 import useIonicService from "@/use/useIonicService";
-import { useRouter } from "vue-router";
+import router from "@/router";
 
 export default defineComponent({
   name: "ListDetailAddProductPopover",
@@ -47,7 +47,6 @@ export default defineComponent({
   },
   setup() {
     const listDetailStore = useListDetailStore();
-    const router = useRouter();
     const { toast } = useIonicService();
 
     function addProduct(productId: string) {

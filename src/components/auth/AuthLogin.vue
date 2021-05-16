@@ -33,9 +33,9 @@ import { computed, reactive } from "vue";
 import { at, key } from "ionicons/icons";
 import useVuelidate from "@vuelidate/core";
 import { email, required } from "@vuelidate/validators";
-import { useRouter } from "vue-router";
 import { ActionType } from "@/models/store";
 import { useAuthsStore } from "@/store/auth";
+import router from "@/router";
 
 export default {
   components: {
@@ -44,7 +44,6 @@ export default {
     VSpinnerButtonLoading,
   },
   setup() {
-    const router = useRouter();
     const authStore = useAuthsStore();
 
     const state = reactive({

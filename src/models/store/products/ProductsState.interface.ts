@@ -10,7 +10,9 @@ export interface ProductFilterInterface {
 export interface ProductsStateInterface {
   products: Product[];
   name: string;
+  isDisableInfiniteScroll: boolean;
   filter: ProductFilterInterface;
   loading: boolean;
   error: string;
+  lastQuery: any;
 }

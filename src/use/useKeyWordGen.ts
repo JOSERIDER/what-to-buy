@@ -9,8 +9,8 @@ export default function useKeyWordGen() {
     return arrName;
   };
 
-  const generateKeywords = names => {
-    const [first] = names;
+  const generateKeywords = name => {
+    const [first] = name;
 
     const keywordFullName = createKeywords(`${first}`);
 

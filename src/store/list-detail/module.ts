@@ -6,7 +6,6 @@ import apiClient from "@/api-client";
 import { Product } from "@/models/domain/product";
 import { DataProduct, List } from "@/models/domain/list";
 import { SharedList } from "@/models/domain/sharedList";
-import { useProductsStore } from "@/store/products";
 
 export const mutations: MutationTree<ListDetailStateInterface> = {
   setProducts(state: ListDetailStateInterface, products: Product[]) {
@@ -85,7 +84,7 @@ export const actions: ActionTree<
     try {
       commit(MutationType.listDetail.setError, "");
       commit(MutationType.listDetail.setLoading, true);
-      const productsStore = useProductsStore();
+      const productsApiClient = apiClient.products;
 
       if (!state.list.products) return;
 
@@ -93,12 +92,7 @@ export const actions: ActionTree<
         p => p.idProduct
       ) as string[];
 
-      await productsStore.action(
-        ActionType.products.fetchProductsById,
-        productsId
-      );
-
-      const products = productsStore.state.products;
+      const products = await productsApiClient.getProductsById(productsId);
 
       products.map(p => {
         p.quantity =

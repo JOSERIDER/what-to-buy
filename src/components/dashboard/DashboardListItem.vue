@@ -24,9 +24,9 @@
           </ion-button>
         </div>
         <div v-else class="flex items-center w-1/3 justify-end">
-          <ion-badge color="medium">{{
-            list.products.length >= 100 ? "99+" : list.products.length
-          }}</ion-badge>
+          <ion-badge color="medium">
+            {{ list.products.length >= 100 ? "99+" : list.products.length }}
+          </ion-badge>
           <ion-icon :icon="arrow" class="ml-2 mr-1"></ion-icon>
         </div>
       </div>

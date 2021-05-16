@@ -12,7 +12,7 @@
           >
             <ion-icon size="large" :icon="icons.filter"></ion-icon>
           </ion-button>
-          <ion-button color="primary" @click="openFilterPopover" fill="clear">
+          <ion-button color="primary" @click="openOptions" fill="clear">
             <ion-icon size="large" :icon="icons.add"></ion-icon>
           </ion-button>
         </ion-buttons>
@@ -20,15 +20,15 @@
     </ion-header>
 
     <ion-content :fullscreen="false" class="p-4">
+      <VRefresher @do-refresh="doRefresh($event)" :icons="icons.dotsCircle" />
       <div class="container sm:m-auto">
         <ion-searchbar
           placeholder="Search by name"
           inputmode="text"
           @ionChange="onSearchChange($event.detail.value)"
         ></ion-searchbar>
-
         <div
-          v-if="error || loading || products.length === 0"
+          v-if="error || (loading && !dataFetched) || products.length === 0"
           class="flex flex-row items-center h-full justify-center"
         >
           <VErrorView
@@ -47,6 +47,16 @@
             :product="product"
           />
         </ion-list>
+        <ion-infinite-scroll
+          :disabled="isDisabledInfiniteScroll"
+          @ionInfinite="loadData($event)"
+        >
+          <ion-infinite-scroll-content
+            loading-spinner="bubbles"
+            loading-text="Fetching more products…"
+          >
+          </ion-infinite-scroll-content>
+        </ion-infinite-scroll>
       </div>
     </ion-content>
   </ion-page>
@@ -65,17 +75,23 @@ import {
   IonSearchbar,
   IonTitle,
   IonToolbar,
+  IonInfiniteScrollContent,
+  IonInfiniteScroll,
 } from "@ionic/vue";
 import { useProductsStore } from "@/store/products";
-import { computed, defineComponent } from "vue";
+import { computed, defineComponent, ref } from "vue";
 import { ActionType } from "@/models/store";
 import ProductItem from "@/components/products/ProductItem.vue";
 import ProductsEmptyView from "@/components/products/ProductsEmptyView.vue";
 import VSpinner from "@/components/ui/VSpinner.vue";
+import VRefresher from "@/components/ui/VRefresher.vue";
 import VErrorView from "@/components/ui/VErrorView.vue";
 import ProductsFilterPopover from "@/components/products/ProductsFilterPopover.vue";
-import { add, filter } from "ionicons/icons";
+import { add, filter, chevronDownCircleOutline } from "ionicons/icons";
 import useIonicService from "@/use/useIonicService";
+import router from "@/router";
+import useScanner from "@/use/useScanner";
+import apiClient from "@/api-client";
 
 export default defineComponent({
   name: "Products",
@@ -84,8 +100,11 @@ export default defineComponent({
     ProductsEmptyView,
     VSpinner,
     VErrorView,
+    VRefresher,
     IonHeader,
     IonToolbar,
+    IonInfiniteScrollContent,
+    IonInfiniteScroll,
     IonTitle,
     IonList,
     IonSearchbar,
@@ -99,9 +118,14 @@ export default defineComponent({
   setup() {
     const productsStore = useProductsStore();
     const ionicService = useIonicService();
-
+    const productsApiClient = apiClient.products;
+    const dataFetched = ref(false);
     const loading = computed(() => {
       return productsStore.state.loading;
+    });
+
+    const isDisabledInfiniteScroll = computed(() => {
+      return productsStore.state.isDisableInfiniteScroll;
     });
 
     const error = computed(() => {
@@ -116,12 +140,57 @@ export default defineComponent({
       productsStore.action(ActionType.products.getProductsByName, value);
     }
 
-    function fetchProducts() {
-      productsStore.action(ActionType.products.fetchProducts);
+    async function fetchProducts() {
+      await productsStore.action(ActionType.products.fetchProducts);
     }
 
-    function save() {
-      //TODO
+    async function doRefresh(ev) {
+      productsStore.action(ActionType.products.restoreProducts);
+      await fetchProducts();
+      ev.target.complete();
+    }
+
+    async function loadData(ev) {
+      await fetchProducts();
+      ev.target.complete();
+    }
+
+    async function checkProduct(productId: string) {
+      const productExists = await productsApiClient.checkProduct(productId);
+
+      if (productExists) {
+        await ionicService.toast({
+          message: "This product already exists on database",
+          duration: 2000,
+        });
+      } else {
+        await router.push({ name: "AddProduct", params: { id: productId } });
+      }
+    }
+
+    function openScanner() {
+      useScanner(resp => checkProduct(resp));
+    }
+
+    function openOptions() {
+      // router.push({ name: "AddProduct" });
+      ionicService.actionSheet({
+        header: "Add new product",
+        buttons: [
+          {
+            text: "Scan barcode",
+            handler: () => openScanner(),
+          },
+          {
+            text: "Insert manual",
+            handler: () => router.push({ name: "AddProduct" }),
+          },
+          {
+            text: "Cancel",
+            role: "cancel",
+          },
+        ],
+      });
     }
 
     function openFilterPopover(event) {
@@ -134,17 +203,24 @@ export default defineComponent({
       });
     }
 
-    fetchProducts();
+    if (products.value.length === 0) {
+      fetchProducts();
+      dataFetched.value = true;
+    }
 
     return {
       loading,
+      dataFetched,
       error,
       products,
       onSearchChange,
       fetchProducts,
-      save,
+      openOptions,
+      doRefresh,
       openFilterPopover,
-      icons: { filter, add },
+      loadData,
+      isDisabledInfiniteScroll,
+      icons: { filter, add, dotsCirlce: chevronDownCircleOutline },
     };
   },
 });
