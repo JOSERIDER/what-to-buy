@@ -85,10 +85,6 @@ export class ProductsApiClientModel implements ProductsApiClientModelInterface {
     return HttpClient.getWithQuery(params);
   }
 
-  private static capitalizeWord(word) {
-    return word.charAt(0).toUpperCase() + word.slice(1);
-  }
-
   getFilterProducts(filter: ProductFilterInterface): Promise<Product[]> {
     const params: HttpRequestParamsInterface = {
       url: this.urls.products,
@@ -96,5 +92,17 @@ export class ProductsApiClientModel implements ProductsApiClientModelInterface {
     };
 
     return HttpClient.getFilterCollections(params);
+  }
+
+  checkProduct(id: string): Promise<boolean> {
+    return new Promise(resolve => {
+      this.get(id)
+        .then(() => resolve(true))
+        .catch(() => resolve(false));
+    });
+  }
+
+  private static capitalizeWord(word) {
+    return word.charAt(0).toUpperCase() + word.slice(1);
   }
 }

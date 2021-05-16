@@ -5,4 +5,5 @@ export namespace ProductsActionTypes {
   export const getProductsByName = "getProductsByName";
   export const setFilter = "setFilter";
   export const fetchFilterProducts = "fetchFilterProducts";
+  export const setLoading = "setLoading";
 }

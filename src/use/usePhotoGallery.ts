@@ -1,54 +1,71 @@
-import { ref, onMounted, watch } from "vue";
+import { ref } from "vue";
 import {
-  Plugins,
+  CameraPhoto,
   CameraResultType,
   CameraSource,
-  CameraPhoto,
-  Capacitor,
-  FilesystemDirectory,
+  Plugins,
 } from "@capacitor/core";
-
 export interface Photo {
   filepath: string;
   webviewPath?: string;
+  base64Data?: string;
 }
 
 export function usePhotoGallery() {
   const { Camera } = Plugins;
-  const photos = ref<Photo[]>([]);
+  const photo = ref<Photo>();
 
-  function savePhoto(cameraPhoto) {
-    const fileName = new Date().getTime() + ".jpeg";
-    const savedFileImage = {
-      filepath: fileName,
-      webviewPath: cameraPhoto.webPath,
-    };
-
-    photos.value = [savedFileImage, ...photos.value];
+  function createPath(): string {
+    return `images/user_image_${new Date().getTime()}.jpg`;
   }
+
+  const convertBlobToBase64 = (blob: Blob) =>
+    new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onerror = reject;
+      reader.onload = () => {
+        resolve(reader.result);
+      };
+      reader.readAsDataURL(blob);
+    });
+
+  const savePicture = async (photo: CameraPhoto): Promise<Photo> => {
+    // Fetch the photo, read as a blob, then convert to base64 format
+    const response = await fetch(photo.webPath!);
+    const blob = await response.blob();
+    const base64Data = (await convertBlobToBase64(blob)) as string;
+    const fileName = createPath();
+
+    return {
+      filepath: fileName,
+      webviewPath: photo.webPath,
+      base64Data,
+    };
+  };
 
   const takePhotoCamera = async () => {
     const cameraPhoto = await Camera.getPhoto({
       resultType: CameraResultType.Uri,
-      source: CameraSource.Prompt,
-      quality: 100,
+      source: CameraSource.Camera,
+      quality: 50,
     });
-    savePhoto(cameraPhoto);
+
+    photo.value = await savePicture(cameraPhoto);
   };
 
-  const takePhotoGallery = async () => {
+  const selectFromGallery = async () => {
     const cameraPhoto = await Camera.getPhoto({
       resultType: CameraResultType.Uri,
       source: CameraSource.Photos,
-      quality: 100,
+      quality: 50,
     });
 
-    savePhoto(cameraPhoto);
+    photo.value = await savePicture(cameraPhoto);
   };
 
   return {
-    photos,
+    photo,
     takePhotoCamera,
-    takePhotoGallery,
+    selectFromGallery,
   };
 }

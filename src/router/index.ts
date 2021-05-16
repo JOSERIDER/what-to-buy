@@ -52,7 +52,7 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import("@/views/Share.vue"),
   },
   {
-    path: "/add-product",
+    path: "/add-product/:id?",
     name: "AddProduct",
     component: () => import("@/views/AddProduct.vue"),
   },

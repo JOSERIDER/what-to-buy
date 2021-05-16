@@ -12,7 +12,7 @@
           >
             <ion-icon size="large" :icon="icons.filter"></ion-icon>
           </ion-button>
-          <ion-button color="primary" @click="addProduct" fill="clear">
+          <ion-button color="primary" @click="openOptions" fill="clear">
             <ion-icon size="large" :icon="icons.add"></ion-icon>
           </ion-button>
         </ion-buttons>
@@ -77,6 +77,8 @@ import ProductsFilterPopover from "@/components/products/ProductsFilterPopover.v
 import { add, filter } from "ionicons/icons";
 import useIonicService from "@/use/useIonicService";
 import router from "@/router";
+import useScanner from "@/use/useScanner";
+import apiClient from "@/api-client";
 
 export default defineComponent({
   name: "Products",
@@ -100,6 +102,7 @@ export default defineComponent({
   setup() {
     const productsStore = useProductsStore();
     const ionicService = useIonicService();
+    const productsApiClient = apiClient.products;
 
     const loading = computed(() => {
       return productsStore.state.loading;
@@ -121,8 +124,42 @@ export default defineComponent({
       productsStore.action(ActionType.products.fetchProducts);
     }
 
-    function addProduct() {
-      router.push({ name: "AddProduct" });
+    async function checkProduct(productId: string) {
+      const productExists = await productsApiClient.checkProduct(productId);
+
+      if (productExists) {
+        await ionicService.toast({
+          message: "This product already exists on database",
+          duration: 2000,
+        });
+      } else {
+        await router.push({ name: "AddProduct", params: { id: productId } });
+      }
+    }
+
+    function openScanner() {
+      useScanner(resp => checkProduct(resp));
+    }
+
+    function openOptions() {
+      // router.push({ name: "AddProduct" });
+      ionicService.actionSheet({
+        header: "Add new product",
+        buttons: [
+          {
+            text: "Scan barcode",
+            handler: () => openScanner(),
+          },
+          {
+            text: "Insert manual",
+            handler: () => router.push({ name: "AddProduct" }),
+          },
+          {
+            text: "Cancel",
+            role: "cancel",
+          },
+        ],
+      });
     }
 
     function openFilterPopover(event) {
@@ -143,7 +180,7 @@ export default defineComponent({
       products,
       onSearchChange,
       fetchProducts,
-      addProduct,
+      openOptions,
       openFilterPopover,
       icons: { filter, add },
     };

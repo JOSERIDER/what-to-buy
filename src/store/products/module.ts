@@ -9,6 +9,8 @@ import {
 import { initialState } from "@/store/products/initialState";
 import { Product } from "@/models/domain/product";
 import apiClient from "@/api-client";
+import { storage } from "@/models/http-client/client/firebase.config";
+import useKeyWordGen from "@/use/useKeyWordGen";
 
 export const mutations: MutationTree<ProductsStateInterface> = {
   setProducts(state: ProductsStateInterface, products: Product[]) {
@@ -52,10 +54,23 @@ export const actions: ActionTree<ProductsStateInterface, RootStateInterface> = {
     }
   },
 
-  async addProduct({ commit, dispatch }, product: Product) {
+  async addProduct({ commit, dispatch }, { base64Data, fileName, product }) {
     try {
       commit(MutationType.products.setLoading, true);
       const productsApiClient = apiClient.products;
+
+      if (base64Data && fileName) {
+        const response = await storage("gs://shopping-list-93c19.appspot.com")
+          .ref(fileName)
+          .putString(base64Data, "data_url");
+
+        product.image = await response.ref.getDownloadURL();
+      } else {
+        product.image =
+          "https://firebasestorage.googleapis.com/v0/b/shopping-list-93c19.appspot.com/o/images%2Fdefault-product.png?alt=media&token=822bdabf-84df-4006-a865-ea7b96294798";
+      }
+
+      product.keyWords = useKeyWordGen().generateKeywords([product.name]);
 
       await productsApiClient.create(product);
 
@@ -104,6 +119,10 @@ export const actions: ActionTree<ProductsStateInterface, RootStateInterface> = {
     commit(MutationType.products.setFilterState, filter);
   },
 
+  setLoading({ commit }, state: boolean) {
+    commit(MutationType.products.setLoading, state);
+  },
+
   async fetchFilterProducts({ commit, state }) {
     try {
       commit(MutationType.products.setLoading, true);
@@ -113,6 +132,7 @@ export const actions: ActionTree<ProductsStateInterface, RootStateInterface> = {
 
       commit(MutationType.products.setProducts, products);
     } catch (error) {
+      console.error(error);
       commit(MutationType.listDetail.setError, error.message);
     } finally {
       commit(MutationType.listDetail.setLoading, false);
