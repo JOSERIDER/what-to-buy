@@ -4,6 +4,8 @@ import useCategory from "@/use/useCategory";
 export const initialState: ProductsStateInterface = {
   products: [],
   loading: false,
+  lastQuery: null,
+  isDisableInfiniteScroll: false,
   filter: {
     minPrice: 0,
     maxPrice: 100,

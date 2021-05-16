@@ -85,7 +85,7 @@ export const actions: ActionTree<
     try {
       commit(MutationType.listDetail.setError, "");
       commit(MutationType.listDetail.setLoading, true);
-      const productsStore = useProductsStore();
+      const productsApiClient = apiClient.products;
 
       if (!state.list.products) return;
 
@@ -93,12 +93,10 @@ export const actions: ActionTree<
         p => p.idProduct
       ) as string[];
 
-      await productsStore.action(
-        ActionType.products.fetchProductsById,
-        productsId
-      );
 
-      const products = productsStore.state.products;
+      if (!productsId) return;
+
+      const products = await productsApiClient.getProductsById(productsId);
 
       products.map(p => {
         p.quantity =

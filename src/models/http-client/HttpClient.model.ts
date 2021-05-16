@@ -24,16 +24,21 @@ export class HttpClientModel implements HttpClientInterface {
     });
   }
 
-  getCollections<T>(params: HttpRequestParamsInterface): Promise<T[]> {
+  getCollections<T>(
+    params: HttpRequestParamsInterface,
+    store: any
+  ): Promise<T[]> {
     return new Promise((resolve, reject) => {
-      firestore
+      console.log(store.state.lastQuery);
+      const query = firestore
         .collection(params.url)
         .orderBy(params.orderBy!!)
-        .startAt(params.query.name)
-        .endAt(`${params.query.name}\uf8ff`)
+        .limit(10)
+        .startAfter(store.state.lastQuery)
         .get()
         .then(response => {
           const docs = response.docs.map(doc => doc.data() as T);
+          store.action("setLastQuery", response.docs[response.docs.length - 1]);
           resolve(docs);
         })
         .catch(error => reject(error));

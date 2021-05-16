@@ -2,7 +2,8 @@ import { ProductsApiClientModelInterface } from "@/models/api-client/Products/Pr
 import { HttpClient, HttpRequestParamsInterface } from "@/models/http-client";
 import { ProductsApiClientUrlInterface } from "@/models/api-client/Products/ProductsApiClientUrl.interface";
 import { Product } from "@/models/domain/product";
-import { ProductFilterInterface } from "@/models/store";
+import { ActionType, ProductFilterInterface } from "@/models/store";
+import { useProductsStore } from "@/store/products";
 
 /**
  * @name ProductsApiClientModel
@@ -52,7 +53,7 @@ export class ProductsApiClientModel implements ProductsApiClientModelInterface {
       orderBy: "name",
     };
 
-    return HttpClient.getCollections(params);
+    return HttpClient.getCollections(params, useProductsStore());
   }
 
   getProductsByName(name: string): Promise<Product[]> {
@@ -63,7 +64,7 @@ export class ProductsApiClientModel implements ProductsApiClientModelInterface {
       orderBy: "name",
     };
 
-    return HttpClient.getCollections(params);
+    return HttpClient.getCollections(params, null);
   }
 
   update(id: string, payload: Product): Promise<void> {

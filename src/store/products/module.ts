@@ -14,7 +14,20 @@ import useKeyWordGen from "@/use/useKeyWordGen";
 
 export const mutations: MutationTree<ProductsStateInterface> = {
   setProducts(state: ProductsStateInterface, products: Product[]) {
+    if (state.products) {
+      state.products = state.products.concat(products);
+      return;
+    }
+
     state.products = products;
+  },
+
+  setInfiniteScroll(state: ProductsStateInterface, enabled: boolean) {
+    state.isDisableInfiniteScroll = enabled;
+  },
+
+  setLastQuery(state: ProductsStateInterface, lastQuery: any) {
+    state.lastQuery = lastQuery;
   },
 
   setLoading(state: ProductsStateInterface, isLoading: boolean) {
@@ -36,15 +49,26 @@ export const mutations: MutationTree<ProductsStateInterface> = {
   setName(state: ProductsStateInterface, name: string) {
     state.name = name;
   },
+
+  restoreProducts(state: ProductsStateInterface) {
+    state.products = [];
+    state.lastQuery = null;
+    state.isDisableInfiniteScroll = false;
+  },
 };
 
 export const actions: ActionTree<ProductsStateInterface, RootStateInterface> = {
-  async fetchProducts({ commit }) {
+  async fetchProducts({ commit, state }) {
     try {
       commit(MutationType.products.setLoading, true);
       const productsApiClient = apiClient.products;
 
-      const products = await productsApiClient.getProducts();
+      const products = await productsApiClient.getProducts(state.lastQuery);
+
+      if (products.length < 10) {
+        commit(MutationType.products.setInfiniteScroll, true);
+        commit(MutationType.products.setLastQuery, null);
+      }
 
       commit(MutationType.products.setProducts, products);
     } catch (error) {
@@ -137,6 +161,14 @@ export const actions: ActionTree<ProductsStateInterface, RootStateInterface> = {
     } finally {
       commit(MutationType.listDetail.setLoading, false);
     }
+  },
+
+  setLastQuery({ commit }, lastQuery) {
+    commit(MutationType.products.setLastQuery, lastQuery);
+  },
+
+  restoreProducts({ commit }) {
+    commit(MutationType.products.restoreProducts);
   },
 };
 

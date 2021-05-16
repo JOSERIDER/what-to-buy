@@ -6,4 +6,6 @@ export namespace ProductsActionTypes {
   export const setFilter = "setFilter";
   export const fetchFilterProducts = "fetchFilterProducts";
   export const setLoading = "setLoading";
+  export const setLastQuery = "setLastQuery";
+  export const restoreProducts = "restoreProducts";
 }
