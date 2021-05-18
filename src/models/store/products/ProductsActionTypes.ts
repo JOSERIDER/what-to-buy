@@ -8,4 +8,5 @@ export namespace ProductsActionTypes {
   export const setLoading = "setLoading";
   export const setLastQuery = "setLastQuery";
   export const restoreProducts = "restoreProducts";
+  export const restoreStore = "restoreStore";
 }

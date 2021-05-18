@@ -11,6 +11,7 @@ import { Product } from "@/models/domain/product";
 import apiClient from "@/api-client";
 import { storage } from "@/models/http-client/client/firebase.config";
 import useKeyWordGen from "@/use/useKeyWordGen";
+import useCategory from "@/use/useCategory";
 
 export const mutations: MutationTree<ProductsStateInterface> = {
   setProducts(state: ProductsStateInterface, products: Product[]) {
@@ -44,6 +45,17 @@ export const mutations: MutationTree<ProductsStateInterface> = {
   ) {
     state.filter = filter;
     state.filter.name = state.name;
+    state.isFilter = true;
+  },
+
+  restoreFilter(state: ProductsStateInterface) {
+    state.filter = {
+      minPrice: 0,
+      maxPrice: 100,
+      name: "",
+      category: useCategory().categories[0],
+    };
+    state.isFilter = false;
   },
 
   setName(state: ProductsStateInterface, name: string) {
@@ -55,12 +67,17 @@ export const mutations: MutationTree<ProductsStateInterface> = {
     state.lastQuery = null;
     state.isDisableInfiniteScroll = false;
   },
+
+  restoreName(state: ProductsStateInterface) {
+    state.name = "";
+  },
 };
 
 export const actions: ActionTree<ProductsStateInterface, RootStateInterface> = {
   async fetchProducts({ commit, state }) {
     try {
       commit(MutationType.products.setLoading, true);
+      commit(MutationType.products.restoreFilter);
       const productsApiClient = apiClient.products;
 
       const products = await productsApiClient.getProducts(state.lastQuery);
@@ -128,8 +145,15 @@ export const actions: ActionTree<ProductsStateInterface, RootStateInterface> = {
       commit(MutationType.products.setLoading, true);
       commit(MutationType.products.setName, name);
       const productsApiClient = apiClient.products;
+      commit(MutationType.products.restoreFilter);
+      commit(MutationType.products.restoreProducts);
 
       const products = await productsApiClient.getProductsByName(name);
+
+      if (products.length < 10) {
+        commit(MutationType.products.setInfiniteScroll, true);
+        commit(MutationType.products.setLastQuery, null);
+      }
 
       commit(MutationType.products.setProducts, products);
     } catch (error) {
@@ -151,6 +175,7 @@ export const actions: ActionTree<ProductsStateInterface, RootStateInterface> = {
     try {
       commit(MutationType.products.setLoading, true);
       const productsApiClient = apiClient.products;
+      commit(MutationType.products.restoreProducts);
 
       const products = await productsApiClient.getFilterProducts(state.filter);
 
@@ -169,6 +194,12 @@ export const actions: ActionTree<ProductsStateInterface, RootStateInterface> = {
 
   restoreProducts({ commit }) {
     commit(MutationType.products.restoreProducts);
+  },
+
+  restoreStore({ commit }) {
+    commit(MutationType.products.restoreProducts);
+    commit(MutationType.products.restoreName);
+    commit(MutationType.products.restoreFilter);
   },
 };
 

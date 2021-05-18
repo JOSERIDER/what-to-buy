@@ -79,7 +79,7 @@ import {
   IonInfiniteScroll,
 } from "@ionic/vue";
 import { useProductsStore } from "@/store/products";
-import { computed, defineComponent, ref } from "vue";
+import { computed, defineComponent, onBeforeUnmount, ref } from "vue";
 import { ActionType } from "@/models/store";
 import ProductItem from "@/components/products/ProductItem.vue";
 import ProductsEmptyView from "@/components/products/ProductsEmptyView.vue";
@@ -145,7 +145,12 @@ export default defineComponent({
     }
 
     async function doRefresh(ev) {
-      productsStore.action(ActionType.products.restoreProducts);
+      await productsStore.action(ActionType.products.restoreProducts);
+      if (productsStore.state.isFilter) {
+        await productsStore.action(ActionType.products.fetchFilterProducts);
+
+        return;
+      }
       await fetchProducts();
       ev.target.complete();
     }
@@ -173,7 +178,6 @@ export default defineComponent({
     }
 
     function openOptions() {
-      // router.push({ name: "AddProduct" });
       ionicService.actionSheet({
         header: "Add new product",
         buttons: [
@@ -203,10 +207,12 @@ export default defineComponent({
       });
     }
 
-    if (products.value.length === 0) {
-      fetchProducts();
-      dataFetched.value = true;
-    }
+    fetchProducts();
+    dataFetched.value = true;
+
+    onBeforeUnmount(() => {
+      productsStore.action(ActionType.products.restoreStore);
+    });
 
     return {
       loading,

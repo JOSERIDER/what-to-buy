@@ -12,6 +12,7 @@ export const initialState: ProductsStateInterface = {
     name: "",
     category: useCategory().categories[0],
   },
+  isFilter: false,
   name: "",
   error: "",
 };

@@ -7,4 +7,6 @@ export namespace ProductsMutationTypes {
   export const setLastQuery = "setLastQuery";
   export const setInfiniteScroll = "setInfiniteScroll";
   export const restoreProducts = "restoreProducts";
+  export const restoreFilter = "restoreFilter";
+  export const restoreName = "restoreName";
 }

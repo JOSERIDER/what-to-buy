@@ -64,7 +64,7 @@ export class ProductsApiClientModel implements ProductsApiClientModelInterface {
       orderBy: "name",
     };
 
-    return HttpClient.getCollections(params, null);
+    return HttpClient.getCollections(params, useProductsStore());
   }
 
   update(id: string, payload: Product): Promise<void> {
@@ -87,12 +87,13 @@ export class ProductsApiClientModel implements ProductsApiClientModelInterface {
   }
 
   getFilterProducts(filter: ProductFilterInterface): Promise<Product[]> {
+    filter.name = ProductsApiClientModel.capitalizeWord(filter.name);
     const params: HttpRequestParamsInterface = {
       url: this.urls.products,
       query: { ...filter },
     };
 
-    return HttpClient.getFilterCollections(params);
+    return HttpClient.getFilterCollections(params, useProductsStore());
   }
 
   checkProduct(id: string): Promise<boolean> {

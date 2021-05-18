@@ -29,7 +29,6 @@ export class HttpClientModel implements HttpClientInterface {
     store: any
   ): Promise<T[]> {
     return new Promise((resolve, reject) => {
-      console.log(store.state.lastQuery);
       firestore
         .collection(params.url)
         .orderBy(params.orderBy!!)
@@ -46,7 +45,10 @@ export class HttpClientModel implements HttpClientInterface {
     });
   }
 
-  getFilterCollections<T>(params: HttpRequestParamsInterface): Promise<T[]> {
+  getFilterCollections<T>(
+    params: HttpRequestParamsInterface,
+    store: any
+  ): Promise<T[]> {
     const category = params.query.category.value;
     const baseProductsFilterQuery = firestore
       .collection(params.url)
@@ -58,10 +60,15 @@ export class HttpClientModel implements HttpClientInterface {
       return new Promise((resolve, reject) => {
         baseProductsFilterQuery
           .orderBy("price")
-          .orderBy("name")
+          .startAfter(store.state.lastQuery)
+          .limit(10)
           .get()
           .then(response => {
             const docs = response.docs.map(doc => doc.data() as T);
+            store.action(
+              "setLastQuery",
+              response.docs[response.docs.length - 1]
+            );
             resolve(docs);
           })
           .catch(error => reject(error));
@@ -72,9 +79,12 @@ export class HttpClientModel implements HttpClientInterface {
         .where("category", "==", params.query.category.text)
         .orderBy("price")
         .orderBy("name")
+        .limit(10)
+        .startAfter(store.state.lastQuery)
         .get()
         .then(response => {
           const docs = response.docs.map(doc => doc.data() as T);
+          store.action("setLastQuery", response.docs[response.docs.length - 1]);
           resolve(docs);
         })
         .catch(error => reject(error));

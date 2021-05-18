@@ -12,6 +12,7 @@ export interface ProductsStateInterface {
   name: string;
   isDisableInfiniteScroll: boolean;
   filter: ProductFilterInterface;
+  isFilter: boolean;
   loading: boolean;
   error: string;
   lastQuery: any;

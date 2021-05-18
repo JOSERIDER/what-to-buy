@@ -10,7 +10,10 @@ export interface HttpClientInterface {
     params: HttpRequestParamsInterface,
     store: any
   ): Promise<T[]>;
-  getFilterCollections<T>(params: HttpRequestParamsInterface): Promise<T[]>;
+  getFilterCollections<T>(
+    params: HttpRequestParamsInterface,
+    store: any
+  ): Promise<T[]>;
   getWithQuery<T>(params: HttpRequestParamsInterface): Promise<T[]>;
   post<T>(params: HttpRequestParamsInterface): Promise<T>;
   put<T>(params: HttpRequestParamsInterface): Promise<T>;
