@@ -3,6 +3,7 @@
  * @Description Interface for ProductsApiClientModelInterface.
  */
 import { Product } from "@/models/domain/product";
+import { ProductFilterInterface } from "@/models/store";
 
 export interface ProductsApiClientModelInterface {
   /**
@@ -16,7 +17,13 @@ export interface ProductsApiClientModelInterface {
    * Obtains all products on database,
    * @return Return an array that contains all products on database.
    */
-  getProducts(): Promise<Product[]>;
+  getProducts(lastQuery: any): Promise<Product[]>;
+
+  /**
+   * Check if the product already exists in database.
+   * @param id - id of product to check
+   */
+  checkProduct(id: string): Promise<boolean>;
 
   /**
    * Obtains products that have name like value of param
@@ -24,6 +31,13 @@ export interface ProductsApiClientModelInterface {
    * @return Return an array that contains all products with name as value..
    */
   getProductsByName(name: string): Promise<Product[]>;
+
+  /**
+   *
+   * Obtains products that pass the filtering criteria.
+   * @param filter - filtering criteria
+   */
+  getFilterProducts(filter: ProductFilterInterface): Promise<Product[]>;
 
   /**
    * Create a product on database.

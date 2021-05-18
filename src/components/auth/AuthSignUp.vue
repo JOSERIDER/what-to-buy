@@ -48,12 +48,12 @@ import AuthCard from "@/components/auth/AuthCard.vue";
 import useVuelidate from "@vuelidate/core";
 import VSpinnerButtonLoading from "@/components/ui/VSpinnerButtonLoading.vue";
 import { computed, reactive } from "vue";
-import { useRouter } from "vue-router";
 import { at, key, listOutline, personOutline } from "ionicons/icons";
 import { email, minLength, required } from "@vuelidate/validators";
 import VInput from "@/components/ui/VInput.vue";
 import { ActionType } from "@/models/store";
 import { useAuthsStore } from "@/store/auth";
+import router from "@/router";
 
 export default {
   components: {
@@ -63,7 +63,6 @@ export default {
   },
   setup() {
     const authStore = useAuthsStore();
-    const router = useRouter();
 
     const state = reactive({
       name: "",

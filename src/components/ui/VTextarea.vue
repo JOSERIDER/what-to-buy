@@ -4,7 +4,7 @@
       <ion-icon :icon="icon"></ion-icon>
     </ion-col>
     <ion-col>
-      <ion-input
+      <ion-textarea
         :name="name"
         @change="v$.$touch()"
         @input="$emit('update:value', $event.target.value)"
@@ -15,15 +15,15 @@
         :placeholder="placeholder"
         :type="type"
       >
-      </ion-input>
+      </ion-textarea>
     </ion-col>
   </ion-row>
 </template>
 <script lang="ts">
-import { IonCol, IonIcon, IonInput, IonRow } from "@ionic/vue";
+import { IonCol, IonIcon, IonRow, IonTextarea } from "@ionic/vue";
 
 export default {
-  name: "VInput",
+  name: "VTextarea",
   emits: ["update:value"],
   props: {
     border: {
@@ -31,6 +31,7 @@ export default {
       default: false,
     },
     value: {
+      type: String,
       required: true,
     },
     v$: {
@@ -57,7 +58,7 @@ export default {
   components: {
     IonCol,
     IonIcon,
-    IonInput,
+    IonTextarea,
     IonRow,
   },
 };

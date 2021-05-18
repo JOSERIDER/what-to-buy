@@ -1,41 +1,43 @@
 <template>
-  <ion-header>
-    <ion-toolbar>
-      <ion-title>Create new list</ion-title>
-      <ion-button @click="close()" fill="clear" slot="end" color="primary">
-        <ion-text>Close</ion-text>
-      </ion-button>
-    </ion-toolbar>
-  </ion-header>
-  <ion-content>
-    <div class="m-4">
-      <ion-text>
-        <h2>
-          Create a new list is very easy, just type a cool name and press create
-          button.
-        </h2>
-      </ion-text>
-      <VInput
-        class="mt-4"
-        :border="true"
-        v-model:value="state.name"
-        :v$="v$.name"
-        placeholder="Next weekend BBQ"
-        name="listName"
-      />
+  <ion-page>
+    <ion-header>
+      <ion-toolbar>
+        <ion-title>Create new list</ion-title>
+        <ion-button @click="close()" fill="clear" slot="end" color="primary">
+          <ion-text>Close</ion-text>
+        </ion-button>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content>
+      <div class="m-4">
+        <ion-text>
+          <h2>
+            Create a new list is very easy, just type a cool name and press
+            create button.
+          </h2>
+        </ion-text>
+        <VInput
+          class="mt-4"
+          :border="true"
+          v-model:value="state.name"
+          :v$="v$.name"
+          placeholder="Next weekend BBQ"
+          name="listName"
+        />
 
-      <p v-if="v$.$error" class="ml-1 text-xs">
-        Name have to almost three characters of length
-      </p>
+        <p v-if="v$.$error" class="ml-1 text-xs">
+          Name have to almost three characters of length
+        </p>
 
-      <div class="flex w-full justify-center mt-4">
-        <ion-button v-if="!loading" @click="createList" fill="clear"
-          >Create list</ion-button
-        >
-        <VSpinner v-else />
+        <div class="flex w-full justify-center mt-4">
+          <ion-button v-if="!loading" @click="createList" fill="clear">
+            Create list
+          </ion-button>
+          <VSpinner v-else />
+        </div>
       </div>
-    </div>
-  </ion-content>
+    </ion-content>
+  </ion-page>
 </template>
 
 <script lang="ts">
@@ -44,6 +46,7 @@ import {
   IonButton,
   IonContent,
   IonHeader,
+  IonPage,
   IonText,
   IonTitle,
   IonToolbar,
@@ -71,6 +74,7 @@ export default defineComponent({
     IonContent,
     IonText,
     IonButton,
+    IonPage,
   },
   setup() {
     const user: User = useUserStore().state.user;

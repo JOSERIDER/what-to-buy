@@ -74,7 +74,7 @@ import {
   shareOutline,
 } from "ionicons/icons";
 import { computed, defineComponent, ref } from "vue";
-import { useRouter } from "vue-router";
+import router from "@/router";
 import { useUserStore } from "@/store/user";
 import { ActionType } from "@/models/store";
 import { useAuthsStore } from "@/store/auth";
@@ -95,7 +95,6 @@ export default defineComponent({
   setup() {
     const userStore = useUserStore();
     const authStore = useAuthsStore();
-    const router = useRouter();
     const selectedIndex = ref(0);
     const appPages = [
       {

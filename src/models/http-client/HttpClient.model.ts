@@ -24,16 +24,67 @@ export class HttpClientModel implements HttpClientInterface {
     });
   }
 
-  getCollections<T>(params: HttpRequestParamsInterface): Promise<T[]> {
+  getCollections<T>(
+    params: HttpRequestParamsInterface,
+    store: any
+  ): Promise<T[]> {
     return new Promise((resolve, reject) => {
       firestore
         .collection(params.url)
         .orderBy(params.orderBy!!)
-        .startAt(params.query.name)
-        .endAt(`${params.query.name}\uf8ff`)
+        .where("keyWords", "array-contains", params.query.name)
+        .limit(10)
+        .startAfter(store.state.lastQuery)
         .get()
         .then(response => {
           const docs = response.docs.map(doc => doc.data() as T);
+          store.action("setLastQuery", response.docs[response.docs.length - 1]);
+          resolve(docs);
+        })
+        .catch(error => reject(error));
+    });
+  }
+
+  getFilterCollections<T>(
+    params: HttpRequestParamsInterface,
+    store: any
+  ): Promise<T[]> {
+    const category = params.query.category.value;
+    const baseProductsFilterQuery = firestore
+      .collection(params.url)
+      .where("keyWords", "array-contains", params.query.name)
+      .where("price", ">=", params.query.minPrice)
+      .where("price", "<=", params.query.maxPrice);
+
+    if (category == -1) {
+      return new Promise((resolve, reject) => {
+        baseProductsFilterQuery
+          .orderBy("price")
+          .startAfter(store.state.lastQuery)
+          .limit(10)
+          .get()
+          .then(response => {
+            const docs = response.docs.map(doc => doc.data() as T);
+            store.action(
+              "setLastQuery",
+              response.docs[response.docs.length - 1]
+            );
+            resolve(docs);
+          })
+          .catch(error => reject(error));
+      });
+    }
+    return new Promise((resolve, reject) => {
+      baseProductsFilterQuery
+        .where("category", "==", params.query.category.text)
+        .orderBy("price")
+        .orderBy("name")
+        .limit(10)
+        .startAfter(store.state.lastQuery)
+        .get()
+        .then(response => {
+          const docs = response.docs.map(doc => doc.data() as T);
+          store.action("setLastQuery", response.docs[response.docs.length - 1]);
           resolve(docs);
         })
         .catch(error => reject(error));

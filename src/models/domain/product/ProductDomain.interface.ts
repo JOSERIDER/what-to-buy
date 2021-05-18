@@ -9,4 +9,5 @@ export interface Product {
   price?: number;
   category?: string;
   quantity?: number;
+  keyWords?: string[];
 }

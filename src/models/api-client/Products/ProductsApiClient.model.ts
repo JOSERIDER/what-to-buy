@@ -2,6 +2,8 @@ import { ProductsApiClientModelInterface } from "@/models/api-client/Products/Pr
 import { HttpClient, HttpRequestParamsInterface } from "@/models/http-client";
 import { ProductsApiClientUrlInterface } from "@/models/api-client/Products/ProductsApiClientUrl.interface";
 import { Product } from "@/models/domain/product";
+import { ProductFilterInterface } from "@/models/store";
+import { useProductsStore } from "@/store/products";
 
 /**
  * @name ProductsApiClientModel
@@ -51,7 +53,7 @@ export class ProductsApiClientModel implements ProductsApiClientModelInterface {
       orderBy: "name",
     };
 
-    return HttpClient.getCollections(params);
+    return HttpClient.getCollections(params, useProductsStore());
   }
 
   getProductsByName(name: string): Promise<Product[]> {
@@ -62,7 +64,7 @@ export class ProductsApiClientModel implements ProductsApiClientModelInterface {
       orderBy: "name",
     };
 
-    return HttpClient.getCollections(params);
+    return HttpClient.getCollections(params, useProductsStore());
   }
 
   update(id: string, payload: Product): Promise<void> {
@@ -82,6 +84,24 @@ export class ProductsApiClientModel implements ProductsApiClientModelInterface {
     };
 
     return HttpClient.getWithQuery(params);
+  }
+
+  getFilterProducts(filter: ProductFilterInterface): Promise<Product[]> {
+    filter.name = ProductsApiClientModel.capitalizeWord(filter.name);
+    const params: HttpRequestParamsInterface = {
+      url: this.urls.products,
+      query: { ...filter },
+    };
+
+    return HttpClient.getFilterCollections(params, useProductsStore());
+  }
+
+  checkProduct(id: string): Promise<boolean> {
+    return new Promise(resolve => {
+      this.get(id)
+        .then(() => resolve(true))
+        .catch(() => resolve(false));
+    });
   }
 
   private static capitalizeWord(word) {

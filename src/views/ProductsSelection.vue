@@ -64,13 +64,13 @@ import {
 import { checkmark } from "ionicons/icons";
 import { useProductsSelectionStore } from "@/store/products-selection";
 import { ActionType } from "@/models/store";
-import { useRouter } from "vue-router";
 import useIonicService from "@/use/useIonicService";
 import ProductSelectionListItem from "@/components/productSelection/ProductSelectionListItem.vue";
 import { Product } from "@/models/domain/product";
 import VSpinner from "@/components/ui/VSpinner.vue";
 import VErrorView from "@/components/ui/VErrorView.vue";
 import ProductsEmptyView from "@/components/products/ProductsEmptyView.vue";
+import router from "@/router";
 
 export default defineComponent({
   name: "ListDetailAddProduct",
@@ -90,7 +90,6 @@ export default defineComponent({
   },
   setup() {
     const productsSelectionStore = useProductsSelectionStore();
-    const router = useRouter();
     const ionicService = useIonicService();
 
     const products = computed(() => {

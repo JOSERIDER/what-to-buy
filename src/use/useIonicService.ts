@@ -1,6 +1,7 @@
 import {
   actionSheetController,
   alertController,
+  pickerController,
   popoverController,
   toastController,
 } from "@ionic/vue";
@@ -49,5 +50,15 @@ export default function useIonicService() {
     await toast.present();
   }
 
-  return { popover, actionSheet, alert, toast };
+  async function picker({ animated, buttons, columns }) {
+    const picker = await pickerController.create({
+      animated,
+      buttons,
+      columns,
+      cssClass: "picker-hours",
+    });
+    await picker.present();
+  }
+
+  return { popover, actionSheet, alert, toast, picker };
 }
