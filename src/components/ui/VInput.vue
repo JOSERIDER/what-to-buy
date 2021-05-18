@@ -31,7 +31,6 @@ export default {
       default: false,
     },
     value: {
-      type: String || Number,
       required: true,
     },
     v$: {
