@@ -2,17 +2,24 @@ import { ActionTree, GetterTree, Module, MutationTree } from "vuex";
 import {
   ActionType,
   MutationType,
+  ProductFilterInterface,
   ProductsSelectionStateInterface,
   RootStateInterface,
 } from "@/models/store";
 import { useListDetailStore } from "@/store/list-detail";
 import { initialState } from "@/store/products-selection/initialState";
-import { useProductsStore } from "@/store/products";
 import { Product } from "@/models/domain/product";
 import { DataProduct } from "@/models/domain/list";
+import apiClient from "@/api-client";
+import useCategory from "@/use/useCategory";
 
 export const mutations: MutationTree<ProductsSelectionStateInterface> = {
   setProducts(state: ProductsSelectionStateInterface, products: Product[]) {
+    if (state.products) {
+      state.products = state.products.concat(products);
+      return;
+    }
+
     state.products = products;
   },
 
@@ -54,22 +61,64 @@ export const mutations: MutationTree<ProductsSelectionStateInterface> = {
       dataProduct => dataProduct.idProduct === product.id
     )!!.cant as number) -= 1;
   },
+
+  setInfiniteScroll(state: ProductsSelectionStateInterface, disable: boolean) {
+    state.isDisableInfiniteScroll = disable;
+  },
+
+  setLastQuery(state: ProductsSelectionStateInterface, lastQuery: any) {
+    state.lastQuery = lastQuery;
+  },
+
+  setFilterState(
+    state: ProductsSelectionStateInterface,
+    filter: ProductFilterInterface
+  ) {
+    state.filter = filter;
+    state.filter.name = state.name;
+    state.isFilter = true;
+  },
+
+  restoreProducts(state: ProductsSelectionStateInterface) {
+    state.products = [];
+    state.lastQuery = null;
+    state.isDisableInfiniteScroll = false;
+  },
+
+  restoreName(state: ProductsSelectionStateInterface) {
+    state.name = "";
+  },
+
+  restoreFilter(state: ProductsSelectionStateInterface) {
+    state.filter = {
+      minPrice: 0,
+      maxPrice: 100,
+      name: "",
+      category: useCategory().categories[0],
+    };
+    state.isFilter = false;
+  },
 };
 
 export const actions: ActionTree<
   ProductsSelectionStateInterface,
   RootStateInterface
 > = {
-  async fetchProducts({ commit }) {
+  async fetchProducts({ commit, state }) {
     try {
       commit(MutationType.productsSelection.setError, "");
       commit(MutationType.productsSelection.setLoading, true);
-
-      const productsStore = useProductsStore();
       const listDetailStore = useListDetailStore();
+      const productsSelectionApiClient = apiClient.productsSelection;
 
-      await productsStore.action(ActionType.products.fetchProducts);
-      const products = productsStore.state.products;
+      const products = await productsSelectionApiClient.getProducts(
+        state.lastQuery
+      );
+
+      if (products.length < 10) {
+        commit(MutationType.productsSelection.setInfiniteScroll, true);
+        commit(MutationType.productsSelection.setLastQuery, null);
+      }
 
       const dataProduct = listDetailStore.state.list.products;
 
@@ -87,12 +136,12 @@ export const actions: ActionTree<
     try {
       commit(MutationType.productsSelection.setLoading, true);
 
-      const productsStore = useProductsStore();
+      //const productsStore = useProductsStore();
 
-      await productsStore.action(ActionType.products.getProductsByName, name);
-      const products = productsStore.state.products;
+      //await productsStore.action(ActionType.products.getProductsByName, name);
+      //const products = productsStore.state.products;
 
-      commit(MutationType.productsSelection.setProducts, products);
+      //commit(MutationType.productsSelection.setProducts, products);
     } catch (error) {
       commit(MutationType.productsSelection.setError, error.message);
     } finally {
@@ -131,6 +180,37 @@ export const actions: ActionTree<
       ActionType.listDetail.saveSelection,
       state.productsSelected
     );
+  },
+
+  async fetchFilterProducts({ commit, state }) {
+    try {
+      commit(MutationType.productsSelection.setLoading, true);
+      commit(MutationType.productsSelection.restoreProducts);
+      const productsApiClient = apiClient.productsSelection;
+
+      const products = await productsApiClient.getFilterProducts(state.filter);
+
+      commit(MutationType.productsSelection.setProducts, products);
+    } catch (error) {
+      console.error(error);
+      commit(MutationType.productsSelection.setError, error.message);
+    } finally {
+      commit(MutationType.productsSelection.setLoading, false);
+    }
+  },
+
+  restoreStore({ commit }) {
+    commit(MutationType.productsSelection.restoreProducts);
+    commit(MutationType.productsSelection.restoreName);
+    commit(MutationType.productsSelection.restoreFilter);
+  },
+
+  setLastQuery({ commit }, lastQuery) {
+    commit(ActionType.productsSelection.setLastQuery, lastQuery);
+  },
+
+  setFilter({ commit }, filter: ProductFilterInterface) {
+    commit(MutationType.productsSelection.setFilterState, filter);
   },
 };
 

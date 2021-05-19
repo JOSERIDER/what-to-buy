@@ -105,8 +105,7 @@ import { trash, pricetagOutline } from "ionicons/icons";
 import { computed, defineComponent, reactive, ref } from "vue";
 import useIonicService from "@/use/useIonicService";
 import useCategory from "@/use/useCategory";
-import { useProductsStore } from "@/store/products";
-import { ActionType, ProductFilterInterface } from "@/models/store";
+import { ProductFilterInterface } from "@/models/store";
 
 export default defineComponent({
   name: "ProductsFilterPopover",
@@ -124,10 +123,15 @@ export default defineComponent({
     IonLabel,
     IonItem,
   },
-  setup() {
+  props: {
+    store: {
+      type: Object,
+      required: true,
+    },
+  },
+  setup(props) {
     const { picker } = useIonicService();
     const { categories } = useCategory();
-    const productsStore = useProductsStore();
     const currentCategory = ref({} as any);
     const lowerPrice = ref(0);
     const upperPrice = ref(0);
@@ -138,7 +142,7 @@ export default defineComponent({
     });
 
     const filterState = computed(() => {
-      return productsStore.state.filter;
+      return props.store.state.filter;
     });
 
     function openPicker() {
@@ -184,11 +188,11 @@ export default defineComponent({
         minPrice: lowerPrice.value,
         maxPrice: upperPrice.value,
         category: currentCategory.value,
-        name: productsStore.state.name,
+        name: props.store.state.name,
       };
 
-      await productsStore.action(ActionType.products.setFilter, filters);
-      await productsStore.action(ActionType.products.fetchFilterProducts);
+      await props.store.action("setFilter", filters);
+      await props.store.action("fetchFilterProducts");
 
       await popoverController.dismiss();
     }

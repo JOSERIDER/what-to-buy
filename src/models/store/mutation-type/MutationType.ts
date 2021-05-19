@@ -15,4 +15,5 @@ export namespace MutationType {
   export const listDetail = ListDetailMutationTypes;
   export const products = ProductsMutationTypes;
   export const productsSelection = ProductsSelectionMutationTypes;
+  export const setFilterState = "setFilterState";
 }

@@ -6,6 +6,14 @@
         <ion-buttons slot="start">
           <ion-back-button @click="goBack()" default-href="/"></ion-back-button>
         </ion-buttons>
+        <ion-button
+          color="primary"
+          slot="end"
+          @click="openFilterPopover($event)"
+          fill="clear"
+        >
+          <ion-icon size="large" :icon="icons.filter"></ion-icon>
+        </ion-button>
         <ion-button slot="end" color="success" @click="save()" fill="clear">
           <ion-icon size="large" :icon="icons.checkmark"></ion-icon>
         </ion-button>
@@ -21,7 +29,7 @@
         ></ion-searchbar>
 
         <div
-          v-if="error || loading || products.length === 0"
+          v-if="error || (loading && !dataFetched) || products.length === 0"
           class="flex flex-row items-center h-full justify-center"
         >
           <VErrorView
@@ -44,13 +52,23 @@
             @onUnselectProduct="unselectProduct(product)"
           />
         </ion-list>
+        <ion-infinite-scroll
+          :disabled="isDisabledInfiniteScroll"
+          @ionInfinite="loadData($event)"
+        >
+          <ion-infinite-scroll-content
+            loading-spinner="bubbles"
+            loading-text="Fetching more products…"
+          >
+          </ion-infinite-scroll-content>
+        </ion-infinite-scroll>
       </div>
     </ion-content>
   </ion-page>
 </template>
 
 <script lang="ts">
-import { computed, defineComponent } from "vue";
+import { computed, defineComponent, onUnmounted, ref } from "vue";
 import {
   IonButton,
   IonHeader,
@@ -60,8 +78,10 @@ import {
   IonToolbar,
   IonSearchbar,
   IonPage,
+  IonInfiniteScrollContent,
+  IonInfiniteScroll,
 } from "@ionic/vue";
-import { checkmark } from "ionicons/icons";
+import { checkmark, filter } from "ionicons/icons";
 import { useProductsSelectionStore } from "@/store/products-selection";
 import { ActionType } from "@/models/store";
 import useIonicService from "@/use/useIonicService";
@@ -71,6 +91,7 @@ import VSpinner from "@/components/ui/VSpinner.vue";
 import VErrorView from "@/components/ui/VErrorView.vue";
 import ProductsEmptyView from "@/components/products/ProductsEmptyView.vue";
 import router from "@/router";
+import ProductsFilterPopover from "@/components/products/ProductsFilterPopover.vue";
 
 export default defineComponent({
   name: "ListDetailAddProduct",
@@ -87,10 +108,13 @@ export default defineComponent({
     IonList,
     IonSearchbar,
     IonPage,
+    IonInfiniteScrollContent,
+    IonInfiniteScroll,
   },
   setup() {
     const productsSelectionStore = useProductsSelectionStore();
-    const ionicService = useIonicService();
+    const { alert, popover } = useIonicService();
+    const dataFetched = ref(false);
 
     const products = computed(() => {
       return productsSelectionStore.state.products;
@@ -104,8 +128,17 @@ export default defineComponent({
       return productsSelectionStore.state.loading;
     });
 
+    const isDisabledInfiniteScroll = computed(() => {
+      return productsSelectionStore.state.isDisableInfiniteScroll;
+    });
+
     function fetchProducts() {
       productsSelectionStore.action(ActionType.productsSelection.fetchProducts);
+    }
+
+    async function loadData(ev) {
+      await fetchProducts();
+      ev.target.complete();
     }
 
     async function save() {
@@ -152,7 +185,7 @@ export default defineComponent({
     }
 
     async function goBack() {
-      await ionicService.alert({
+      await alert({
         header: "Are you sure ?",
         message: "If you go back without saving, your changes will lost.",
         buttons: [
@@ -170,12 +203,29 @@ export default defineComponent({
       });
     }
 
+    function openFilterPopover(event) {
+      popover({
+        event,
+        component: ProductsFilterPopover,
+        componentProps: { store: productsSelectionStore },
+        mode: "ios",
+        translucent: "false",
+      });
+    }
+
     fetchProducts();
+    dataFetched.value = true;
+
+    onUnmounted(() => {
+      productsSelectionStore.action(ActionType.productsSelection.restoreStore);
+    });
 
     return {
       products,
       error,
       loading,
+      isDisabledInfiniteScroll,
+      dataFetched,
       save,
       fetchProducts,
       unselectProduct,
@@ -184,8 +234,11 @@ export default defineComponent({
       decrementQuantity,
       selectProduct,
       goBack,
+      loadData,
+      openFilterPopover,
       icons: {
         checkmark,
+        filter,
       },
     };
   },

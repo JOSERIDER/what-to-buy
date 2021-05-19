@@ -29,7 +29,14 @@
 </template>
 
 <script lang="ts">
-import { IonCol, IonRow, popoverController } from "@ionic/vue";
+import {
+  IonCol,
+  IonContent,
+  IonGrid,
+  IonIcon,
+  IonRow,
+  popoverController,
+} from "@ionic/vue";
 import { scan, searchOutline } from "ionicons/icons";
 import useScanner from "@/use/useScanner";
 import apiClient from "@/api-client";
@@ -42,8 +49,11 @@ import router from "@/router";
 export default defineComponent({
   name: "ListDetailAddProductPopover",
   components: {
-    IonRow,
     IonCol,
+    IonContent,
+    IonGrid,
+    IonIcon,
+    IonRow,
   },
   setup() {
     const listDetailStore = useListDetailStore();

@@ -201,7 +201,7 @@ export default defineComponent({
       ionicService.popover({
         event,
         component: ProductsFilterPopover,
-        componentProps: null,
+        componentProps: { store: productsStore },
         mode: "ios",
         translucent: "false",
       });

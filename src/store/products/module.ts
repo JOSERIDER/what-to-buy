@@ -76,6 +76,7 @@ export const mutations: MutationTree<ProductsStateInterface> = {
 export const actions: ActionTree<ProductsStateInterface, RootStateInterface> = {
   async fetchProducts({ commit, state }) {
     try {
+      commit(MutationType.listDetail.setError, "");
       commit(MutationType.products.setLoading, true);
       commit(MutationType.products.restoreFilter);
       const productsApiClient = apiClient.products;
@@ -182,9 +183,9 @@ export const actions: ActionTree<ProductsStateInterface, RootStateInterface> = {
       commit(MutationType.products.setProducts, products);
     } catch (error) {
       console.error(error);
-      commit(MutationType.listDetail.setError, error.message);
+      commit(MutationType.products.setError, error.message);
     } finally {
-      commit(MutationType.listDetail.setLoading, false);
+      commit(MutationType.products.setLoading, false);
     }
   },
 

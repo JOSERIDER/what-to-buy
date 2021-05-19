@@ -6,4 +6,8 @@ export namespace productsSelectionActionTypes {
   export const decrementQuantity = "decrementQuantity";
   export const saveSelection = "saveSelection";
   export const searchProducts = "searchProducts";
+  export const restoreStore = "restoreStore";
+  export const setLastQuery = "setLastQuery";
+  export const fetchFilterProducts = "fetchFilterProducts";
+  export const setFilter = "setFilter";
 }

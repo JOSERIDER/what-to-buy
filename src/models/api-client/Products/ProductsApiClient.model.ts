@@ -3,7 +3,6 @@ import { HttpClient, HttpRequestParamsInterface } from "@/models/http-client";
 import { ProductsApiClientUrlInterface } from "@/models/api-client/Products/ProductsApiClientUrl.interface";
 import { Product } from "@/models/domain/product";
 import { ProductFilterInterface } from "@/models/store";
-import { useProductsStore } from "@/store/products";
 
 /**
  * @name ProductsApiClientModel
@@ -13,9 +12,11 @@ import { useProductsStore } from "@/store/products";
  */
 export class ProductsApiClientModel implements ProductsApiClientModelInterface {
   private readonly urls!: ProductsApiClientUrlInterface;
+  private readonly store!: any;
 
-  constructor(urls: ProductsApiClientUrlInterface) {
+  constructor(urls: ProductsApiClientUrlInterface, store: any) {
     this.urls = urls;
+    this.store = store;
   }
 
   create(payload: Product): Promise<void> {
@@ -53,7 +54,7 @@ export class ProductsApiClientModel implements ProductsApiClientModelInterface {
       orderBy: "name",
     };
 
-    return HttpClient.getCollections(params, useProductsStore());
+    return HttpClient.getCollections(params, this.store);
   }
 
   getProductsByName(name: string): Promise<Product[]> {
@@ -64,7 +65,7 @@ export class ProductsApiClientModel implements ProductsApiClientModelInterface {
       orderBy: "name",
     };
 
-    return HttpClient.getCollections(params, useProductsStore());
+    return HttpClient.getCollections(params, this.store);
   }
 
   update(id: string, payload: Product): Promise<void> {
@@ -93,7 +94,7 @@ export class ProductsApiClientModel implements ProductsApiClientModelInterface {
       query: { ...filter },
     };
 
-    return HttpClient.getFilterCollections(params, useProductsStore());
+    return HttpClient.getFilterCollections(params, this.store);
   }
 
   checkProduct(id: string): Promise<boolean> {
