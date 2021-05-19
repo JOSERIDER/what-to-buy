@@ -10,4 +10,5 @@ export namespace productsSelectionActionTypes {
   export const setLastQuery = "setLastQuery";
   export const fetchFilterProducts = "fetchFilterProducts";
   export const setFilter = "setFilter";
+  export const loadData = "loadData";
 }

@@ -74,14 +74,14 @@ export const mutations: MutationTree<ProductsStateInterface> = {
 };
 
 export const actions: ActionTree<ProductsStateInterface, RootStateInterface> = {
-  async fetchProducts({ commit, state }) {
+  async fetchProducts({ commit }) {
     try {
       commit(MutationType.listDetail.setError, "");
       commit(MutationType.products.setLoading, true);
       commit(MutationType.products.restoreFilter);
       const productsApiClient = apiClient.products;
 
-      const products = await productsApiClient.getProducts(state.lastQuery);
+      const products = await productsApiClient.getProducts();
 
       if (products.length < 10) {
         commit(MutationType.products.setInfiniteScroll, true);

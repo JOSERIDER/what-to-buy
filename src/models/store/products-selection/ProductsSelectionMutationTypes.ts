@@ -13,4 +13,5 @@ export namespace ProductsSelectionMutationTypes {
   export const restoreFilter = "restoreFilter";
   export const restoreName = "restoreName";
   export const setFilterState = "setFilterState";
+  export const setName = "setName";
 }

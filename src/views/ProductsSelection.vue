@@ -53,7 +53,7 @@
           />
         </ion-list>
         <ion-infinite-scroll
-          :disabled="isDisabledInfiniteScroll"
+          v-if="!isDisabledInfiniteScroll"
           @ionInfinite="loadData($event)"
         >
           <ion-infinite-scroll-content
@@ -80,6 +80,9 @@ import {
   IonPage,
   IonInfiniteScrollContent,
   IonInfiniteScroll,
+  IonContent,
+  IonBackButton,
+  IonButtons,
 } from "@ionic/vue";
 import { checkmark, filter } from "ionicons/icons";
 import { useProductsSelectionStore } from "@/store/products-selection";
@@ -94,7 +97,7 @@ import router from "@/router";
 import ProductsFilterPopover from "@/components/products/ProductsFilterPopover.vue";
 
 export default defineComponent({
-  name: "ListDetailAddProduct",
+  name: "ProductsSelection",
   components: {
     ProductsEmptyView,
     VSpinner,
@@ -110,6 +113,9 @@ export default defineComponent({
     IonPage,
     IonInfiniteScrollContent,
     IonInfiniteScroll,
+    IonContent,
+    IonBackButton,
+    IonButtons,
   },
   setup() {
     const productsSelectionStore = useProductsSelectionStore();
@@ -137,7 +143,9 @@ export default defineComponent({
     }
 
     async function loadData(ev) {
-      await fetchProducts();
+      await productsSelectionStore.action(
+        ActionType.productsSelection.loadData
+      );
       ev.target.complete();
     }
 

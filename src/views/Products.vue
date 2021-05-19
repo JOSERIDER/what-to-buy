@@ -156,7 +156,14 @@ export default defineComponent({
     }
 
     async function loadData(ev) {
-      await fetchProducts();
+      if (productsStore.state.name) {
+        await productsStore.action(
+          ActionType.products.getProductsByName,
+          productsStore.state.name
+        );
+      } else {
+        await fetchProducts();
+      }
       ev.target.complete();
     }
 

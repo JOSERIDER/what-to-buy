@@ -79,6 +79,10 @@ export const mutations: MutationTree<ProductsSelectionStateInterface> = {
     state.isFilter = true;
   },
 
+  setName(state: ProductsSelectionStateInterface, name: string) {
+    state.name = name;
+  },
+
   restoreProducts(state: ProductsSelectionStateInterface) {
     state.products = [];
     state.lastQuery = null;
@@ -104,20 +108,20 @@ export const actions: ActionTree<
   ProductsSelectionStateInterface,
   RootStateInterface
 > = {
-  async fetchProducts({ commit, state }) {
+  async fetchProducts({ commit }) {
     try {
       commit(MutationType.productsSelection.setError, "");
       commit(MutationType.productsSelection.setLoading, true);
       const listDetailStore = useListDetailStore();
       const productsSelectionApiClient = apiClient.productsSelection;
 
-      const products = await productsSelectionApiClient.getProducts(
-        state.lastQuery
-      );
+      const products = await productsSelectionApiClient.getProducts();
 
       if (products.length < 10) {
         commit(MutationType.productsSelection.setInfiniteScroll, true);
         commit(MutationType.productsSelection.setLastQuery, null);
+      } else {
+        commit(MutationType.productsSelection.setInfiniteScroll, false);
       }
 
       const dataProduct = listDetailStore.state.list.products;
@@ -135,13 +139,49 @@ export const actions: ActionTree<
   async searchProducts({ commit }, name: string) {
     try {
       commit(MutationType.productsSelection.setLoading, true);
+      commit(MutationType.productsSelection.setError, "");
+      const productsSelectionApiClient = apiClient.productsSelection;
+      commit(MutationType.productsSelection.setName, name);
+      commit(MutationType.productsSelection.restoreFilter);
+      commit(MutationType.productsSelection.restoreProducts);
 
-      //const productsStore = useProductsStore();
+      const products = await productsSelectionApiClient.getProductsByName(name);
 
-      //await productsStore.action(ActionType.products.getProductsByName, name);
-      //const products = productsStore.state.products;
+      if (products.length < 10) {
+        commit(MutationType.productsSelection.setInfiniteScroll, true);
+        commit(MutationType.productsSelection.setLastQuery, null);
+      } else {
+        commit(MutationType.productsSelection.setInfiniteScroll, false);
+      }
 
-      //commit(MutationType.productsSelection.setProducts, products);
+      commit(MutationType.productsSelection.setProducts, products);
+    } catch (error) {
+      commit(MutationType.productsSelection.setError, error.message);
+    } finally {
+      commit(MutationType.productsSelection.setLoading, false);
+    }
+  },
+
+  async loadData({ commit, state }) {
+    try {
+      commit(MutationType.productsSelection.setLoading, true);
+      commit(MutationType.productsSelection.setError, "");
+
+      const productsSelectionApiClient = apiClient.productsSelection;
+
+      const products =
+        state.name === ""
+          ? await productsSelectionApiClient.getProducts()
+          : await productsSelectionApiClient.getProductsByName(state.name);
+
+      if (products.length < 10) {
+        commit(MutationType.productsSelection.setInfiniteScroll, true);
+        commit(MutationType.productsSelection.setLastQuery, null);
+      } else {
+        commit(MutationType.productsSelection.setInfiniteScroll, false);
+      }
+
+      commit(MutationType.productsSelection.setProducts, products);
     } catch (error) {
       commit(MutationType.productsSelection.setError, error.message);
     } finally {
@@ -189,6 +229,13 @@ export const actions: ActionTree<
       const productsApiClient = apiClient.productsSelection;
 
       const products = await productsApiClient.getFilterProducts(state.filter);
+
+      if (products.length < 10) {
+        commit(MutationType.productsSelection.setInfiniteScroll, true);
+        commit(MutationType.productsSelection.setLastQuery, null);
+      } else {
+        commit(MutationType.productsSelection.setInfiniteScroll, false);
+      }
 
       commit(MutationType.productsSelection.setProducts, products);
     } catch (error) {
