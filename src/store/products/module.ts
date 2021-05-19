@@ -164,6 +164,37 @@ export const actions: ActionTree<ProductsStateInterface, RootStateInterface> = {
     }
   },
 
+  async loadData({ commit, state }) {
+    try {
+      commit(MutationType.products.setLoading, true);
+      commit(MutationType.products.setError, "");
+
+      const productsApiClient = apiClient.products;
+
+      let products: Product[] = [];
+      if (state.name === "" && !state.isFilter) {
+        products = await productsApiClient.getProducts();
+      } else if (state.isFilter) {
+        products = await productsApiClient.getFilterProducts(state.filter);
+      } else {
+        products = await productsApiClient.getProductsByName(state.name);
+      }
+
+      if (products.length < 10) {
+        commit(MutationType.products.setInfiniteScroll, true);
+        commit(MutationType.products.setLastQuery, null);
+      } else {
+        commit(MutationType.products.setInfiniteScroll, false);
+      }
+
+      commit(MutationType.products.setProducts, products);
+    } catch (error) {
+      commit(MutationType.products.setError, error.message);
+    } finally {
+      commit(MutationType.products.setLoading, false);
+    }
+  },
+
   setFilter({ commit }, filter: ProductFilterInterface) {
     commit(MutationType.products.setFilterState, filter);
   },

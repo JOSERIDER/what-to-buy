@@ -169,10 +169,18 @@ export const actions: ActionTree<
 
       const productsSelectionApiClient = apiClient.productsSelection;
 
-      const products =
-        state.name === ""
-          ? await productsSelectionApiClient.getProducts()
-          : await productsSelectionApiClient.getProductsByName(state.name);
+      let products: Product[] = [];
+      if (state.name === "" && !state.isFilter) {
+        products = await productsSelectionApiClient.getProducts();
+      } else if (state.isFilter) {
+        products = await productsSelectionApiClient.getFilterProducts(
+          state.filter
+        );
+      } else {
+        products = await productsSelectionApiClient.getProductsByName(
+          state.name
+        );
+      }
 
       if (products.length < 10) {
         commit(MutationType.productsSelection.setInfiniteScroll, true);

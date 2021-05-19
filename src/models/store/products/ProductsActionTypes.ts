@@ -9,4 +9,5 @@ export namespace ProductsActionTypes {
   export const setLastQuery = "setLastQuery";
   export const restoreProducts = "restoreProducts";
   export const restoreStore = "restoreStore";
+  export const loadData = "loadData";
 }

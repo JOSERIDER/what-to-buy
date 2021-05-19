@@ -146,24 +146,12 @@ export default defineComponent({
 
     async function doRefresh(ev) {
       await productsStore.action(ActionType.products.restoreProducts);
-      if (productsStore.state.isFilter) {
-        await productsStore.action(ActionType.products.fetchFilterProducts);
-
-        return;
-      }
-      await fetchProducts();
+      await productsStore.action(ActionType.products.loadData);
       ev.target.complete();
     }
 
     async function loadData(ev) {
-      if (productsStore.state.name) {
-        await productsStore.action(
-          ActionType.products.getProductsByName,
-          productsStore.state.name
-        );
-      } else {
-        await fetchProducts();
-      }
+      await productsStore.action(ActionType.products.loadData);
       ev.target.complete();
     }
 
