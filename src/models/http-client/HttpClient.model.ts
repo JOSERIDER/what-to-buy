@@ -1,6 +1,6 @@
 import { HttpClientInterface } from "@/models/http-client/HttpClient.interface";
 import { HttpRequestParamsInterface } from "@/models/http-client/HttpRequestParams.interface";
-import { firestore, auth } from "./client/firebase.config";
+import { auth, firestore } from "./client/firebase.config";
 
 /**
  * @name HttpClientModel
@@ -152,27 +152,23 @@ export class HttpClientModel implements HttpClientInterface {
   private async queryPerformance<T>(
     params: HttpRequestParamsInterface
   ): Promise<T[]> {
-    let i, j, tempArray;
-    const FIREBASE_MAX_VALUES = 10;
-    const aux: any[] = [];
+    const mainArr: string[] = params.query.value;
+    let index: number;
+    const arrayLength = mainArr.length;
+    const tempArray: T[] = [];
 
-    for (
-      i = 0, j = params.query.value.length;
-      i < j;
-      i += FIREBASE_MAX_VALUES
-    ) {
-      tempArray = params.query.value.slice(i, i + FIREBASE_MAX_VALUES);
-      params.query.value = tempArray;
+    for (index = 0; index < arrayLength; index += 10) {
+      params.query.value = mainArr.slice(index, index + 10);
       await this.queryWithWhere(params)
         .then(response => {
-          response.forEach(r => aux.push(r));
+          response.forEach(r => tempArray.push(r as any));
         })
         .catch(error => {
           throw error;
         });
     }
 
-    return Promise.resolve(aux);
+    return Promise.resolve(tempArray);
   }
 
   private queryWithWhere<T>(params: HttpRequestParamsInterface): Promise<T[]> {
