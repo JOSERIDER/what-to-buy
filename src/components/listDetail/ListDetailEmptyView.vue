@@ -15,7 +15,7 @@
 </template>
 
 <script>
-import { IonImg, IonText } from "@ionic/vue";
+import { IonButton, IonImg, IonText } from "@ionic/vue";
 
 export default {
   name: "ListDetailEmptyView",
@@ -23,6 +23,7 @@ export default {
   components: {
     IonImg,
     IonText,
+    IonButton,
   },
 };
 </script>

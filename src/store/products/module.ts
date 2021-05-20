@@ -74,13 +74,14 @@ export const mutations: MutationTree<ProductsStateInterface> = {
 };
 
 export const actions: ActionTree<ProductsStateInterface, RootStateInterface> = {
-  async fetchProducts({ commit, state }) {
+  async fetchProducts({ commit }) {
     try {
+      commit(MutationType.listDetail.setError, "");
       commit(MutationType.products.setLoading, true);
       commit(MutationType.products.restoreFilter);
       const productsApiClient = apiClient.products;
 
-      const products = await productsApiClient.getProducts(state.lastQuery);
+      const products = await productsApiClient.getProducts();
 
       if (products.length < 10) {
         commit(MutationType.products.setInfiniteScroll, true);
@@ -163,6 +164,37 @@ export const actions: ActionTree<ProductsStateInterface, RootStateInterface> = {
     }
   },
 
+  async loadData({ commit, state }) {
+    try {
+      commit(MutationType.products.setLoading, true);
+      commit(MutationType.products.setError, "");
+
+      const productsApiClient = apiClient.products;
+
+      let products: Product[] = [];
+      if (state.name === "" && !state.isFilter) {
+        products = await productsApiClient.getProducts();
+      } else if (state.isFilter) {
+        products = await productsApiClient.getFilterProducts(state.filter);
+      } else {
+        products = await productsApiClient.getProductsByName(state.name);
+      }
+
+      if (products.length < 10) {
+        commit(MutationType.products.setInfiniteScroll, true);
+        commit(MutationType.products.setLastQuery, null);
+      } else {
+        commit(MutationType.products.setInfiniteScroll, false);
+      }
+
+      commit(MutationType.products.setProducts, products);
+    } catch (error) {
+      commit(MutationType.products.setError, error.message);
+    } finally {
+      commit(MutationType.products.setLoading, false);
+    }
+  },
+
   setFilter({ commit }, filter: ProductFilterInterface) {
     commit(MutationType.products.setFilterState, filter);
   },
@@ -182,9 +214,9 @@ export const actions: ActionTree<ProductsStateInterface, RootStateInterface> = {
       commit(MutationType.products.setProducts, products);
     } catch (error) {
       console.error(error);
-      commit(MutationType.listDetail.setError, error.message);
+      commit(MutationType.products.setError, error.message);
     } finally {
-      commit(MutationType.listDetail.setLoading, false);
+      commit(MutationType.products.setLoading, false);
     }
   },
 

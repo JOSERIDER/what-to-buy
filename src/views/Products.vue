@@ -146,17 +146,12 @@ export default defineComponent({
 
     async function doRefresh(ev) {
       await productsStore.action(ActionType.products.restoreProducts);
-      if (productsStore.state.isFilter) {
-        await productsStore.action(ActionType.products.fetchFilterProducts);
-
-        return;
-      }
-      await fetchProducts();
+      await productsStore.action(ActionType.products.loadData);
       ev.target.complete();
     }
 
     async function loadData(ev) {
-      await fetchProducts();
+      await productsStore.action(ActionType.products.loadData);
       ev.target.complete();
     }
 
@@ -201,7 +196,7 @@ export default defineComponent({
       ionicService.popover({
         event,
         component: ProductsFilterPopover,
-        componentProps: null,
+        componentProps: { store: productsStore },
         mode: "ios",
         translucent: "false",
       });

@@ -17,7 +17,7 @@ export interface ProductsApiClientModelInterface {
    * Obtains all products on database,
    * @return Return an array that contains all products on database.
    */
-  getProducts(lastQuery: any): Promise<Product[]>;
+  getProducts(): Promise<Product[]>;
 
   /**
    * Check if the product already exists in database.

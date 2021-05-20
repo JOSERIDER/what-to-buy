@@ -12,4 +12,5 @@ export interface ApiClientInterface {
   products: ProductsApiClientModelInterface;
   privateLists: PrivateListsApiClientModelInterface;
   sharedLists: SharedListsApiClientModelInterface;
+  productsSelection: ProductsApiClientModelInterface;
 }

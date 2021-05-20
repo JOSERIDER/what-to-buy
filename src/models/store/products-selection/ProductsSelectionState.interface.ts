@@ -6,4 +6,9 @@ export interface ProductsSelectionStateInterface {
   productsSelected: DataProduct[];
   loading: boolean;
   error: string;
+  lastQuery: any;
+  isDisableInfiniteScroll: boolean;
+  name: string;
+  filter: any;
+  isFilter: boolean;
 }
