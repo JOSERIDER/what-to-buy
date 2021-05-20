@@ -20,12 +20,7 @@
       :icons="icons"
     />
     <div v-if="!isListEmpty">
-      <DashboardList
-        @create-list="openModal()"
-        @join-list="openJoinOptions()"
-        :list="lists"
-        :list-type="type"
-      />
+      <DashboardPrivateList />
     </div>
 
     <div
@@ -58,7 +53,7 @@
 </template>
 
 <script lang="ts">
-import DashboardList from "@/components/dashboard/DashboardList.vue";
+import DashboardPrivateList from "@/components/dashboard/DashboardPrivateList.vue";
 import DashBoardModalCreateList from "@/components/dashboard/DashboardModalCreateList.vue";
 import VEmptyView from "@/components/ui/VEmptyView.vue";
 import VSpinner from "@/components/ui/VSpinner.vue";
@@ -79,7 +74,7 @@ import {
 } from "@ionic/vue";
 
 import { add, chevronDownCircleOutline } from "ionicons/icons";
-import { computed, defineComponent, ref, watch } from "vue";
+import { computed, defineComponent, ref } from "vue";
 import { useUserStore } from "@/store/user";
 import { useListsStore } from "@/store/lists";
 import { ActionType } from "@/models/store";
@@ -92,7 +87,7 @@ export default defineComponent({
   components: {
     VRefresher,
     VSpinner,
-    DashboardList,
+    DashboardPrivateList,
     VEmptyView,
     VErrorView,
     IonHeader,
@@ -106,7 +101,7 @@ export default defineComponent({
     IonFabButton,
     IonMenuButton,
   },
-  async setup() {
+  setup() {
     const listsStore = useListsStore();
     const userStore = useUserStore();
     const isModalOpen = ref(false);
@@ -117,10 +112,6 @@ export default defineComponent({
 
     const type = computed(() => {
       return listsStore.state.type;
-    });
-
-    const lists = computed(() => {
-      return listsStore.state.lists;
     });
 
     const loading = computed(() => {
@@ -241,16 +232,9 @@ export default defineComponent({
       });
     }
 
-    watch(lists, lists => {
-      if (lists.length === 0) {
-        listsStore.action(ActionType.lists.editLists);
-      }
-    });
-
-    await fetchList();
+    fetchList();
 
     return {
-      lists,
       type,
       isModalOpen,
       editing,
