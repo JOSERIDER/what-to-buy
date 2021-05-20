@@ -1,0 +1,7 @@
+{
+  "name": "WhatToBuy",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "vue"
+}

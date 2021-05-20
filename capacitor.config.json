@@ -1,0 +1,17 @@
+{
+  "appId": "jose.alvarez.whatToBuy",
+  "appName": "WhatToBuy",
+  "bundledWebRuntime": false,
+  "npmClient": "npm",
+  "webDir": "dist",
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 0
+    }
+  },
+  "cordova": {},
+  "server": {
+    "url": "http://192.168.1.112:8100",
+    "cleartext": true
+  }
+}
