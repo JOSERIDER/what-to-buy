@@ -9,7 +9,10 @@
       <div class="flex items-center w-full">
         <h2 class="w-2/3">{{ list.name }}</h2>
 
-        <div v-if="editing" class="flex items-center w-1/3 justify-end">
+        <div
+          v-if="editing && canBeDeleted"
+          class="flex items-center w-1/3 justify-end"
+        >
           <ion-button
             fill="clear"
             slot="end"
@@ -18,7 +21,7 @@
             <ion-icon
               size="large"
               color="danger"
-              :icon="trash"
+              :icon="type === 'Shared' ? exit : trash"
               class="ml-2 mr-1"
             ></ion-icon>
           </ion-button>
@@ -37,7 +40,11 @@
 <script lang="ts">
 import { PropType } from "vue";
 import { IonBadge, IonButton, IonCard, IonIcon, IonItem } from "@ionic/vue";
-import { chevronForwardOutline, trashOutline } from "ionicons/icons";
+import {
+  chevronForwardOutline,
+  trashOutline,
+  exitOutline,
+} from "ionicons/icons";
 import { useListsStore } from "@/store/lists";
 import { List } from "@/models/domain/list";
 
@@ -55,17 +62,25 @@ export default {
     return {
       arrow: chevronForwardOutline,
       trash: trashOutline,
+      exit: exitOutline,
     };
   },
   computed: {
     editing() {
       return useListsStore().state.editing;
     },
+    type() {
+      return useListsStore().state.type;
+    },
   },
   props: {
     list: {
       type: Object as PropType<List>,
       required: true,
+    },
+    canBeDeleted: {
+      type: Boolean,
+      default: true,
     },
   },
 };

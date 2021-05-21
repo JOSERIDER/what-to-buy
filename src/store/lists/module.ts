@@ -51,13 +51,10 @@ export const actions: ActionTree<ListsStateInterface, RootStateInterface> = {
       }
 
       commit(MutationType.lists.updateLists, lists);
-      commit(MutationType.lists.loadedLists);
     } catch (error) {
+      commit(ActionType.lists.setError, error.message);
+    } finally {
       commit(MutationType.lists.loadedLists);
-      commit(
-        ActionType.lists.setError,
-        "Something went wrong, with our server or network connection."
-      );
     }
   },
 
@@ -67,15 +64,11 @@ export const actions: ActionTree<ListsStateInterface, RootStateInterface> = {
 
       if (state.type === "Private") {
         await privateListsApiClient.create(list);
-        commit(MutationType.lists.loadedLists);
-        return;
       }
     } catch (error) {
+      commit(ActionType.lists.setError, error.message);
+    } finally {
       commit(MutationType.lists.loadedLists);
-      commit(
-        ActionType.lists.setError,
-        "Something went wrong, with our server or network connection."
-      );
     }
   },
 
@@ -83,14 +76,11 @@ export const actions: ActionTree<ListsStateInterface, RootStateInterface> = {
     try {
       commit(MutationType.lists.loadingLists);
       await privateListsApiClient.delete(listId);
-    } catch (e) {
+    } catch (error) {
+      commit(ActionType.lists.setError, error.message);
+    } finally {
       commit(MutationType.lists.loadedLists);
-      commit(
-        ActionType.lists.setError,
-        "Something went wrong, with our server or network connection."
-      );
     }
-    commit(MutationType.lists.loadedLists);
   },
 
   changeType({ commit }, type: string) {
@@ -105,18 +95,33 @@ export const actions: ActionTree<ListsStateInterface, RootStateInterface> = {
     try {
       commit(MutationType.lists.loadingLists);
       await sharedListsApiClient.create(sharedList);
+    } catch (error) {
+      commit(ActionType.lists.setError, error.message);
+    } finally {
       commit(MutationType.lists.loadedLists);
-    } catch (e) {
-      commit(MutationType.lists.loadedLists);
-      commit(
-        ActionType.lists.setError,
-        "Something went wrong, with our server or network connection."
-      );
     }
   },
 
   resetError({ commit }) {
     commit(ActionType.lists.setError, "");
+  },
+
+  async unJoinList({ commit, state }, listId: string) {
+    try {
+      commit(MutationType.lists.loadingLists);
+      const userId = useUserStore().state.user.id as string;
+      const list = state.lists.find(
+        list => list.listCode === listId
+      ) as SharedList;
+
+      list.users = list.users.filter(id => id !== userId);
+
+      await sharedListsApiClient.update(listId, list);
+    } catch (error) {
+      commit(ActionType.lists.setError, error.message);
+    } finally {
+      commit(MutationType.lists.loadedLists);
+    }
   },
 };
 
