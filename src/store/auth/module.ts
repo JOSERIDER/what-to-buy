@@ -51,6 +51,7 @@ export const mutations: MutationTree<AuthStateInterface> = {
 export const actions: ActionTree<AuthStateInterface, RootStateInterface> = {
   async login({ commit, state }, { email, password }) {
     commit(MutationType.auth.loading);
+    commit(MutationType.auth.setError, "");
     const userApiClient = apiClient.users;
     const userStore = useUserStore();
 
