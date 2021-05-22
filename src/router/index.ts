@@ -52,6 +52,12 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import("@/views/Products.vue"),
   },
   {
+    path: "/product-detail/:id",
+    name: "ProductDetail",
+    props: true,
+    component: () => import("@/views/ProductDetail.vue"),
+  },
+  {
     path: "/share",
     name: "Share",
     component: () => import("@/views/Share.vue"),

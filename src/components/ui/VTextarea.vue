@@ -7,6 +7,7 @@
       <ion-textarea
         :name="name"
         @change="v$.$touch()"
+        :value="value"
         @input="$emit('update:value', $event.target.value)"
         :class="{
           invalid: v$.$invalid && v$.$dirty,
