@@ -11,8 +11,15 @@
       <div class="h-full px-4">
         <div class="flex flex-col justify-center main items-center">
           <div class="m-4">
-            <ion-avatar @click="chooseImage()">
+            <ion-avatar @click="openCameraOptions()">
               <img
+                v-if="photo"
+                class="avatar"
+                :src="photo.webviewPath"
+                alt="user profile image"
+              />
+              <img
+                v-else
                 class="avatar"
                 :src="
                   user?.image
@@ -123,6 +130,7 @@ import { useListsStore } from "@/store/lists";
 import { ActionType } from "@/models/store";
 import { useAuthsStore } from "@/store/auth";
 import useIonicService from "@/use/useIonicService";
+import { usePhotoGallery } from "@/use/usePhotoGallery";
 
 export default {
   name: "Profile",
@@ -147,7 +155,8 @@ export default {
     const userStore = useUserStore();
     const editing = ref(false);
     const privateListsStore = useListsStore();
-    const { alert, toast } = useIonicService();
+    const { alert, toast, actionSheet } = useIonicService();
+    const { takePhotoCamera, selectFromGallery, photo } = usePhotoGallery();
     const authStore = useAuthsStore();
 
     const user = computed(() => {
@@ -182,8 +191,38 @@ export default {
 
     const v$ = useVuelidate(rules, state);
 
-    function chooseImage() {
-      //TODO
+    function updateImageProfile() {
+      userStore.action(ActionType.user.updateUserProfileImage, {
+        base64Data: photo.value?.base64Data,
+        fileName: photo.value?.filepath,
+        userId: user.value.id,
+      });
+    }
+
+    function openCameraOptions() {
+      actionSheet({
+        header: "Photo source",
+        buttons: [
+          {
+            text: "Take picture",
+            handler: async () => {
+              await takePhotoCamera();
+              updateImageProfile();
+            },
+          },
+          {
+            text: "Select from gallery",
+            handler: async () => {
+              await selectFromGallery();
+              updateImageProfile();
+            },
+          },
+          {
+            text: "Cancel",
+            role: "cancel",
+          },
+        ],
+      });
     }
 
     function close() {
@@ -276,7 +315,8 @@ export default {
       user,
       editing,
       privateLists,
-      chooseImage,
+      photo,
+      openCameraOptions,
       updateUser,
       close,
       icons: {

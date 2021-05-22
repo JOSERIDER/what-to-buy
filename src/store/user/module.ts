@@ -10,6 +10,7 @@ import storageClient from "@/storage-client";
 import usersApiClient from "@/api-client/users";
 import { User } from "@/models/domain/user";
 import apiClient, { firebaseAuth } from "@/api-client";
+import { storage } from "@/models/http-client/client/firebase.config";
 
 export const mutations: MutationTree<UserStateInterface> = {
   loadingUser(state: UserStateInterface) {
@@ -82,6 +83,40 @@ export const actions: ActionTree<UserStateInterface, RootStateInterface> = {
       user = JSON.parse(JSON.stringify(user));
 
       await userApiClient.update(id, user);
+      await dispatch(ActionType.user.setUser, user);
+    } catch (error) {
+      commit(MutationType.user.setError, error.message);
+      if (error.code === "auth/requires-recent-login") {
+        return Promise.reject("require-login");
+      } else if (error.code === "auth/email-already-in-use") {
+        return Promise.reject("");
+      }
+    } finally {
+      commit(MutationType.user.loadedUser);
+    }
+  },
+
+  async updateUserProfileImage(
+    { commit, dispatch, state },
+    { base64Data, fileName, userId }
+  ) {
+    try {
+      commit(MutationType.user.setError, "");
+      commit(MutationType.user.loadingUser);
+      const userApiClient = apiClient.users;
+      let user: User = { ...state.user };
+
+      if (base64Data && fileName) {
+        const response = await storage("gs://shopping-list-93c19.appspot.com")
+          .ref(fileName)
+          .putString(base64Data, "data_url");
+
+        user.image = await response.ref.getDownloadURL();
+      }
+
+      user = JSON.parse(JSON.stringify(user));
+
+      await userApiClient.update(userId, user);
       await dispatch(ActionType.user.setUser, user);
     } catch (error) {
       commit(MutationType.user.setError, error.message);
