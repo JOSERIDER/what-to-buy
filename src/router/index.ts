@@ -23,6 +23,11 @@ const routes: Array<RouteRecordRaw> = [
     component: Auth,
   },
   {
+    path: "/profile",
+    name: "Profile",
+    component: () => import("@/views/Profile.vue"),
+  },
+  {
     path: "/list-detail/:listId/:listType",
     name: "ListDetail",
     component: () => import("@/views/ListDetail.vue"),

@@ -8,4 +8,5 @@ export namespace UserMutationType {
 
   export const loadingUser = "loadingUser";
   export const loadedUser = "loadedUser";
+  export const setError = "setError";
 }

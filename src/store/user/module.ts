@@ -9,6 +9,7 @@ import { initialState } from "@/store/user/InitialState";
 import storageClient from "@/storage-client";
 import usersApiClient from "@/api-client/users";
 import { User } from "@/models/domain/user";
+import apiClient, { firebaseAuth } from "@/api-client";
 
 export const mutations: MutationTree<UserStateInterface> = {
   loadingUser(state: UserStateInterface) {
@@ -23,6 +24,9 @@ export const mutations: MutationTree<UserStateInterface> = {
   removeUser(state: UserStateInterface) {
     state.user = {};
   },
+  setError(state: UserStateInterface, error: string) {
+    state.error = error;
+  },
 };
 
 export const actions: ActionTree<UserStateInterface, RootStateInterface> = {
@@ -34,6 +38,7 @@ export const actions: ActionTree<UserStateInterface, RootStateInterface> = {
     commit(MutationType.user.setUser, user);
     commit(MutationType.user.loadedUser);
   },
+
   async getUser({ commit }) {
     commit(MutationType.user.loadingUser);
     const userStorage = storageClient.user;
@@ -42,6 +47,7 @@ export const actions: ActionTree<UserStateInterface, RootStateInterface> = {
     commit(MutationType.user.setUser, user);
     commit(MutationType.user.loadedUser);
   },
+
   async removeUser({ commit }) {
     commit(MutationType.user.loadingUser);
     const userStorage = storageClient.user;
@@ -50,11 +56,43 @@ export const actions: ActionTree<UserStateInterface, RootStateInterface> = {
     commit(MutationType.user.removeUser);
     commit(MutationType.user.loadedUser);
   },
+
   async createUser({ commit, dispatch }, user: User) {
     commit(MutationType.user.loadingUser);
     await usersApiClient.create(user);
     dispatch(ActionType.user.setUser, user);
     commit(MutationType.user.loadedUser);
+  },
+
+  async updateUser(
+    { commit, dispatch, state },
+    { id, name, email }
+  ): Promise<any> {
+    try {
+      commit(MutationType.user.setError, "");
+      commit(MutationType.user.loadingUser);
+      const userApiClient = apiClient.users;
+      let user: User = { ...state.user };
+      user.name = name;
+      if (email !== user.email) {
+        await firebaseAuth.currentUser!!.updateEmail(email);
+        user.email = email;
+      }
+
+      user = JSON.parse(JSON.stringify(user));
+
+      await userApiClient.update(id, user);
+      await dispatch(ActionType.user.setUser, user);
+    } catch (error) {
+      commit(MutationType.user.setError, error.message);
+      if (error.code === "auth/requires-recent-login") {
+        return Promise.reject("require-login");
+      } else if (error.code === "auth/email-already-in-use") {
+        return Promise.reject("");
+      }
+    } finally {
+      commit(MutationType.user.loadedUser);
+    }
   },
 };
 

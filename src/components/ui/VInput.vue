@@ -5,9 +5,11 @@
     </ion-col>
     <ion-col>
       <ion-input
+        :disabled="disabled"
         :name="name"
         @change="v$.$touch()"
-        @input="$emit('update:value', $event.target.value)"
+        :value="value"
+        @ionInput="$emit('update:value', $event.target.value)"
         :class="{
           invalid: v$.$invalid && v$.$dirty,
           border: border,
@@ -26,6 +28,10 @@ export default {
   name: "VInput",
   emits: ["update:value"],
   props: {
+    disabled: {
+      type: Boolean,
+      default: false,
+    },
     border: {
       type: Boolean,
       default: false,
