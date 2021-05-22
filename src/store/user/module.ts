@@ -113,12 +113,12 @@ export const actions: ActionTree<UserStateInterface, RootStateInterface> = {
           .putString(base64Data, "data_url");
 
         user.image = await response.ref.getDownloadURL();
+
+        user = JSON.parse(JSON.stringify(user));
+
+        await userApiClient.update(userId, user);
+        await dispatch(ActionType.user.setUser, user);
       }
-
-      user = JSON.parse(JSON.stringify(user));
-
-      await userApiClient.update(userId, user);
-      await dispatch(ActionType.user.setUser, user);
     } catch (error) {
       commit(MutationType.user.setError, error.message);
       if (error.code === "auth/requires-recent-login") {
