@@ -287,6 +287,8 @@ export default {
     }
 
     async function updateUser() {
+      if (v$.value.$invalid) return;
+
       await userStore
         .action(ActionType.user.updateUser, {
           id: user.value.id,

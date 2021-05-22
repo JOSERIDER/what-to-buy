@@ -74,9 +74,10 @@ export const actions: ActionTree<UserStateInterface, RootStateInterface> = {
       commit(MutationType.user.loadingUser);
       const userApiClient = apiClient.users;
       let user: User = { ...state.user };
+      if (name === user.name && email === user.email) return;
       user.name = name;
       if (email !== user.email) {
-        await firebaseAuth.currentUser!!.updateEmail(email);
+        await firebaseAuth.currentUser?.updateEmail(email);
         user.email = email;
       }
 
