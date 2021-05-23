@@ -54,7 +54,7 @@
           />
         </ion-list>
         <ion-infinite-scroll
-          :disabled="isDisabledInfiniteScroll"
+          v-if="!isDisabledInfiniteScroll"
           @ionInfinite="loadData($event)"
         >
           <ion-infinite-scroll-content
