@@ -67,7 +67,7 @@ import {
   IonMenuToggle,
 } from "@ionic/vue";
 import {
-  cogOutline,
+  settingsOutline,
   fastFoodOutline,
   listOutline,
   logOutOutline,
@@ -113,9 +113,9 @@ export default defineComponent({
         icon: shareOutline,
       },
       {
-        title: "Settings",
-        url: "/settings",
-        icon: cogOutline,
+        title: "Profile",
+        url: "/profile",
+        icon: settingsOutline,
       },
     ];
 

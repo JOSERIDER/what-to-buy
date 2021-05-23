@@ -20,12 +20,8 @@
       :icons="icons"
     />
     <div v-if="!isListEmpty">
-      <DashboardList
-        @create-list="openModal()"
-        @join-list="openJoinOptions()"
-        :list="lists"
-        :list-type="type"
-      />
+      <DashboardPrivateList v-if="type === 'Private'" />
+      <DashboardSharedList v-else-if="type === 'Shared'" />
     </div>
 
     <div
@@ -58,7 +54,7 @@
 </template>
 
 <script lang="ts">
-import DashboardList from "@/components/dashboard/DashboardList.vue";
+import DashboardPrivateList from "@/components/dashboard/DashboardPrivateList.vue";
 import DashBoardModalCreateList from "@/components/dashboard/DashboardModalCreateList.vue";
 import VEmptyView from "@/components/ui/VEmptyView.vue";
 import VSpinner from "@/components/ui/VSpinner.vue";
@@ -79,20 +75,18 @@ import {
 } from "@ionic/vue";
 
 import { add, chevronDownCircleOutline } from "ionicons/icons";
-import { computed, defineComponent, ref, watch } from "vue";
-import { useUserStore } from "@/store/user";
+import { computed, defineComponent, ref } from "vue";
 import { useListsStore } from "@/store/lists";
 import { ActionType } from "@/models/store";
-import apiClient from "@/api-client";
-import useIonicService from "@/use/useIonicService";
-import useScanner from "@/use/useScanner";
+import DashboardSharedList from "@/components/dashboard/DashboardSharedList.vue";
 
 export default defineComponent({
   name: "DashboardContainer",
   components: {
+    DashboardSharedList,
     VRefresher,
     VSpinner,
-    DashboardList,
+    DashboardPrivateList,
     VEmptyView,
     VErrorView,
     IonHeader,
@@ -106,21 +100,12 @@ export default defineComponent({
     IonFabButton,
     IonMenuButton,
   },
-  async setup() {
+  setup() {
     const listsStore = useListsStore();
-    const userStore = useUserStore();
     const isModalOpen = ref(false);
-
-    const user = computed(() => {
-      return userStore.state.user;
-    });
 
     const type = computed(() => {
       return listsStore.state.type;
-    });
-
-    const lists = computed(() => {
-      return listsStore.state.lists;
     });
 
     const loading = computed(() => {
@@ -138,8 +123,6 @@ export default defineComponent({
     const listsError = computed(() => {
       return listsStore.state.error;
     });
-
-    const { actionSheet, alert, toast } = useIonicService();
 
     async function openModal() {
       const modal = await modalController.create({
@@ -165,92 +148,9 @@ export default defineComponent({
       event.target.complete();
     }
 
-    function joinToList(resp: string) {
-      apiClient.sharedLists
-        .checkList(resp)
-        .then(async () => {
-          const added = await apiClient.sharedLists.addUser(
-            resp,
-            user.value.id as string
-          );
-          if (!added) {
-            await toast({
-              message: "You already belong to this list.",
-              duration: 2000,
-            });
-            return;
-          }
-        })
-        .catch(async () => {
-          await toast({
-            message: "This list or user not exists.",
-            duration: 2000,
-          });
-        });
-    }
-
-    function openScanner() {
-      useScanner(resp => joinToList(resp));
-    }
-
-    async function insertCode() {
-      await alert({
-        header: "Insert list code",
-        message: "",
-        inputs: [
-          {
-            name: "listCode",
-            id: "listCode",
-            placeholder: "List code",
-          },
-        ],
-        buttons: [
-          {
-            text: "Cancel",
-            role: "cancel",
-            cssClass: "secondary",
-            handler: () => {
-              console.log("Confirm Cancel");
-            },
-          },
-          {
-            text: "Join",
-            handler: data => joinToList(data.listCode),
-          },
-        ],
-      });
-    }
-
-    async function openJoinOptions() {
-      await actionSheet({
-        header: "Join to list",
-        buttons: [
-          {
-            text: "Scan QR",
-            handler: () => openScanner(),
-          },
-          {
-            text: "Insert list code",
-            handler: () => insertCode(),
-          },
-          {
-            text: "Cancel",
-            role: "cancel",
-          },
-        ],
-      });
-    }
-
-    watch(lists, lists => {
-      if (lists.length === 0) {
-        listsStore.action(ActionType.lists.editLists);
-      }
-    });
-
-    await fetchList();
+    fetchList();
 
     return {
-      lists,
       type,
       isModalOpen,
       editing,
@@ -259,7 +159,6 @@ export default defineComponent({
       listsError,
       doRefresh,
       openModal,
-      openJoinOptions,
       changeType,
       fetchList,
       icons: {

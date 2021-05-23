@@ -144,7 +144,7 @@ export default defineComponent({
       name: "",
       description: "",
       category: "",
-      price: -1,
+      price: 0,
     });
     const productId: string = router.currentRoute.value.params.id as string;
 

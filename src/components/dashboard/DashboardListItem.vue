@@ -9,17 +9,28 @@
       <div class="flex items-center w-full">
         <h2 class="w-2/3">{{ list.name }}</h2>
 
-        <div v-if="editing" class="flex items-center w-1/3 justify-end">
+        <div
+          v-if="editing && canBeDeleted"
+          class="flex items-center w-1/3 justify-end"
+        >
+          <ion-button
+            v-if="type === 'Private'"
+            fill="clear"
+            slot="end"
+            @click="$emit('edit-item', list)"
+          >
+            <ion-icon size="large" color="success" :icon="edit"></ion-icon>
+          </ion-button>
           <ion-button
             fill="clear"
             slot="end"
+            class="ml-1 mr-1"
             @click="$emit('delete-item', list.listCode)"
           >
             <ion-icon
               size="large"
               color="danger"
-              :icon="trash"
-              class="ml-2 mr-1"
+              :icon="type === 'Shared' ? exit : trash"
             ></ion-icon>
           </ion-button>
         </div>
@@ -37,13 +48,18 @@
 <script lang="ts">
 import { PropType } from "vue";
 import { IonBadge, IonButton, IonCard, IonIcon, IonItem } from "@ionic/vue";
-import { chevronForwardOutline, trashOutline } from "ionicons/icons";
+import {
+  chevronForwardOutline,
+  trashOutline,
+  exitOutline,
+  createOutline,
+} from "ionicons/icons";
 import { useListsStore } from "@/store/lists";
 import { List } from "@/models/domain/list";
 
 export default {
   name: "DashboardListItem",
-  emits: ["delete-item", "view-list"],
+  emits: ["delete-item", "view-list", "edit-item"],
   components: {
     IonCard,
     IonItem,
@@ -55,17 +71,26 @@ export default {
     return {
       arrow: chevronForwardOutline,
       trash: trashOutline,
+      exit: exitOutline,
+      edit: createOutline,
     };
   },
   computed: {
     editing() {
       return useListsStore().state.editing;
     },
+    type() {
+      return useListsStore().state.type;
+    },
   },
   props: {
     list: {
       type: Object as PropType<List>,
       required: true,
+    },
+    canBeDeleted: {
+      type: Boolean,
+      default: true,
     },
   },
 };

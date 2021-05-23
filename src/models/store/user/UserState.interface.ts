@@ -6,4 +6,5 @@ import { User } from "@/models/domain/user";
 export interface UserStateInterface {
   user: User;
   isLoading: boolean;
+  error: string;
 }

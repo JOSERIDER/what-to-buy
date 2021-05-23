@@ -45,10 +45,16 @@
             v-for="product in products"
             :key="product.id"
             :product="product"
+            @click="
+              router.push({
+                name: 'ProductDetail',
+                params: { id: product.id },
+              })
+            "
           />
         </ion-list>
         <ion-infinite-scroll
-          :disabled="isDisabledInfiniteScroll"
+          v-if="!isDisabledInfiniteScroll"
           @ionInfinite="loadData($event)"
         >
           <ion-infinite-scroll-content
@@ -214,6 +220,7 @@ export default defineComponent({
       dataFetched,
       error,
       products,
+      router,
       onSearchChange,
       fetchProducts,
       openOptions,

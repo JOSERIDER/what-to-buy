@@ -7,4 +7,5 @@ import { UserStateInterface } from "@/models/store";
 export const initialState: UserStateInterface = {
   user: {},
   isLoading: false,
+  error: "",
 };

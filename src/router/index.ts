@@ -23,6 +23,11 @@ const routes: Array<RouteRecordRaw> = [
     component: Auth,
   },
   {
+    path: "/profile",
+    name: "Profile",
+    component: () => import("@/views/Profile.vue"),
+  },
+  {
     path: "/list-detail/:listId/:listType",
     name: "ListDetail",
     component: () => import("@/views/ListDetail.vue"),
@@ -45,6 +50,12 @@ const routes: Array<RouteRecordRaw> = [
     path: "/products",
     name: "Products",
     component: () => import("@/views/Products.vue"),
+  },
+  {
+    path: "/product-detail/:id",
+    name: "ProductDetail",
+    props: true,
+    component: () => import("@/views/ProductDetail.vue"),
   },
   {
     path: "/share",
