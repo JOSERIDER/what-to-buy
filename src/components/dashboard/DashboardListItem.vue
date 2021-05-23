@@ -14,15 +14,23 @@
           class="flex items-center w-1/3 justify-end"
         >
           <ion-button
+            v-if="type === 'Private'"
             fill="clear"
             slot="end"
+            @click="$emit('edit-item', list)"
+          >
+            <ion-icon size="large" color="success" :icon="edit"></ion-icon>
+          </ion-button>
+          <ion-button
+            fill="clear"
+            slot="end"
+            class="ml-1 mr-1"
             @click="$emit('delete-item', list.listCode)"
           >
             <ion-icon
               size="large"
               color="danger"
               :icon="type === 'Shared' ? exit : trash"
-              class="ml-2 mr-1"
             ></ion-icon>
           </ion-button>
         </div>
@@ -44,13 +52,14 @@ import {
   chevronForwardOutline,
   trashOutline,
   exitOutline,
+  createOutline,
 } from "ionicons/icons";
 import { useListsStore } from "@/store/lists";
 import { List } from "@/models/domain/list";
 
 export default {
   name: "DashboardListItem",
-  emits: ["delete-item", "view-list"],
+  emits: ["delete-item", "view-list", "edit-item"],
   components: {
     IonCard,
     IonItem,
@@ -63,6 +72,7 @@ export default {
       arrow: chevronForwardOutline,
       trash: trashOutline,
       exit: exitOutline,
+      edit: createOutline,
     };
   },
   computed: {

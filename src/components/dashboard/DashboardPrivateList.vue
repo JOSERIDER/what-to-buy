@@ -10,6 +10,7 @@
     <div v-if="lists.length > 0">
       <DashboardListItem
         @delete-item="remove($event)"
+        @edit-item="openEditAlert($event)"
         @click="!editing ? openList(item) : ''"
         v-for="item in lists"
         :key="item.listCode"
@@ -26,11 +27,14 @@ import DashboardListItem from "@/components/dashboard/DashboardListItem.vue";
 import { useListsStore } from "@/store/lists";
 import { ActionType } from "@/models/store";
 import router from "@/router";
+import useIonicService from "@/use/useIonicService";
+import { List } from "@/models/domain/list";
 
 export default defineComponent({
   name: "DashboardPrivateList",
   async setup() {
     const listsStore = useListsStore();
+    const { alert } = useIonicService();
 
     const editing = computed(() => {
       return listsStore.state.editing;
@@ -55,6 +59,47 @@ export default defineComponent({
         params: { listId: item.listCode, listType: "Private" },
       });
     }
+    async function editItem(item: List, name: string) {
+      const listItem = { ...item };
+
+      listItem.name = name;
+      await listsStore.action(ActionType.lists.updateList, {
+        listId: item.listCode,
+        listItem,
+      });
+      await listsStore.action(ActionType.lists.fetchLists);
+    }
+
+    function openEditAlert(item) {
+      alert({
+        header: "Edit your list",
+        message: "Here you can change your list name",
+        buttons: [
+          {
+            text: "Cancel",
+            role: "cancel",
+            handler: () => close(),
+          },
+          {
+            text: "Save",
+            handler: val => {
+              if (val.listName === "") {
+                return;
+              }
+              editItem(item, val.listName);
+            },
+          },
+        ],
+        inputs: [
+          {
+            name: "listName",
+            value: item.name,
+            type: "text",
+            placeholder: "List name",
+          },
+        ],
+      });
+    }
 
     //If the lists become to be empty editing will be false.
     watch(lists, lists => {
@@ -67,6 +112,7 @@ export default defineComponent({
       lists,
       editing,
       edit,
+      openEditAlert,
       remove,
       openList,
     };

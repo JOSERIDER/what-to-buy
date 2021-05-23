@@ -83,6 +83,19 @@ export const actions: ActionTree<ListsStateInterface, RootStateInterface> = {
     }
   },
 
+  async updateList({ commit }, { listId, listItem }) {
+    try {
+      commit(ActionType.lists.setError, "");
+      commit(MutationType.lists.loadingLists);
+
+      await privateListsApiClient.update(listId, listItem);
+    } catch (error) {
+      commit(ActionType.lists.setError, error.message);
+    } finally {
+      commit(MutationType.lists.loadedLists);
+    }
+  },
+
   changeType({ commit }, type: string) {
     commit(MutationType.lists.changeType, type);
   },
