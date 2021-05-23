@@ -67,8 +67,10 @@
 
 <script lang="ts">
 import {
+  IonButton,
   IonContent,
   IonHeader,
+  IonLabel,
   IonPage,
   IonText,
   IonTitle,
@@ -99,6 +101,8 @@ export default defineComponent({
     VInput,
     VSpinner,
     IonText,
+    IonButton,
+    IonLabel,
   },
   props: {
     product: {
@@ -183,6 +187,9 @@ export default defineComponent({
       modalController.dismiss();
     }
     categories.splice(0, 1);
+    currentCategory.value = categories.find(
+      category => category.text === props.product.category
+    );
     return {
       v$,
       state,
