@@ -5,7 +5,7 @@ import { UserStateInterface } from "@/models/store";
  * @description Instance of user state with default values.
  */
 export const initialState: UserStateInterface = {
-  user: {},
+  user: null!!,
   isLoading: false,
   error: "",
 };

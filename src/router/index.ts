@@ -52,6 +52,11 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import("@/views/Products.vue"),
   },
   {
+    path: "/require-auth",
+    name: "RequireAuth",
+    component: () => import("@/views/RequireAuth.vue"),
+  },
+  {
     path: "/product-detail/:id",
     name: "ProductDetail",
     props: true,
@@ -76,15 +81,38 @@ const router = createRouter({
 
 router.beforeEach(async (to, from, next) => {
   const userStore = useUserStore();
-  await userStore.action(MutationType.user.getUser);
-  const user: User = userStore.state.user;
+  let user: User = userStore.state.user;
 
+  if (to.name === "RequireAuth" && user === null) {
+    await userStore.action(MutationType.user.getUser);
+    user = userStore.state.user;
+    if (user === null) {
+      next({ name: "Auth" });
+    } else {
+      next();
+    }
+    return;
+  }
+
+  //First initialization app
   if (to.name === "Auth" && user === null) {
     next();
     return;
-  } else if (to.name === "Auth" && user !== null) {
-    next({ name: "Dashboard" });
+  } else if (to.name !== "Auth" && user === null) {
+    await userStore.action(MutationType.user.getUser);
+    user = userStore.state.user;
+
+    if (user === null) {
+      next({ name: "Auth" });
+    } else {
+      next({ name: "RequireAuth" });
+    }
     return;
+  }
+
+  if (user === null) {
+    await userStore.action(MutationType.user.getUser);
+    user = userStore.state.user;
   }
 
   if (user === null) {

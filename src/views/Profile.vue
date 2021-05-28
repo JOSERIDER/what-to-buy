@@ -91,6 +91,23 @@
                 {{ privateLists }}
               </ion-label>
             </ion-item>
+            <ion-item>
+              <ion-label>Touch ID</ion-label>
+              <ion-toggle
+                slot="end"
+                v-if="isEnabledFingerPrint"
+                @ionChange="toggleFingerPrint($event.target.value)"
+                :disabled="!isAvailableFingerPrint"
+                checked
+              />
+              <ion-toggle
+                slot="end"
+                v-else
+                @ionChange="toggleFingerPrint($event.target.value)"
+                :disabled="!isAvailableFingerPrint"
+                :checked="false"
+              />
+            </ion-item>
           </ion-item-group>
         </div>
         <div v-if="editing" class="flex justify-center mt-4">
@@ -118,9 +135,10 @@ import {
   IonPage,
   IonText,
   IonTitle,
+  IonToggle,
   IonToolbar,
 } from "@ionic/vue";
-import VInput from "@/components/ui/VInput";
+import VInput from "@/components/ui/VInput.vue";
 import { useUserStore } from "@/store/user";
 import { computed, reactive, ref, watch } from "vue";
 import { create, closeOutline } from "ionicons/icons";
@@ -131,6 +149,8 @@ import { ActionType } from "@/models/store";
 import { useAuthsStore } from "@/store/auth";
 import useIonicService from "@/use/useIonicService";
 import { usePhotoGallery } from "@/use/usePhotoGallery";
+import touchID from "@/module-client/touchID";
+import touchIdStorageClient from "@/storage-client/touchId";
 
 export default {
   name: "Profile",
@@ -150,8 +170,9 @@ export default {
     IonAvatar,
     IonLabel,
     IonButton,
+    IonToggle,
   },
-  setup: function() {
+  setup() {
     const userStore = useUserStore();
     const editing = ref(false);
     const privateListsStore = useListsStore();
@@ -166,6 +187,10 @@ export default {
     const error = computed(() => {
       return userStore.state.error;
     });
+
+    const isAvailableFingerPrint = ref(false);
+
+    const isEnabledFingerPrint = ref(false);
 
     const state = reactive({
       email: user.value.email,
@@ -305,11 +330,29 @@ export default {
       editing.value = false;
     }
 
+    async function toggleFingerPrint() {
+      isEnabledFingerPrint.value = !isEnabledFingerPrint.value;
+      await touchIdStorageClient.set(isEnabledFingerPrint.value ? true : null);
+    }
+
     watch(error, error => {
       if (error) {
         toast({ message: error, duration: 2000 });
       }
     });
+
+    function requestTouchId() {
+      touchIdStorageClient.get().then(isEnabled => {
+        isEnabledFingerPrint.value = isEnabled === true;
+      });
+
+      touchID
+        .isAvailable()
+        .then(() => (isAvailableFingerPrint.value = true))
+        .catch(() => (isAvailableFingerPrint.value = false));
+    }
+
+    requestTouchId();
 
     return {
       v$,
@@ -319,8 +362,11 @@ export default {
       privateLists,
       photo,
       openCameraOptions,
+      toggleFingerPrint,
       updateUser,
       close,
+      isEnabledFingerPrint,
+      isAvailableFingerPrint,
       icons: {
         create,
         closeOutline,
