@@ -4,7 +4,7 @@ export namespace ListsMutationType {
   export const changeType = "changeType";
   export const editLists = "editLists";
   export const setError = "setError";
-
+  export const resetLists = "resetLists";
   export const loadingLists = "loadingLists";
   export const loadedLists = "loadedLists";
 }

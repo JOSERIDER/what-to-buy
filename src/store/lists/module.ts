@@ -35,6 +35,12 @@ export const mutations: MutationTree<ListsStateInterface> = {
   setError(state: ListsStateInterface, error: string) {
     state.error = error;
   },
+  resetLists(state: ListsStateInterface) {
+    state.lists = [];
+    state.type = "Private";
+    state.editing = false;
+    state.error = "";
+  },
 };
 
 export const actions: ActionTree<ListsStateInterface, RootStateInterface> = {
@@ -135,6 +141,10 @@ export const actions: ActionTree<ListsStateInterface, RootStateInterface> = {
     } finally {
       commit(MutationType.lists.loadedLists);
     }
+  },
+
+  resetLists({ commit }) {
+    commit(MutationType.lists.resetLists);
   },
 };
 

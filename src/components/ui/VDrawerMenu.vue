@@ -76,9 +76,7 @@ import {
 import { computed, defineComponent, ref } from "vue";
 import router from "@/router";
 import { useUserStore } from "@/store/user";
-import { ActionType } from "@/models/store";
-import { useAuthsStore } from "@/store/auth";
-import touchIdStorageClient from "@/storage-client/touchId";
+import useLogout from "@/use/useLogout";
 
 export default defineComponent({
   name: "VDrawerMenu",
@@ -95,8 +93,8 @@ export default defineComponent({
   },
   setup() {
     const userStore = useUserStore();
-    const authStore = useAuthsStore();
     const selectedIndex = ref(0);
+    const { logout } = useLogout();
     const appPages = [
       {
         title: "Home",
@@ -124,12 +122,6 @@ export default defineComponent({
       return userStore.state.user;
     });
 
-    async function logout() {
-      await userStore.action(ActionType.user.removeUser);
-      await authStore.action(ActionType.auth.logout);
-      await touchIdStorageClient.remove();
-      await router.push("/auth");
-    }
     const path: string = router.currentRoute.value.path;
 
     function findCurrentRoute() {

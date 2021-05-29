@@ -9,4 +9,5 @@ export namespace ListsActionTypes {
   export const resetError = "resetError";
   export const unJoinList = "unJoinList";
   export const updateList = "updateList";
+  export const resetLists = "resetLists";
 }
