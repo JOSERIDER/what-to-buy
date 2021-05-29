@@ -26,7 +26,10 @@
           LOGIN
         </ion-button>
       </div>
-      <div class="bottom-4 absolute w-full text-center font-bold">
+      <div
+        @click="logout"
+        class="bottom-4 absolute w-full text-center font-bold"
+      >
         Logout ->
       </div>
     </ion-content>
@@ -46,6 +49,7 @@ import useIonicService from "@/use/useIonicService";
 import router from "@/router";
 import touchID from "@/module-client/touchID";
 import touchIdStorageClient from "@/storage-client/touchId";
+import useLogout from "@/use/useLogout";
 
 export default {
   name: "RequireAuth",
@@ -54,6 +58,7 @@ export default {
     const userStore = useUserStore();
     const authStore = useAuthsStore();
     const { alert, toast } = useIonicService();
+    const { logout } = useLogout();
 
     const isAvailableFingerPrint = ref(false);
 
@@ -126,7 +131,15 @@ export default {
 
     requestTouchId();
 
-    return { user, state, v$, isAvailableFingerPrint, login, useTouchID };
+    return {
+      user,
+      state,
+      v$,
+      isAvailableFingerPrint,
+      login,
+      logout,
+      useTouchID,
+    };
   },
 };
 </script>
