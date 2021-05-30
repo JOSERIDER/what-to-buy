@@ -116,6 +116,7 @@ export const actions: ActionTree<
   async fetchList({ commit }, { listId, listType }) {
     try {
       commit(MutationType.listDetail.setLoading, true);
+      commit(MutationType.listDetail.setError, "");
 
       let list: List;
       if (listType === "Private") {
@@ -162,6 +163,7 @@ export const actions: ActionTree<
   async updateList({ commit, state }) {
     try {
       commit(MutationType.listDetail.setLoading, true);
+      commit(MutationType.listDetail.setError, "");
       commit(MutationType.listDetail.updateList);
       if (state.type === "Private") {
         await apiClient.privateLists.update(state.list.listCode, state.list);
@@ -202,6 +204,7 @@ export const actions: ActionTree<
     commit(MutationType.listDetail.updateListDataProduct, products);
     try {
       commit(MutationType.listDetail.setLoading, true);
+      commit(MutationType.listDetail.setError, "");
       if (state.type === "Private") {
         await apiClient.privateLists.update(state.list.listCode, state.list);
       } else {

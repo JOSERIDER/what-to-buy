@@ -99,6 +99,7 @@ export const actions: ActionTree<ProductsStateInterface, RootStateInterface> = {
   async addProduct({ commit, dispatch }, { base64Data, fileName, product }) {
     try {
       commit(MutationType.products.setLoading, true);
+      commit(MutationType.listDetail.setError, "");
       const productsApiClient = apiClient.products;
 
       if (base64Data && fileName) {
@@ -127,6 +128,7 @@ export const actions: ActionTree<ProductsStateInterface, RootStateInterface> = {
   async fetchProductsById({ commit }, productsId: string[]) {
     try {
       commit(MutationType.products.setLoading, true);
+      commit(MutationType.listDetail.setError, "");
       const productsApiClient = apiClient.products;
 
       if (!productsId) return;
@@ -144,6 +146,7 @@ export const actions: ActionTree<ProductsStateInterface, RootStateInterface> = {
   async getProductsByName({ commit }, name: string) {
     try {
       commit(MutationType.products.setLoading, true);
+      commit(MutationType.listDetail.setError, "");
       commit(MutationType.products.setName, name);
       const productsApiClient = apiClient.products;
       commit(MutationType.products.restoreFilter);
@@ -206,6 +209,7 @@ export const actions: ActionTree<ProductsStateInterface, RootStateInterface> = {
   async fetchFilterProducts({ commit, state }) {
     try {
       commit(MutationType.products.setLoading, true);
+      commit(MutationType.listDetail.setError, "");
       const productsApiClient = apiClient.products;
       commit(MutationType.products.restoreProducts);
 
@@ -232,6 +236,7 @@ export const actions: ActionTree<ProductsStateInterface, RootStateInterface> = {
     commit(MutationType.products.restoreProducts);
     commit(MutationType.products.restoreName);
     commit(MutationType.products.restoreFilter);
+    commit(MutationType.products.setError, "");
   },
 };
 

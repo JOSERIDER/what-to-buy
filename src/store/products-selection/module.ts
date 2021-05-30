@@ -233,6 +233,7 @@ export const actions: ActionTree<
   async fetchFilterProducts({ commit, state }) {
     try {
       commit(MutationType.productsSelection.setLoading, true);
+      commit(MutationType.productsSelection.setError, "");
       commit(MutationType.productsSelection.restoreProducts);
       const productsApiClient = apiClient.productsSelection;
 
@@ -258,6 +259,7 @@ export const actions: ActionTree<
     commit(MutationType.productsSelection.restoreProducts);
     commit(MutationType.productsSelection.restoreName);
     commit(MutationType.productsSelection.restoreFilter);
+    commit(MutationType.productsSelection.setError, "");
   },
 
   setLastQuery({ commit }, lastQuery) {
