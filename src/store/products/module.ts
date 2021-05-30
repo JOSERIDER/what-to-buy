@@ -14,8 +14,8 @@ import useKeyWordGen from "@/use/useKeyWordGen";
 import useCategory from "@/use/useCategory";
 
 export const mutations: MutationTree<ProductsStateInterface> = {
-  setProducts(state: ProductsStateInterface, products: Product[]) {
-    if (state.products) {
+  setProducts(state: ProductsStateInterface, { products, replace = false }) {
+    if (state.products && !replace) {
       state.products = state.products.concat(products);
       return;
     }
@@ -88,7 +88,7 @@ export const actions: ActionTree<ProductsStateInterface, RootStateInterface> = {
         commit(MutationType.products.setLastQuery, null);
       }
 
-      commit(MutationType.products.setProducts, products);
+      commit(MutationType.products.setProducts, { products });
     } catch (error) {
       commit(MutationType.listDetail.setError, error.message);
     } finally {
@@ -135,7 +135,7 @@ export const actions: ActionTree<ProductsStateInterface, RootStateInterface> = {
 
       const products = await productsApiClient.getProductsById(productsId);
 
-      commit(MutationType.products.setProducts, products);
+      commit(MutationType.products.setProducts, { products });
     } catch (error) {
       commit(MutationType.listDetail.setError, error.message);
     } finally {
@@ -159,7 +159,7 @@ export const actions: ActionTree<ProductsStateInterface, RootStateInterface> = {
         commit(MutationType.products.setLastQuery, null);
       }
 
-      commit(MutationType.products.setProducts, products);
+      commit(MutationType.products.setProducts, { products });
     } catch (error) {
       commit(MutationType.listDetail.setError, error.message);
     } finally {
@@ -167,7 +167,7 @@ export const actions: ActionTree<ProductsStateInterface, RootStateInterface> = {
     }
   },
 
-  async loadData({ commit, state }) {
+  async loadData({ commit, state }, replace = false) {
     try {
       commit(MutationType.products.setLoading, true);
       commit(MutationType.products.setError, "");
@@ -190,7 +190,7 @@ export const actions: ActionTree<ProductsStateInterface, RootStateInterface> = {
         commit(MutationType.products.setInfiniteScroll, false);
       }
 
-      commit(MutationType.products.setProducts, products);
+      commit(MutationType.products.setProducts, { products, replace });
     } catch (error) {
       commit(MutationType.products.setError, error.message);
     } finally {
@@ -215,7 +215,7 @@ export const actions: ActionTree<ProductsStateInterface, RootStateInterface> = {
 
       const products = await productsApiClient.getFilterProducts(state.filter);
 
-      commit(MutationType.products.setProducts, products);
+      commit(MutationType.products.setProducts, { products });
     } catch (error) {
       console.error(error);
       commit(MutationType.products.setError, error.message);
@@ -230,6 +230,11 @@ export const actions: ActionTree<ProductsStateInterface, RootStateInterface> = {
 
   restoreProducts({ commit }) {
     commit(MutationType.products.restoreProducts);
+  },
+
+  async refresh({ commit, dispatch }) {
+    commit(MutationType.products.setLastQuery, null);
+    await dispatch(ActionType.products.loadData, true);
   },
 
   restoreStore({ commit }) {

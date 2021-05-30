@@ -10,4 +10,5 @@ export namespace ProductsActionTypes {
   export const restoreProducts = "restoreProducts";
   export const restoreStore = "restoreStore";
   export const loadData = "loadData";
+  export const refresh = "refresh";
 }
