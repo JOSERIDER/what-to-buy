@@ -151,8 +151,7 @@ export default defineComponent({
     }
 
     async function doRefresh(ev) {
-      await productsStore.action(ActionType.products.restoreProducts);
-      await productsStore.action(ActionType.products.loadData);
+      await productsStore.action(ActionType.products.refresh);
       ev.target.complete();
     }
 
@@ -175,7 +174,10 @@ export default defineComponent({
     }
 
     function openScanner() {
-      useScanner(resp => checkProduct(resp));
+      useScanner(resp => {
+        if (!resp) return;
+        checkProduct(resp);
+      });
     }
 
     function openOptions() {
