@@ -7,15 +7,22 @@
         v-model:value="state.email"
         placeholder="Email"
         :icon="email"
+        enterkeyhint="next"
+        @enter="$refs.pass.setFocus()"
+        input-mode="email"
         name="email"
       />
 
       <!-- Password -->
       <VInput
+        ref="pass"
         :v$="v$.password"
         v-model:value="state.password"
         placeholder="Password"
+        enterkeyhint="done"
+        :clearInput="true"
         :icon="password"
+        @enter="login"
         name="password"
         type="password"
       />
