@@ -22,11 +22,13 @@
 
     <ion-content :fullscreen="false" class="p-4">
       <div class="container sm:m-auto">
-        <ion-searchbar
+        <VSearchBar
           placeholder="Search by name"
           inputmode="text"
-          @ionChange="onSearchChange($event.detail.value)"
-        ></ion-searchbar>
+          @onSearchChange="onSearchChange($event.detail.value)"
+          enter-keyhint="search"
+          @enter="hideKeyboard"
+        />
 
         <div
           v-if="error || (loading && !dataFetched) || products.length === 0"
@@ -76,7 +78,6 @@ import {
   IonList,
   IonTitle,
   IonToolbar,
-  IonSearchbar,
   IonPage,
   IonInfiniteScrollContent,
   IonInfiniteScroll,
@@ -95,10 +96,13 @@ import VErrorView from "@/components/ui/VErrorView.vue";
 import ProductsEmptyView from "@/components/products/ProductsEmptyView.vue";
 import router from "@/router";
 import ProductsFilterPopover from "@/components/products/ProductsFilterPopover.vue";
+import VSearchBar from "@/views/VSearchBar.vue";
+import { useKeyboard } from "@/use/useKeyboard";
 
 export default defineComponent({
   name: "ProductsSelection",
   components: {
+    VSearchBar,
     ProductsEmptyView,
     VSpinner,
     ProductSelectionListItem,
@@ -109,7 +113,6 @@ export default defineComponent({
     IonIcon,
     IonButton,
     IonList,
-    IonSearchbar,
     IonPage,
     IonInfiniteScrollContent,
     IonInfiniteScroll,
@@ -120,6 +123,7 @@ export default defineComponent({
   setup() {
     const productsSelectionStore = useProductsSelectionStore();
     const { alert, popover } = useIonicService();
+    const { hideKeyboard } = useKeyboard();
     const dataFetched = ref(false);
 
     const products = computed(() => {
@@ -234,6 +238,7 @@ export default defineComponent({
       loading,
       isDisabledInfiniteScroll,
       dataFetched,
+      hideKeyboard,
       save,
       fetchProducts,
       unselectProduct,

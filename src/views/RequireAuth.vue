@@ -7,24 +7,30 @@
           :src="require('@/assets/resources/user.png')"
         />
         <h2 class="text-center">Hi {{ user.name }}!</h2>
-        <VInput
-          class="shadow"
-          type="password"
-          name="password"
-          placeholder="Password"
-          v-model:value="state.password"
-          :v$="v$"
-        />
-        <div
-          v-if="isAvailableFingerPrint"
-          class="font-bold"
-          @click="useTouchID"
-        >
-          Touch ID
+        <ion-loading :is-open="loading" message="Please wait..." />
+
+        <div class="flex flex-col justify-center">
+          <VInput
+            class="shadow"
+            type="password"
+            name="password"
+            placeholder="Password"
+            enterkeyhint="done"
+            @enter="login"
+            v-model:value="state.password"
+            :v$="v$"
+          />
+          <div
+            v-if="isAvailableFingerPrint"
+            class="font-bold"
+            @click="useTouchID"
+          >
+            Touch ID
+          </div>
+          <ion-button @click="login" v-if="!v$.$invalid">
+            LOGIN
+          </ion-button>
         </div>
-        <ion-button @click="login" v-if="!v$.$invalid">
-          LOGIN
-        </ion-button>
       </div>
       <div
         @click="logout"
@@ -38,7 +44,7 @@
 
 <script>
 import VInput from "@/components/ui/VInput";
-import { IonContent, IonPage } from "@ionic/vue";
+import { IonContent, IonLoading, IonPage } from "@ionic/vue";
 import { useUserStore } from "@/store/user";
 import { useAuthsStore } from "@/store/auth";
 import { computed, reactive, ref } from "vue";
@@ -50,15 +56,17 @@ import router from "@/router";
 import touchID from "@/module-client/touchID";
 import touchIdStorageClient from "@/storage-client/touchId";
 import useLogout from "@/use/useLogout";
+import { useKeyboard } from "@/use/useKeyboard";
 
 export default {
   name: "RequireAuth",
-  components: { VInput, IonPage, IonContent },
+  components: { VInput, IonPage, IonContent, IonLoading },
   setup() {
     const userStore = useUserStore();
     const authStore = useAuthsStore();
     const { alert, toast } = useIonicService();
     const { logout } = useLogout();
+    const { hideKeyboard } = useKeyboard();
 
     const isAvailableFingerPrint = ref(false);
 
@@ -76,6 +84,10 @@ export default {
       };
     });
 
+    const loading = computed(() => {
+      return authStore.state.loading;
+    });
+
     const v$ = useVuelidate(rules, state);
 
     const user = computed(() => {
@@ -91,6 +103,7 @@ export default {
     }
 
     async function login() {
+      await hideKeyboard();
       const userData = { email: user.value.email, password: state.password };
       await authStore.action(ActionType.auth.login, userData);
       if (authStore.state.error) {
@@ -134,6 +147,7 @@ export default {
     return {
       user,
       state,
+      loading,
       v$,
       isAvailableFingerPrint,
       login,
