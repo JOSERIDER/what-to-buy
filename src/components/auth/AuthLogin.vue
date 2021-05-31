@@ -7,15 +7,22 @@
         v-model:value="state.email"
         placeholder="Email"
         :icon="email"
+        enterkeyhint="next"
+        @enter="$refs.pass.setFocus()"
+        input-mode="email"
         name="email"
       />
 
       <!-- Password -->
       <VInput
+        ref="pass"
         :v$="v$.password"
         v-model:value="state.password"
         placeholder="Password"
+        enterkeyhint="done"
+        :clearInput="true"
         :icon="password"
+        @enter="login"
         name="password"
         type="password"
       />
@@ -36,6 +43,7 @@ import { email, required } from "@vuelidate/validators";
 import { ActionType } from "@/models/store";
 import { useAuthsStore } from "@/store/auth";
 import router from "@/router";
+import { useKeyboard } from "@/use/useKeyboard";
 
 export default {
   components: {
@@ -45,7 +53,7 @@ export default {
   },
   setup() {
     const authStore = useAuthsStore();
-
+    const { hideKeyboard } = useKeyboard();
     const state = reactive({
       email: "",
       password: "",
@@ -74,6 +82,7 @@ export default {
 
       if (v$.value.$error) return;
 
+      await hideKeyboard();
       await authStore.action(ActionType.auth.login, {
         email: state.email,
         password: state.password,

@@ -21,6 +21,8 @@
           :border="true"
           v-model:value="state.name"
           :v$="v$.name"
+          enterkeyhint="done"
+          @enter="createList"
           placeholder="Next weekend BBQ"
           name="listName"
         />
@@ -62,6 +64,7 @@ import { ActionType } from "@/models/store";
 import { User } from "@/models/domain/user";
 import { ListBuild } from "@/models/domain/list";
 import VSpinner from "@/components/ui/VSpinner.vue";
+import { useKeyboard } from "@/use/useKeyboard";
 
 export default defineComponent({
   name: "DashBoardModalCreateList",
@@ -79,7 +82,7 @@ export default defineComponent({
   setup() {
     const user: User = useUserStore().state.user;
     const listsStore = useListsStore();
-
+    const { hideKeyboard } = useKeyboard();
     const state = reactive({
       name: "",
     });
@@ -125,6 +128,7 @@ export default defineComponent({
       await v$.value.$validate();
       if (v$.value.$error) return;
 
+      await hideKeyboard();
       const newList = ListBuild.build(user.id as string, state.name as string);
       await listsStore.action(ActionType.lists.createList, newList);
 

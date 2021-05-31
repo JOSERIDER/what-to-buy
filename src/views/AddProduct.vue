@@ -28,9 +28,11 @@
 
         <ion-card class="flexbox ion-padding">
           <!-- name -->
-          <form>
+          <form @submit.prevent="save">
             <VInput
               name="productName"
+              enterkeyhint="next"
+              @enter="$refs.description.setFocus()"
               v-model:value="state.name"
               placeholder="Name of product"
               :v$="v$.name"
@@ -38,6 +40,9 @@
 
             <!-- Description -->
             <VTextarea
+              ref="description"
+              enterkeyhint="next"
+              @enter="$refs.price.setFocus()"
               name="productDescription"
               v-model:value="state.description"
               placeholder="Description"
@@ -62,13 +67,21 @@
             </ion-grid>
             <!-- Price -->
             <VInput
+              ref="price"
               name="productPrice"
+              enterkeyhint="done"
+              @enter="save"
               v-model:value.number="state.price"
               placeholder="price"
               :v$="v$.price"
               type="number"
             />
-            <ion-button v-if="!loading" @click="save()" expand="block">
+            <ion-button
+              v-if="!loading"
+              type="submit"
+              @click="save()"
+              expand="block"
+            >
               Save
             </ion-button>
             <ion-button v-else expand="block">
@@ -112,6 +125,7 @@ import { ActionType } from "@/models/store";
 import { ProductDomainBuilder } from "@/models/domain/product/ProductDomain.builder";
 import apiClient from "@/api-client";
 import { Product } from "@/models/domain/product";
+import { useKeyboard } from "@/use/useKeyboard";
 
 export default defineComponent({
   name: "AddProduct",
@@ -136,6 +150,7 @@ export default defineComponent({
   setup() {
     const { picker, toast, actionSheet } = useIonicService();
     const { categories } = useCategory();
+    const { hideKeyboard } = useKeyboard();
     const { takePhotoCamera, selectFromGallery, photo } = usePhotoGallery();
     const currentCategory = ref({} as any);
     const productsStore = useProductsStore();
@@ -241,6 +256,8 @@ export default defineComponent({
         v$.value.$touch();
         return;
       }
+
+      await hideKeyboard();
 
       if (currentCategory.value.value === -1) {
         await toast({ message: "Please, select a category", duration: 1500 });

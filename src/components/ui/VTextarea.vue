@@ -6,9 +6,14 @@
     <ion-col>
       <ion-textarea
         :name="name"
+        :ref="name"
         @change="v$.$touch()"
         :value="value"
         @input="$emit('update:value', $event.target.value)"
+        :enterkeyhint="enterkeyhint"
+        :inputmode="inputMode"
+        :clear-input="clearInput"
+        @keypress.enter="$emit('enter')"
         :class="{
           invalid: v$.$invalid && v$.$dirty,
           border: border,
@@ -20,7 +25,7 @@
     </ion-col>
   </ion-row>
 </template>
-<script lang="ts">
+<script>
 import { IonCol, IonIcon, IonRow, IonTextarea } from "@ionic/vue";
 
 export default {
@@ -54,6 +59,23 @@ export default {
     name: {
       type: String,
       required: true,
+    },
+    enterkeyhint: {
+      type: String,
+      default: undefined,
+    },
+    inputMode: {
+      type: String,
+      default: undefined,
+    },
+    clearInput: {
+      type: Boolean,
+      default: false,
+    },
+  },
+  methods: {
+    setFocus() {
+      this.$refs[this.name].$el.setFocus();
     },
   },
   components: {

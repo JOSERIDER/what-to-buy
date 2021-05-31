@@ -7,22 +7,31 @@
         v-model:value="s.email"
         placeholder="Email"
         :icon="email"
-        name="Email"
+        enterkeyhint="next"
+        @enter="$refs.userName.setFocus()"
+        input-mode="email"
+        name="email"
       />
 
       <!-- Name -->
       <VInput
+        ref="userName"
         :v$="v$.name"
         v-model:value="s.name"
         placeholder="userName"
+        enterkeyhint="next"
+        @enter="$refs.listName.setFocus()"
         :icon="person"
         name="userName"
       />
 
       <!-- sharedList name -->
       <VInput
+        ref="listName"
         :v$="v$.listName"
         v-model:value="s.listName"
+        enterkeyhint="next"
+        @enter="$refs.signUp_password.setFocus()"
         placeholder="Name of your shared list"
         :icon="list"
         name="listName"
@@ -30,8 +39,11 @@
 
       <!-- Password -->
       <VInput
+        ref="signUp_password"
         :v$="v$.password"
         v-model:value="s.password"
+        enterkeyhint="done"
+        @enter="signUp"
         placeholder="Password"
         :icon="password"
         name="password"
@@ -54,6 +66,7 @@ import VInput from "@/components/ui/VInput.vue";
 import { ActionType } from "@/models/store";
 import { useAuthsStore } from "@/store/auth";
 import router from "@/router";
+import { useKeyboard } from "@/use/useKeyboard";
 
 export default {
   components: {
@@ -63,7 +76,7 @@ export default {
   },
   setup() {
     const authStore = useAuthsStore();
-
+    const { hideKeyboard } = useKeyboard();
     const state = reactive({
       name: "",
       email: "",
@@ -91,6 +104,7 @@ export default {
 
       if (v$.value.$error) return;
 
+      await hideKeyboard();
       await authStore.action(ActionType.auth.signUp, {
         email: state.email,
         password: state.password,

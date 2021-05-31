@@ -61,7 +61,7 @@ export const actions: ActionTree<UserStateInterface, RootStateInterface> = {
   async createUser({ commit, dispatch }, user: User) {
     commit(MutationType.user.loadingUser);
     await usersApiClient.create(user);
-    dispatch(ActionType.user.setUser, user);
+    await dispatch(ActionType.user.setUser, user);
     commit(MutationType.user.loadedUser);
   },
 
