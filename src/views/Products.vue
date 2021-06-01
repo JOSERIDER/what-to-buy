@@ -99,7 +99,7 @@ import useIonicService from "@/use/useIonicService";
 import router from "@/router";
 import useScanner from "@/use/useScanner";
 import apiClient from "@/api-client";
-import VSearchBar from "@/views/VSearchBar.vue";
+import VSearchBar from "@/components/ui/VSearchBar.vue";
 import { useKeyboard } from "@/use/useKeyboard";
 
 export default defineComponent({
@@ -132,7 +132,7 @@ export default defineComponent({
     const loading = computed(() => {
       return productsStore.state.loading;
     });
-    const {hideKeyboard} = useKeyboard();
+    const { hideKeyboard } = useKeyboard();
     const isDisabledInfiniteScroll = computed(() => {
       return productsStore.state.isDisableInfiniteScroll;
     });
@@ -239,4 +239,3 @@ export default defineComponent({
   },
 });
 </script>
-

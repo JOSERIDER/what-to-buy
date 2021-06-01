@@ -6,6 +6,7 @@ import { useUserStore } from "@/store/user";
 import { MutationType } from "@/models/store";
 import { User } from "@/models/domain/user";
 import { useListDetailStore } from "@/store/list-detail";
+import storageClient from "@/storage-client";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -72,6 +73,11 @@ const routes: Array<RouteRecordRaw> = [
     name: "AddProduct",
     component: () => import("@/views/AddProduct.vue"),
   },
+  {
+    path: "/starter",
+    name: "Starter",
+    component: () => import("@/views/Starter.vue"),
+  },
 ];
 
 const router = createRouter({
@@ -82,6 +88,18 @@ const router = createRouter({
 router.beforeEach(async (to, from, next) => {
   const userStore = useUserStore();
   let user: User = userStore.state.user;
+
+  const isFirstTime = await storageClient.starter.get();
+
+  if (to.name === "Auth" && !isFirstTime) {
+    next({ name: "Starter" });
+    return;
+  }
+
+  if (to.name === "Starter" && !isFirstTime) {
+    next();
+    return;
+  }
 
   if (to.name === "RequireAuth" && user === null) {
     await userStore.action(MutationType.user.getUser);

@@ -96,7 +96,7 @@ import VErrorView from "@/components/ui/VErrorView.vue";
 import ProductsEmptyView from "@/components/products/ProductsEmptyView.vue";
 import router from "@/router";
 import ProductsFilterPopover from "@/components/products/ProductsFilterPopover.vue";
-import VSearchBar from "@/views/VSearchBar.vue";
+import VSearchBar from "@/components/ui/VSearchBar.vue";
 import { useKeyboard } from "@/use/useKeyboard";
 
 export default defineComponent({
