@@ -54,6 +54,8 @@
               <VInput
                 v-if="editing"
                 slot="end"
+                enterkeyhint="next"
+                @enter="$refs.userEmail.setFocus()"
                 :v$="v$.userName"
                 v-model:value="v$.userName.$model"
                 name="name"
@@ -72,6 +74,9 @@
               <VInput
                 v-if="editing"
                 slot="end"
+                ref="userEmail"
+                enterkeyhint="done"
+                @enter="updateUser"
                 :v$="v$.email"
                 v-model:value="v$.email.$model"
                 name="email"
@@ -111,7 +116,7 @@
           </ion-item-group>
         </div>
         <div v-if="editing" class="flex justify-center mt-4">
-          <ion-button @click="updateUser()">
+          <ion-button @click="updateUser">
             Update user
           </ion-button>
         </div>
@@ -151,6 +156,7 @@ import useIonicService from "@/use/useIonicService";
 import { usePhotoGallery } from "@/use/usePhotoGallery";
 import touchID from "@/module-client/touchID";
 import touchIdStorageClient from "@/storage-client/touchId";
+import { useKeyboard } from "@/use/useKeyboard";
 
 export default {
   name: "Profile",
@@ -313,6 +319,8 @@ export default {
 
     async function updateUser() {
       if (v$.value.$invalid) return;
+
+      await useKeyboard().hideKeyboard();
 
       await userStore
         .action(ActionType.user.updateUser, {

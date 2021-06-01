@@ -11,54 +11,67 @@
     <ion-content>
       <div class="m-4">
         <div class="mt-4">
-          <ion-label>Product Name</ion-label>
-          <VInput
-            :border="true"
-            v-model:value="state.name"
-            :v$="v$.name"
-            placeholder="Product name"
-            name="listName"
-          />
-        </div>
+          <form @submit.prevent="updateProduct">
+            <ion-label>Product Name</ion-label>
+            <VInput
+              :border="true"
+              enterkeyhint="next"
+              @enter="$refs.productEditDescription.setFocus()"
+              v-model:value="state.name"
+              :v$="v$.name"
+              placeholder="Product name"
+              name="productName"
+            />
 
-        <div class="mt-4">
-          <ion-label>Product Description</ion-label>
-          <VTextarea
-            :border="true"
-            v-model:value="state.description"
-            :v$="v$.description"
-            placeholder="Product description"
-            name="listName"
-          />
-        </div>
+            <div class="mt-4">
+              <ion-label>Product Description</ion-label>
+              <VTextarea
+                :border="true"
+                ref="productEditDescription"
+                enterkeyhint="next"
+                @enter="$refs.productEditPrice.setFocus()"
+                v-model:value="state.description"
+                :v$="v$.description"
+                placeholder="Product description"
+                name="productDescription"
+              />
+            </div>
 
-        <div class="mt-4">
-          <ion-label>Product Price</ion-label>
-          <VInput
-            :border="true"
-            type="number"
-            v-model:value.number="state.price"
-            :v$="v$.price"
-            placeholder="Product price"
-            name="listName"
-          />
-        </div>
+            <div class="mt-4">
+              <ion-label>Product Price</ion-label>
+              <VInput
+                :border="true"
+                type="number"
+                ref="productEditPrice"
+                enterkeyhint="done"
+                @enter="updateProduct"
+                v-model:value.number="state.price"
+                :v$="v$.price"
+                step="any"
+                placeholder="Product price"
+                name="productPrice"
+              />
+            </div>
 
-        <div>
-          <ion-label>Category</ion-label>
-          <h2
-            class="text-center mt-2 border p-2 rounded shadow"
-            @click="openPicker"
-          >
-            {{ currentCategory.text ? currentCategory.text : product.category }}
-          </h2>
-        </div>
+            <div>
+              <ion-label>Category</ion-label>
+              <h2
+                class="text-center mt-2 border p-2 rounded shadow"
+                @click="openPicker"
+              >
+                {{
+                  currentCategory.text ? currentCategory.text : product.category
+                }}
+              </h2>
+            </div>
 
-        <div class="flex w-full justify-center mt-4">
-          <ion-button v-if="!loading" @click="updateProduct" fill="clear">
-            Update product
-          </ion-button>
-          <VSpinner v-else />
+            <div class="flex w-full justify-center mt-4">
+              <ion-button type="submit" v-if="!loading" fill="clear">
+                Update product
+              </ion-button>
+              <VSpinner v-else />
+            </div>
+          </form>
         </div>
       </div>
     </ion-content>
@@ -88,6 +101,7 @@ import useIonicService from "@/use/useIonicService";
 import apiClient from "@/api-client";
 import { Product } from "@/models/domain/product";
 import useKeyWordGen from "@/use/useKeyWordGen";
+import { useKeyboard } from "@/use/useKeyboard";
 
 export default defineComponent({
   name: "ProductDetailEditModal",
@@ -171,6 +185,8 @@ export default defineComponent({
         return;
       }
       loading.value = true;
+      await useKeyboard().hideKeyboard();
+
       const product = { ...props.product };
       product.name = state.name;
       product.description = state.description;

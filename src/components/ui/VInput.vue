@@ -13,6 +13,7 @@
         :enterkeyhint="enterkeyhint"
         :inputmode="inputMode"
         :clear-input="clearInput"
+        :step="step"
         @keypress.enter="$emit('enter')"
         @ionInput="$emit('update:value', $event.target.value)"
         :class="{
@@ -82,6 +83,10 @@ export default {
       default: false,
     },
     reference: {
+      type: String,
+      default: "",
+    },
+    step: {
       type: String,
       default: "",
     },

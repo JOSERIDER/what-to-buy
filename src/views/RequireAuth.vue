@@ -5,6 +5,7 @@
         <img
           class="rounded-full w-20 h-20 shadow"
           :src="require('@/assets/resources/user.png')"
+          alt="user image"
         />
         <h2 class="text-center">Hi {{ user.name }}!</h2>
         <ion-loading :is-open="loading" message="Please wait..." />
@@ -44,7 +45,7 @@
 
 <script>
 import VInput from "@/components/ui/VInput";
-import { IonContent, IonLoading, IonPage } from "@ionic/vue";
+import { IonButton, IonContent, IonLoading, IonPage } from "@ionic/vue";
 import { useUserStore } from "@/store/user";
 import { useAuthsStore } from "@/store/auth";
 import { computed, reactive, ref } from "vue";
@@ -60,7 +61,7 @@ import { useKeyboard } from "@/use/useKeyboard";
 
 export default {
   name: "RequireAuth",
-  components: { VInput, IonPage, IonContent, IonLoading },
+  components: { VInput, IonPage, IonContent, IonLoading, IonButton },
   setup() {
     const userStore = useUserStore();
     const authStore = useAuthsStore();
