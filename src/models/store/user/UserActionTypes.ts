@@ -5,4 +5,5 @@ export namespace UserActionTypes {
   export const createUser = "createUser";
   export const updateUser = "updateUser";
   export const updateUserProfileImage = "updateUserProfileImage";
+  export const deleteUser = "deleteUser";
 }

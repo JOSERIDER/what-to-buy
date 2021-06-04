@@ -4,6 +4,14 @@
       <ion-toolbar>
         <ion-menu-button slot="start"> </ion-menu-button>
         <ion-title>My Profile</ion-title>
+        <ion-button
+          @click="openPopover($event)"
+          fill="clear"
+          slot="end"
+          color="primary"
+        >
+          <ion-icon size="large" :icon="icons.ellipsis"></ion-icon>
+        </ion-button>
       </ion-toolbar>
     </ion-header>
 
@@ -146,7 +154,7 @@ import {
 import VInput from "@/components/ui/VInput.vue";
 import { useUserStore } from "@/store/user";
 import { computed, reactive, ref, watch } from "vue";
-import { create, closeOutline } from "ionicons/icons";
+import { create, closeOutline, ellipsisVerticalOutline } from "ionicons/icons";
 import { email, minLength, required } from "@vuelidate/validators";
 import useVuelidate from "@vuelidate/core";
 import { useListsStore } from "@/store/lists";
@@ -157,6 +165,7 @@ import { usePhotoGallery } from "@/use/usePhotoGallery";
 import touchID from "@/module-client/touchID";
 import touchIdStorageClient from "@/storage-client/touchId";
 import { useKeyboard } from "@/use/useKeyboard";
+import ProfileOptionsPopover from "@/components/profile/ProfileOptionsPopover";
 
 export default {
   name: "Profile",
@@ -182,7 +191,7 @@ export default {
     const userStore = useUserStore();
     const editing = ref(false);
     const privateListsStore = useListsStore();
-    const { alert, toast, actionSheet } = useIonicService();
+    const { alert, toast, actionSheet, popover } = useIonicService();
     const { takePhotoCamera, selectFromGallery, photo } = usePhotoGallery();
     const authStore = useAuthsStore();
 
@@ -360,6 +369,16 @@ export default {
         .catch(() => (isAvailableFingerPrint.value = false));
     }
 
+    function openPopover(event) {
+      popover({
+        event,
+        component: ProfileOptionsPopover,
+        componentProps: {},
+        mode: "ios",
+        translucent: "false",
+      });
+    }
+
     requestTouchId();
 
     return {
@@ -372,12 +391,14 @@ export default {
       openCameraOptions,
       toggleFingerPrint,
       updateUser,
+      openPopover,
       close,
       isEnabledFingerPrint,
       isAvailableFingerPrint,
       icons: {
         create,
         closeOutline,
+        ellipsis: ellipsisVerticalOutline,
       },
     };
   },

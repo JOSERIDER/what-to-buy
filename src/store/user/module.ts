@@ -53,7 +53,6 @@ export const actions: ActionTree<UserStateInterface, RootStateInterface> = {
     commit(MutationType.user.loadingUser);
     const userStorage = storageClient.user;
     await userStorage.remove();
-
     commit(MutationType.user.removeUser);
     commit(MutationType.user.loadedUser);
   },
@@ -62,6 +61,13 @@ export const actions: ActionTree<UserStateInterface, RootStateInterface> = {
     commit(MutationType.user.loadingUser);
     await usersApiClient.create(user);
     await dispatch(ActionType.user.setUser, user);
+    commit(MutationType.user.loadedUser);
+  },
+
+  async deleteUser({ commit, dispatch }, userId: string) {
+    commit(MutationType.user.loadingUser);
+    await usersApiClient.delete(userId);
+    await dispatch(ActionType.user.removeUser);
     commit(MutationType.user.loadedUser);
   },
 
