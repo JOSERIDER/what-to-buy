@@ -112,8 +112,11 @@ export const actions: ActionTree<ProductsStateInterface, RootStateInterface> = {
         product.image =
           "https://firebasestorage.googleapis.com/v0/b/shopping-list-93c19.appspot.com/o/images%2Fdefault-product.png?alt=media&token=822bdabf-84df-4006-a865-ea7b96294798";
       }
+      const productName = product.name;
 
-      product.keyWords = useKeyWordGen().generateKeywords([product.name]);
+      product.keyWords = useKeyWordGen().generateKeywords([
+        productName.charAt(0).toUpperCase() + productName.slice(1),
+      ]);
 
       await productsApiClient.create(product);
 

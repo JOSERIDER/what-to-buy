@@ -34,7 +34,7 @@ export class HttpClientModel implements HttpClientInterface {
         .orderBy(params.orderBy!!)
         .where("keyWords", "array-contains", params.query.name)
         .limit(10)
-        .startAfter(store.state.lastQuery)
+        .startAfter(store.state.lastQuery ? store.state.lastQuery : null)
         .get()
         .then(response => {
           const docs = response.docs.map(doc => doc.data() as T);
@@ -60,7 +60,7 @@ export class HttpClientModel implements HttpClientInterface {
       return new Promise((resolve, reject) => {
         baseProductsFilterQuery
           .orderBy("price")
-          .startAfter(store.state.lastQuery)
+          .startAfter(store.state.lastQuery ? store.state.lastQuery : null)
           .limit(10)
           .get()
           .then(response => {
@@ -80,7 +80,7 @@ export class HttpClientModel implements HttpClientInterface {
         .orderBy("price")
         .orderBy("name")
         .limit(10)
-        .startAfter(store.state.lastQuery)
+        .startAfter(store.state.lastQuery ? store.state.lastQuery : null)
         .get()
         .then(response => {
           const docs = response.docs.map(doc => doc.data() as T);
