@@ -6,10 +6,12 @@ import { useAuthsStore } from "@/store/auth";
 import { useListsStore } from "@/store/lists";
 import { useProductsStore } from "@/store/products";
 import { useProductsSelectionStore } from "@/store/products-selection";
+import { firebaseAuth } from "@/api-client";
 
 export default function useLogout() {
+  const userStore = useUserStore();
   async function logout() {
-    await useUserStore().action(ActionType.user.removeUser);
+    await userStore.action(ActionType.user.removeUser);
     await useListsStore().action(ActionType.lists.resetLists);
     await useProductsStore().action(ActionType.products.restoreStore);
     await useProductsSelectionStore().action(
@@ -20,5 +22,14 @@ export default function useLogout() {
     await router.push("/auth");
   }
 
-  return { logout };
+  async function deleteAccount() {
+    await userStore.action(
+      ActionType.user.deleteUser,
+      firebaseAuth.currentUser?.uid
+    );
+    await firebaseAuth.currentUser?.delete();
+    await logout();
+  }
+
+  return { logout, deleteAccount };
 }
