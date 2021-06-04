@@ -57,6 +57,12 @@ export default function useIonicService() {
       columns,
       cssClass: "picker-hours",
     });
+    picker.columns[0].options.forEach(element => {
+      delete element.selected;
+      delete element.duration;
+      delete element.transform;
+    });
+
     await picker.present();
   }
 

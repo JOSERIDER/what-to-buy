@@ -145,6 +145,7 @@ export default defineComponent({
       return props.store.state.filter;
     });
 
+    let selectedIndex = 0;
     function openPicker() {
       picker({
         animated: true,
@@ -156,7 +157,9 @@ export default defineComponent({
           {
             text: "Choose",
             handler: val => {
-              currentCategory.value = val["Categories"];
+              const value = val["Categories"];
+              selectedIndex = categories.findIndex(i => i.value == value.value);
+              currentCategory.value = value;
               return true;
             },
           },
@@ -164,6 +167,7 @@ export default defineComponent({
         columns: [
           {
             name: "Categories",
+            selectedIndex: selectedIndex,
             options: categories,
           },
         ],
