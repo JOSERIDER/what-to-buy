@@ -37,17 +37,6 @@
           </ion-item>
         </ion-menu-toggle>
       </ion-list>
-      <ion-menu-toggle>
-        <ion-item
-          @click="logout()"
-          lines="none"
-          detail="false"
-          class="hydrated"
-        >
-          <ion-icon slot="start" :icon="logOutOutline"></ion-icon>
-          <ion-label>Logout</ion-label></ion-item
-        >
-      </ion-menu-toggle>
     </ion-content>
   </ion-menu>
   <!-- Should render <ion-router-outlet/> and must have contentId as id -->
@@ -70,13 +59,11 @@ import {
   settingsOutline,
   fastFoodOutline,
   listOutline,
-  logOutOutline,
   shareOutline,
 } from "ionicons/icons";
 import { computed, defineComponent, ref } from "vue";
 import router from "@/router";
 import { useUserStore } from "@/store/user";
-import useLogout from "@/use/useLogout";
 
 export default defineComponent({
   name: "VDrawerMenu",
@@ -94,7 +81,6 @@ export default defineComponent({
   setup() {
     const userStore = useUserStore();
     const selectedIndex = ref(0);
-    const { logout } = useLogout();
     const appPages = [
       {
         title: "Home",
@@ -133,9 +119,7 @@ export default defineComponent({
     return {
       appPages,
       user,
-      logOutOutline,
       selectedIndex,
-      logout,
     };
   },
 });
