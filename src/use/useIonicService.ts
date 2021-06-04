@@ -1,6 +1,7 @@
 import {
   actionSheetController,
   alertController,
+  loadingController,
   pickerController,
   popoverController,
   toastController,
@@ -66,5 +67,23 @@ export default function useIonicService() {
     await picker.present();
   }
 
-  return { popover, actionSheet, alert, toast, picker };
+  async function loading({ spinner, message }) {
+    const loading = await loadingController.create({
+      spinner: spinner,
+      message,
+      translucent: true,
+      backdropDismiss: true,
+    });
+    await loading.present();
+    return loading;
+  }
+
+  return {
+    popover,
+    actionSheet,
+    alert,
+    toast,
+    picker,
+    loadingController: loading,
+  };
 }

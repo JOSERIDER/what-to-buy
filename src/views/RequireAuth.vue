@@ -8,7 +8,6 @@
           alt="user image"
         />
         <h2 class="text-center">Hi {{ user.name }}!</h2>
-        <ion-loading :is-open="loading" message="Please wait..." />
 
         <div class="flex flex-col justify-center">
           <VInput
@@ -21,6 +20,9 @@
             v-model:value="state.password"
             :v$="v$"
           />
+          <ion-button @click="login" v-show="!v$.password.$invalid">
+            LOGIN
+          </ion-button>
           <div
             v-if="isAvailableFingerPrint"
             class="font-bold"
@@ -28,9 +30,6 @@
           >
             Touch ID
           </div>
-          <ion-button @click="login" v-if="!v$.$invalid">
-            LOGIN
-          </ion-button>
         </div>
       </div>
       <div
@@ -45,7 +44,7 @@
 
 <script>
 import VInput from "@/components/ui/VInput";
-import { IonButton, IonContent, IonLoading, IonPage } from "@ionic/vue";
+import { IonButton, IonContent, IonPage } from "@ionic/vue";
 import { useUserStore } from "@/store/user";
 import { useAuthsStore } from "@/store/auth";
 import { computed, reactive, ref } from "vue";
@@ -61,14 +60,15 @@ import { useKeyboard } from "@/use/useKeyboard";
 
 export default {
   name: "RequireAuth",
-  components: { VInput, IonPage, IonContent, IonLoading, IonButton },
+  components: { VInput, IonPage, IonContent, IonButton },
   setup() {
     const userStore = useUserStore();
     const authStore = useAuthsStore();
-    const { alert, toast } = useIonicService();
+    const { alert, toast, loadingController } = useIonicService();
     const { logout } = useLogout();
     const { hideKeyboard } = useKeyboard();
-
+    const loggedIn = ref(false);
+    let lc;
     const isAvailableFingerPrint = ref(false);
 
     const isEnabledFingerPrint = ref(false);
@@ -95,6 +95,13 @@ export default {
       return userStore.state.user;
     });
 
+    async function showLoading() {
+      lc = await loadingController({
+        spinner: "lines",
+        message: "Loading...",
+      });
+    }
+
     async function showAlert() {
       await alert({
         header: "Something went wrong",
@@ -104,6 +111,7 @@ export default {
     }
 
     async function login() {
+      await showLoading();
       await hideKeyboard();
       const userData = { email: user.value.email, password: state.password };
       await authStore.action(ActionType.auth.login, userData);
@@ -111,6 +119,7 @@ export default {
         await showAlert();
         return;
       }
+      await lc.dismiss();
       await router.push({ name: "Dashboard" });
     }
 
@@ -149,6 +158,7 @@ export default {
       user,
       state,
       loading,
+      loggedIn,
       v$,
       isAvailableFingerPrint,
       login,
