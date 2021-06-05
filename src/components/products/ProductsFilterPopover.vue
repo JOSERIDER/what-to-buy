@@ -140,12 +140,11 @@ export default defineComponent({
       max: upperPrice.value,
       initialValueRange: { lower: 1, upper: 100 },
     });
-
     const filterState = computed(() => {
       return props.store.state.filter;
     });
-
     let selectedIndex = 0;
+
     function openPicker() {
       picker({
         animated: true,
@@ -185,6 +184,10 @@ export default defineComponent({
       rangeState.min = lowerPrice.value;
       rangeState.max = upperPrice.value;
       currentCategory.value = categories[0];
+
+      selectedIndex = categories.findIndex(
+        i => i.value == currentCategory.value.value
+      );
     }
 
     async function apply() {
@@ -207,6 +210,10 @@ export default defineComponent({
       upperPrice.value = filterState.value.maxPrice;
       rangeState.min = 0;
       rangeState.max = 100;
+
+      selectedIndex = categories.findIndex(
+        i => i.value == currentCategory.value.value
+      );
     }
 
     setInitialFilter();

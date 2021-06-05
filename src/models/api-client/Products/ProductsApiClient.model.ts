@@ -3,6 +3,7 @@ import { HttpClient, HttpRequestParamsInterface } from "@/models/http-client";
 import { ProductsApiClientUrlInterface } from "@/models/api-client/Products/ProductsApiClientUrl.interface";
 import { Product } from "@/models/domain/product";
 import { ProductFilterInterface } from "@/models/store";
+import _ from "lodash";
 
 /**
  * @name ProductsApiClientModel
@@ -54,7 +55,13 @@ export class ProductsApiClientModel implements ProductsApiClientModelInterface {
       orderBy: "name",
     };
 
-    return HttpClient.getCollections(params, this.store);
+    return new Promise((resolve, reject) => {
+      HttpClient.getCollections(params, this.store)
+        .then(products => {
+          resolve(_.orderBy(products, ["name", "price"], ["asc", "desc"]));
+        })
+        .catch(error => reject(error));
+    });
   }
 
   getProductsByName(name: string): Promise<Product[]> {
@@ -65,7 +72,13 @@ export class ProductsApiClientModel implements ProductsApiClientModelInterface {
       orderBy: "name",
     };
 
-    return HttpClient.getCollections(params, this.store);
+    return new Promise((resolve, reject) => {
+      HttpClient.getCollections(params, this.store)
+        .then(products => {
+          resolve(_.orderBy(products, ["name", "price"], ["asc", "desc"]));
+        })
+        .catch(error => reject(error));
+    });
   }
 
   update(id: string, payload: Product): Promise<void> {
@@ -84,7 +97,13 @@ export class ProductsApiClientModel implements ProductsApiClientModelInterface {
       query: { path: "id", filter: "in", value: productsId },
     };
 
-    return HttpClient.getWithQuery(params);
+    return new Promise((resolve, reject) => {
+      HttpClient.getWithQuery(params)
+        .then(products => {
+          resolve(_.orderBy(products, ["name", "price"], ["asc", "desc"]));
+        })
+        .catch(error => reject(error));
+    });
   }
 
   getFilterProducts(filter: ProductFilterInterface): Promise<Product[]> {
@@ -94,7 +113,13 @@ export class ProductsApiClientModel implements ProductsApiClientModelInterface {
       query: { ...filter },
     };
 
-    return HttpClient.getFilterCollections(params, this.store);
+    return new Promise((resolve, reject) => {
+      HttpClient.getFilterCollections(params, this.store)
+        .then(products => {
+          resolve(_.orderBy(products, ["name", "price"], ["asc", "desc"]));
+        })
+        .catch(error => reject(error));
+    });
   }
 
   checkProduct(id: string): Promise<boolean> {

@@ -9,6 +9,7 @@ export class ProductDomainBuilder {
     productId?: string,
     imageUrl?: string
   ): Product {
+    name = name.charAt(0).toUpperCase() + name.slice(1);
     return {
       id: productId ? productId : name,
       name,

@@ -116,6 +116,7 @@ export default {
       const userData = { email: user.value.email, password: state.password };
       await authStore.action(ActionType.auth.login, userData);
       if (authStore.state.error) {
+        await lc.dismiss();
         await showAlert();
         return;
       }

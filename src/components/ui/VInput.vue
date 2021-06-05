@@ -22,6 +22,7 @@
         }"
         :placeholder="placeholder"
         :type="type"
+        :autocapitalize="capitalize"
       >
       </ion-input>
     </ion-col>
@@ -89,6 +90,10 @@ export default {
     step: {
       type: String,
       default: "",
+    },
+    capitalize: {
+      type: String,
+      default: "off",
     },
   },
   components: {

@@ -31,6 +31,7 @@
           <form @submit.prevent="save">
             <VInput
               name="productName"
+              capitalize="words"
               enterkeyhint="next"
               @enter="$refs.description.setFocus()"
               v-model:value="state.name"
@@ -39,7 +40,7 @@
             />
 
             <!-- Description -->
-            <VTextarea
+            <VInput
               ref="description"
               enterkeyhint="next"
               @enter="$refs.price.setFocus()"
@@ -113,7 +114,6 @@ import {
 import router from "@/router";
 import VInput from "@/components/ui/VInput.vue";
 import useVuelidate from "@vuelidate/core";
-import VTextarea from "@/components/ui/VTextarea.vue";
 import VSpinnerButtonLoading from "@/components/ui/VSpinnerButtonLoading.vue";
 import { computed, defineComponent, reactive, ref } from "vue";
 import { maxLength, minLength, numeric, required } from "@vuelidate/validators";
@@ -131,7 +131,6 @@ export default defineComponent({
   name: "AddProduct",
   components: {
     VSpinnerButtonLoading,
-    VTextarea,
     VInput,
     IonPage,
     IonLabel,
@@ -162,7 +161,6 @@ export default defineComponent({
       price: 0,
     });
     const productId: string = router.currentRoute.value.params.id as string;
-
     const loading = computed(() => {
       return productsStore.state.loading;
     });
@@ -183,6 +181,7 @@ export default defineComponent({
         },
       };
     });
+    let selectedIndex = 0;
 
     function openPicker() {
       picker({
@@ -195,13 +194,16 @@ export default defineComponent({
           {
             text: "Choose",
             handler: val => {
-              currentCategory.value = val["Categories"];
+              const value = val["Categories"];
+              selectedIndex = categories.findIndex(i => i.value == value.value);
+              currentCategory.value = value;
               return true;
             },
           },
         ],
         columns: [
           {
+            selectedIndex,
             name: "Categories",
             options: categories,
           },
