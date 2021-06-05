@@ -22,28 +22,43 @@
         <VSpinner />
       </div>
 
-      <ion-card v-else>
-        <ion-card-content class="card card-content">
-          <ion-img @click="openCameraOptions" :src="product.image"></ion-img>
+      <div class="flex h-1/2 justify-center">
+        <img class="w-60" :src="product.image" alt="products image" />
+      </div>
 
-          <ion-card-title class="text">
+      <div class="content h-1/2 shadow-inner p-4">
+        <!-- Camera button -->
+        <div
+          @click="openCameraOptions"
+          class="camera-button rounded-full w-12 p-2 m-auto shadow-lg"
+        >
+          <img
+            class="w-full"
+            :src="require('@/assets/resources/products/diaphragm.svg')"
+            alt="camera"
+          />
+        </div>
+
+        <!-- Header -->
+        <div class="flex justify-between">
+          <div class="text-2xl font-bold w-2/3">
             {{ product.name }}
-          </ion-card-title>
-          <ion-card-subtitle class="text">
-            {{ product.description }}
-          </ion-card-subtitle>
+          </div>
+          <div class="font-bold text-xl">{{ product.price }} €</div>
+        </div>
 
-          <ion-item>
-            <ion-icon slot="start" :icon="icons.price"></ion-icon>
-            <ion-label>{{ product.category }}</ion-label>
-          </ion-item>
+        <!-- Category -->
+        <div class="flex flex-col pt-4 space-y-1">
+          <p class="font-bold text-sm">Category</p>
+          <div class="font-light">{{ product.category }}</div>
+        </div>
 
-          <ion-item>
-            <ion-label>{{ product.price }}</ion-label>
-            <ion-icon slot="end" :icon="icons.euro"></ion-icon>
-          </ion-item>
-        </ion-card-content>
-      </ion-card>
+        <!-- Description -->
+        <div class="flex flex-col pt-4 space-y-1">
+          <p class="font-bold text-sm">Description</p>
+          <div class="font-light">{{ product.description }}</div>
+        </div>
+      </div>
     </ion-content>
   </ion-page>
 </template>
@@ -52,16 +67,9 @@
 import {
   IonBackButton,
   IonButton,
-  IonCard,
-  IonCardContent,
-  IonCardSubtitle,
-  IonCardTitle,
   IonContent,
   IonHeader,
   IonIcon,
-  IonImg,
-  IonItem,
-  IonLabel,
   IonPage,
   IonTitle,
   IonToolbar,
@@ -88,15 +96,8 @@ export default defineComponent({
     IonBackButton,
     IonTitle,
     IonContent,
-    IonCard,
-    IonCardTitle,
-    IonCardSubtitle,
-    IonItem,
-    IonIcon,
-    IonLabel,
-    IonCardContent,
-    IonImg,
     IonButton,
+    IonIcon,
   },
   props: {
     id: {
@@ -176,13 +177,18 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.card-content {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
+.camera-button {
+  position: relative;
+  top: -35px;
+  background-color: #ffc409;
 }
-.text {
-  margin: 0.6rem;
+.camera-button:active {
+  @apply shadow-inner;
+}
+.content {
+  -webkit-box-shadow: 0 0 28px -6px rgba(135, 135, 135, 1);
+  -moz-box-shadow: 0 0 28px -6px rgba(135, 135, 135, 1);
+  box-shadow: 0 0 28px -6px rgba(135, 135, 135, 1);
+  border-radius: 25px 25px 0 0;
 }
 </style>

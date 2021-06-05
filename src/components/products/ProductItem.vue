@@ -1,24 +1,30 @@
 <template>
-  <ion-item>
-    <ion-thumbnail slot="start">
-      <img :src="product.image" :alt="product.name" />
+  <ion-item lines="none" detail class="element m-1 shadow rounded">
+    <ion-thumbnail
+      slot="start"
+      class="p-1 w-16 h-16 flex justify-start items-center"
+    >
+      <img
+        :src="product.image"
+        class=""
+        width="64"
+        height="64"
+        :alt="product.name"
+      />
     </ion-thumbnail>
-    <div class="grid w-full grid-rows-2 grid-cols-2">
-      <ion-label class="row-start-1">{{ product.name }}</ion-label>
-      <p class="row-start-2 row-end-2">
+
+    <div class="flex flex-col h-20 w-full">
+      <p class="font-bold text-lg">{{ product.name }}</p>
+      <p class="font-light text-base text-blue-500">{{ product.price }} €</p>
+      <p class="font-extralight text-sm">
         {{ product.category }}
       </p>
-      <div
-        class="flex justify-end items-center row-span-3 row-start-1 row-end-2 col-start-2 col-end-2 items-center"
-      >
-        <p class="text-2xl text-blue-500">{{ product.price }} €</p>
-      </div>
     </div>
   </ion-item>
 </template>
 
 <script lang="ts">
-import { IonItem, IonLabel, IonThumbnail } from "@ionic/vue";
+import { IonItem, IonThumbnail } from "@ionic/vue";
 import { defineComponent, PropType } from "vue";
 import { Product } from "@/models/domain/product";
 
@@ -33,9 +39,12 @@ export default defineComponent({
   components: {
     IonItem,
     IonThumbnail,
-    IonLabel,
   },
 });
 </script>
 
-<style scoped></style>
+<style scoped>
+.element:active {
+  @apply shadow-inner;
+}
+</style>

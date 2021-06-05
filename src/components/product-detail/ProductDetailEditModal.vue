@@ -11,22 +11,24 @@
     <ion-content>
       <div class="m-4">
         <div class="mt-4">
-          <form @submit.prevent="updateProduct">
-            <ion-label>Product Name</ion-label>
-            <VInput
-              :border="true"
-              enterkeyhint="next"
-              @enter="$refs.productEditDescription.setFocus()"
-              v-model:value="state.name"
-              :v$="v$.name"
-              placeholder="Product name"
-              name="productName"
-            />
-
-            <div class="mt-4">
-              <ion-label>Product Description</ion-label>
+          <form class="space-y-4" @submit.prevent="updateProduct">
+            <div class="space-y-1">
+              <p class="font-bold">Name</p>
               <VInput
-                :border="true"
+                class="shadow rounded"
+                enterkeyhint="next"
+                @enter="$refs.productEditDescription.setFocus()"
+                v-model:value="state.name"
+                :v$="v$.name"
+                placeholder="Product name"
+                name="productName"
+              />
+            </div>
+
+            <div class="space-y-1">
+              <p class="font-bold">Description</p>
+              <VInput
+                class="shadow rounded"
                 ref="productEditDescription"
                 enterkeyhint="next"
                 @enter="$refs.productEditPrice.setFocus()"
@@ -37,10 +39,10 @@
               />
             </div>
 
-            <div class="mt-4">
-              <ion-label>Product Price</ion-label>
+            <div class="space-y-1">
+              <p class="font-bold">Product Price</p>
               <VInput
-                :border="true"
+                class="shadow rounded"
                 type="number"
                 ref="productEditPrice"
                 enterkeyhint="done"
@@ -53,8 +55,8 @@
               />
             </div>
 
-            <div>
-              <ion-label>Category</ion-label>
+            <div class="space-y-1">
+              <p class="font-bold">Category</p>
               <VPicker
                 @categorySelected="currentCategory = $event"
                 :options="categories"
@@ -64,7 +66,7 @@
             </div>
 
             <div class="flex w-full justify-center mt-4">
-              <ion-button type="submit" v-if="!loading" fill="clear">
+              <ion-button type="submit" v-if="!loading">
                 Update product
               </ion-button>
               <VSpinner v-else />
@@ -81,7 +83,6 @@ import {
   IonButton,
   IonContent,
   IonHeader,
-  IonLabel,
   IonPage,
   IonText,
   IonTitle,
@@ -113,7 +114,6 @@ export default defineComponent({
     VSpinner,
     IonText,
     IonButton,
-    IonLabel,
   },
   props: {
     product: {
