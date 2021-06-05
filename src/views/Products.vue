@@ -1,6 +1,6 @@
 <template>
   <ion-page>
-    <ion-header>
+    <ion-header :translucent="true">
       <ion-toolbar>
         <ion-menu-button slot="start"> </ion-menu-button>
         <ion-title>Products</ion-title>
@@ -21,7 +21,7 @@
 
     <ion-content :fullscreen="false" class="p-4">
       <VRefresher @do-refresh="doRefresh($event)" :icons="icons.dotsCircle" />
-      <ion-header collapse="condense">
+      <ion-header collapse="condense" :translucent="true">
         <ion-toolbar>
           <ion-title size="large">Products</ion-title>
         </ion-toolbar>

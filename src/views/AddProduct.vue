@@ -12,35 +12,42 @@
     </ion-header>
 
     <ion-content>
-      <ion-grid fixed class="form">
-        <ion-row class="ion-justify-content-center">
-          <ion-col size="6">
-            <ion-img
-              :src="
-                photo
-                  ? photo.webviewPath
-                  : require('@/assets/resources/file-image-icon.png')
-              "
-              @click="openCameraOptions"
-            ></ion-img>
-          </ion-col>
-        </ion-row>
+      <div class="flex flex-col items-center  justify-center mt-10 ">
+        <img
+          class="w-32 h-32 rounded"
+          :src="
+            photo
+              ? photo.webviewPath
+              : require('@/assets/resources/products/add-image.png')
+          "
+          @click="openCameraOptions"
+          alt="Product image"
+        />
+        <p class="text-lg font-extralight mt-3">Take a cool picture</p>
+      </div>
 
-        <ion-card class="flexbox ion-padding">
-          <!-- name -->
-          <form @submit.prevent="save">
+      <ion-card class="flexbox ion-padding">
+        <!-- name -->
+        <form class="space-y-4" @submit.prevent="save">
+          <div class="space-y-1">
+            <p class="font-bold">Name</p>
             <VInput
+              class="shadow"
               name="productName"
               capitalize="words"
               enterkeyhint="next"
               @enter="$refs.description.setFocus()"
               v-model:value="state.name"
-              placeholder="Name of product"
               :v$="v$.name"
+              placeholder="product name"
             />
+          </div>
 
-            <!-- Description -->
+          <!-- Description -->
+          <div class="space-y-1">
+            <p class="font-bold">Description</p>
             <VInput
+              class="shadow"
               ref="description"
               enterkeyhint="next"
               @enter="$refs.price.setFocus()"
@@ -49,27 +56,22 @@
               placeholder="Description"
               :v$="v$.description"
             />
+          </div>
 
-            <ion-grid>
-              <ion-row class="justify-center">
-                <ion-col>
-                  <ion-label class="text-center">
-                    Category
-                  </ion-label>
-                </ion-col>
-              </ion-row>
-              <ion-row>
-                <ion-col>
-                  <VPicker
-                    @categorySelected="currentCategory = $event"
-                    :options="categories"
-                    :category="currentCategory"
-                    column-name="Categories"
-                  />
-                </ion-col>
-              </ion-row>
-            </ion-grid>
-            <!-- Price -->
+          <!-- Category -->
+          <div class="space-y-1">
+            <p class="font-bold">Category</p>
+            <VPicker
+              @categorySelected="currentCategory = $event"
+              :options="categories"
+              :category="currentCategory"
+              column-name="Categories"
+            />
+          </div>
+
+          <!-- Price -->
+          <div class="space-y-1">
+            <p class="font-bold">Price</p>
             <VInput
               ref="price"
               name="productPrice"
@@ -80,20 +82,21 @@
               :v$="v$.price"
               type="number"
             />
-            <ion-button
-              v-if="!loading"
-              type="submit"
-              @click="save()"
-              expand="block"
-            >
-              Save
-            </ion-button>
-            <ion-button v-else expand="block">
-              <VSpinnerButtonLoading />
-            </ion-button>
-          </form>
-        </ion-card>
-      </ion-grid>
+          </div>
+
+          <ion-button
+            v-if="!loading"
+            type="submit"
+            @click="save()"
+            expand="block"
+          >
+            Save
+          </ion-button>
+          <ion-button v-else expand="block">
+            <VSpinnerButtonLoading />
+          </ion-button>
+        </form>
+      </ion-card>
     </ion-content>
   </ion-page>
 </template>
@@ -103,14 +106,9 @@ import {
   IonBackButton,
   IonButton,
   IonCard,
-  IonCol,
   IonContent,
-  IonGrid,
   IonHeader,
-  IonImg,
-  IonLabel,
   IonPage,
-  IonRow,
   IonTitle,
   IonToolbar,
 } from "@ionic/vue";
@@ -138,18 +136,13 @@ export default defineComponent({
     VSpinnerButtonLoading,
     VInput,
     IonPage,
-    IonLabel,
     IonContent,
-    IonRow,
-    IonCol,
     IonButton,
     IonCard,
-    IonGrid,
     IonHeader,
     IonToolbar,
     IonTitle,
     IonBackButton,
-    IonImg,
   },
   setup() {
     const { toast, actionSheet } = useIonicService();
@@ -281,8 +274,4 @@ export default defineComponent({
 });
 </script>
 
-<style>
-p {
-  color: rgb(178, 178, 178);
-}
-</style>
+<style></style>
