@@ -21,6 +21,11 @@
 
     <ion-content :fullscreen="false" class="p-4">
       <VRefresher @do-refresh="doRefresh($event)" :icons="icons.dotsCircle" />
+      <ion-header collapse="condense">
+        <ion-toolbar>
+          <ion-title size="large">Products</ion-title>
+        </ion-toolbar>
+      </ion-header>
       <div class="container sm:m-auto">
         <VSearchBar
           placeholder="Search by name"
@@ -29,6 +34,7 @@
           enter-keyhint="search"
           @enter="hideKeyboard"
         />
+
         <div
           v-if="error || (loading && !dataFetched) || products.length === 0"
           class="flex flex-row items-center h-full justify-center"
