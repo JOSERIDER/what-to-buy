@@ -13,7 +13,7 @@
 
   <ion-content>
     <ion-item-group>
-      <ion-item @click="openPicker()">
+      <ion-item>
         <ion-grid>
           <ion-row class="justify-center">
             <ion-col>
@@ -24,9 +24,12 @@
           </ion-row>
           <ion-row>
             <ion-col>
-              <ion-label class="text-center">
-                {{ currentCategory.text }}
-              </ion-label>
+              <VPicker
+                @categorySelected="currentCategory = $event"
+                :category="currentCategory"
+                :options="categories"
+                column-name="Categories"
+              />
             </ion-col>
           </ion-row>
         </ion-grid>
@@ -103,13 +106,14 @@ import {
 } from "@ionic/vue";
 import { trash, pricetagOutline } from "ionicons/icons";
 import { computed, defineComponent, reactive, ref } from "vue";
-import useIonicService from "@/use/useIonicService";
 import useCategory from "@/use/useCategory";
 import { ProductFilterInterface } from "@/models/store";
+import VPicker from "@/components/ui/VPicker.vue";
 
 export default defineComponent({
   name: "ProductsFilterPopover",
   components: {
+    VPicker,
     IonHeader,
     IonContent,
     IonItemGroup,
@@ -130,7 +134,6 @@ export default defineComponent({
     },
   },
   setup(props) {
-    const { picker } = useIonicService();
     const { categories } = useCategory();
     const currentCategory = ref({} as any);
     const lowerPrice = ref(0);
@@ -143,35 +146,6 @@ export default defineComponent({
     const filterState = computed(() => {
       return props.store.state.filter;
     });
-    let selectedIndex = 0;
-
-    function openPicker() {
-      picker({
-        animated: true,
-        buttons: [
-          {
-            text: "Cancel",
-            role: "cancel",
-          },
-          {
-            text: "Choose",
-            handler: val => {
-              const value = val["Categories"];
-              selectedIndex = categories.findIndex(i => i.value == value.value);
-              currentCategory.value = value;
-              return true;
-            },
-          },
-        ],
-        columns: [
-          {
-            name: "Categories",
-            selectedIndex: selectedIndex,
-            options: categories,
-          },
-        ],
-      });
-    }
 
     function onIonRangeChange({ lower, upper }) {
       lowerPrice.value = lower;
@@ -184,10 +158,6 @@ export default defineComponent({
       rangeState.min = lowerPrice.value;
       rangeState.max = upperPrice.value;
       currentCategory.value = categories[0];
-
-      selectedIndex = categories.findIndex(
-        i => i.value == currentCategory.value.value
-      );
     }
 
     async function apply() {
@@ -210,10 +180,6 @@ export default defineComponent({
       upperPrice.value = filterState.value.maxPrice;
       rangeState.min = 0;
       rangeState.max = 100;
-
-      selectedIndex = categories.findIndex(
-        i => i.value == currentCategory.value.value
-      );
     }
 
     setInitialFilter();
@@ -223,7 +189,7 @@ export default defineComponent({
       rangeState,
       lowerPrice,
       upperPrice,
-      openPicker,
+      categories,
       reset,
       onIonRangeChange,
       apply,

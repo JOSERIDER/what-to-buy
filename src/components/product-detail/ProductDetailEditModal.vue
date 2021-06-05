@@ -25,7 +25,7 @@
 
             <div class="mt-4">
               <ion-label>Product Description</ion-label>
-              <VTextarea
+              <VInput
                 :border="true"
                 ref="productEditDescription"
                 enterkeyhint="next"
@@ -55,14 +55,12 @@
 
             <div>
               <ion-label>Category</ion-label>
-              <h2
-                class="text-center mt-2 border p-2 rounded shadow"
-                @click="openPicker"
-              >
-                {{
-                  currentCategory.text ? currentCategory.text : product.category
-                }}
-              </h2>
+              <VPicker
+                @categorySelected="currentCategory = $event"
+                :options="categories"
+                :category="currentCategory"
+                column-name="Categories"
+              />
             </div>
 
             <div class="flex w-full justify-center mt-4">
@@ -95,18 +93,17 @@ import VSpinner from "@/components/ui/VSpinner.vue";
 import { computed, defineComponent, PropType, reactive, ref } from "vue";
 import { minLength, numeric, required } from "@vuelidate/validators";
 import useVuelidate from "@vuelidate/core";
-import VTextarea from "@/components/ui/VTextarea.vue";
 import useCategory from "@/use/useCategory";
-import useIonicService from "@/use/useIonicService";
 import apiClient from "@/api-client";
 import { Product } from "@/models/domain/product";
 import useKeyWordGen from "@/use/useKeyWordGen";
 import { useKeyboard } from "@/use/useKeyboard";
+import VPicker from "@/components/ui/VPicker.vue";
 
 export default defineComponent({
   name: "ProductDetailEditModal",
   components: {
-    VTextarea,
+    VPicker,
     IonPage,
     IonHeader,
     IonToolbar,
@@ -132,7 +129,6 @@ export default defineComponent({
     });
     const { categories } = useCategory();
     const currentCategory = ref({} as any);
-    const { picker } = useIonicService();
     const productsApiClient = apiClient.products;
     const rules = computed(() => {
       return {
@@ -153,31 +149,6 @@ export default defineComponent({
     const loading = ref(false);
 
     const v$ = useVuelidate(rules, state);
-
-    function openPicker() {
-      picker({
-        animated: true,
-        buttons: [
-          {
-            text: "Cancel",
-            role: "cancel",
-          },
-          {
-            text: "Choose",
-            handler: val => {
-              currentCategory.value = val["Categories"];
-              return true;
-            },
-          },
-        ],
-        columns: [
-          {
-            name: "Categories",
-            options: categories,
-          },
-        ],
-      });
-    }
 
     async function updateProduct() {
       if (v$.value.$invalid) {
@@ -210,8 +181,8 @@ export default defineComponent({
       v$,
       state,
       currentCategory,
+      categories,
       loading,
-      openPicker,
       updateProduct,
       close,
     };

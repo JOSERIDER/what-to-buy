@@ -50,7 +50,7 @@
               :v$="v$.description"
             />
 
-            <ion-grid @click="openPicker()">
+            <ion-grid>
               <ion-row class="justify-center">
                 <ion-col>
                   <ion-label class="text-center">
@@ -60,9 +60,12 @@
               </ion-row>
               <ion-row>
                 <ion-col>
-                  <ion-label class="text-center">
-                    {{ currentCategory.text }}
-                  </ion-label>
+                  <VPicker
+                    @categorySelected="currentCategory = $event"
+                    :options="categories"
+                    :category="currentCategory"
+                    column-name="Categories"
+                  />
                 </ion-col>
               </ion-row>
             </ion-grid>
@@ -126,10 +129,12 @@ import { ProductDomainBuilder } from "@/models/domain/product/ProductDomain.buil
 import apiClient from "@/api-client";
 import { Product } from "@/models/domain/product";
 import { useKeyboard } from "@/use/useKeyboard";
+import VPicker from "@/components/ui/VPicker.vue";
 
 export default defineComponent({
   name: "AddProduct",
   components: {
+    VPicker,
     VSpinnerButtonLoading,
     VInput,
     IonPage,
@@ -147,7 +152,7 @@ export default defineComponent({
     IonImg,
   },
   setup() {
-    const { picker, toast, actionSheet } = useIonicService();
+    const { toast, actionSheet } = useIonicService();
     const { categories } = useCategory();
     const { hideKeyboard } = useKeyboard();
     const { takePhotoCamera, selectFromGallery, photo } = usePhotoGallery();
@@ -181,35 +186,6 @@ export default defineComponent({
         },
       };
     });
-    let selectedIndex = 0;
-
-    function openPicker() {
-      picker({
-        animated: true,
-        buttons: [
-          {
-            text: "Cancel",
-            role: "cancel",
-          },
-          {
-            text: "Choose",
-            handler: val => {
-              const value = val["Categories"];
-              selectedIndex = categories.findIndex(i => i.value == value.value);
-              currentCategory.value = value;
-              return true;
-            },
-          },
-        ],
-        columns: [
-          {
-            selectedIndex,
-            name: "Categories",
-            options: categories,
-          },
-        ],
-      });
-    }
 
     function openCameraOptions() {
       actionSheet({
@@ -297,9 +273,9 @@ export default defineComponent({
       currentCategory,
       photo,
       router,
+      categories,
       save,
       openCameraOptions,
-      openPicker,
     };
   },
 });
