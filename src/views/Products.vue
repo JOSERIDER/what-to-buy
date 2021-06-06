@@ -169,8 +169,10 @@ export default defineComponent({
       ev.target.complete();
     }
 
-    async function checkProduct(productId: string) {
-      const productExists = await productsApiClient.checkProduct(productId);
+    async function checkProduct(barcode: string) {
+      const productExists = await productsApiClient.checkProductBarcode(
+        barcode
+      );
 
       if (productExists) {
         await ionicService.toast({
@@ -178,7 +180,7 @@ export default defineComponent({
           duration: 2000,
         });
       } else {
-        await router.push({ name: "AddProduct", params: { id: productId } });
+        await router.push({ name: "AddProduct", params: { id: barcode } });
       }
     }
 

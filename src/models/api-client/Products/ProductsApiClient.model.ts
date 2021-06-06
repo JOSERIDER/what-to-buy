@@ -122,11 +122,29 @@ export class ProductsApiClientModel implements ProductsApiClientModelInterface {
     });
   }
 
-  checkProduct(id: string): Promise<boolean> {
+  checkProductBarcode(barcode: string): Promise<boolean> {
+    const params: HttpRequestParamsInterface = {
+      url: this.urls.products,
+      query: { path: "barcode", filter: "==", value: barcode },
+    };
+
+    return this.checkProduct(params);
+  }
+
+  checkProductName(name: string): Promise<boolean> {
+    const params: HttpRequestParamsInterface = {
+      url: this.urls.products,
+      query: { path: "name", filter: "==", value: name },
+    };
+
+    return this.checkProduct(params);
+  }
+
+  private checkProduct(params: HttpRequestParamsInterface): Promise<boolean> {
     return new Promise(resolve => {
-      this.get(id)
-        .then(() => resolve(true))
-        .catch(() => resolve(false));
+      HttpClient.getWithQuery(params).then(response =>
+        resolve(response.length > 0)
+      );
     });
   }
 

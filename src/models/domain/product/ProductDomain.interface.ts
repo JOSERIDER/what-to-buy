@@ -10,4 +10,5 @@ export interface Product {
   category?: string;
   quantity?: number;
   keyWords?: string[];
+  barcode?: string;
 }

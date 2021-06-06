@@ -84,12 +84,7 @@
             />
           </div>
 
-          <ion-button
-            v-if="!loading"
-            type="submit"
-            @click="save()"
-            expand="block"
-          >
+          <ion-button v-if="!loading" type="submit" expand="block">
             Save
           </ion-button>
           <ion-button v-else expand="block">
@@ -158,7 +153,7 @@ export default defineComponent({
       category: "",
       price: 0,
     });
-    const productId: string = router.currentRoute.value.params.id as string;
+    const barcode: string = router.currentRoute.value.params.id as string;
     const loading = computed(() => {
       return productsStore.state.loading;
     });
@@ -208,7 +203,8 @@ export default defineComponent({
         state.description,
         state.price,
         currentCategory.value.text,
-        productId
+        "",
+        barcode
       );
     }
 
@@ -237,9 +233,12 @@ export default defineComponent({
 
       await productsStore.action(ActionType.products.setLoading, true);
       //Check if the product already exists on database.
-      const productExists = await productApiClient.checkProduct(
-        productId ? productId : state.name
-      );
+      let productExists: boolean;
+      if (barcode) {
+        productExists = await productApiClient.checkProductBarcode(barcode);
+      } else {
+        productExists = await productApiClient.checkProductName(state.name);
+      }
 
       if (productExists) {
         await productsStore.action(ActionType.products.setLoading, false);
@@ -259,6 +258,7 @@ export default defineComponent({
     currentCategory.value = { text: "Choose an option", value: -1 };
 
     categories.splice(0, 1);
+
     return {
       state,
       loading,

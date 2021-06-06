@@ -100,6 +100,7 @@ import { Product } from "@/models/domain/product";
 import useKeyWordGen from "@/use/useKeyWordGen";
 import { useKeyboard } from "@/use/useKeyboard";
 import VPicker from "@/components/ui/VPicker.vue";
+import useIonicService from "@/use/useIonicService";
 
 export default defineComponent({
   name: "ProductDetailEditModal",
@@ -123,9 +124,9 @@ export default defineComponent({
   },
   setup(props) {
     const state = reactive({
-      name: props.product.name,
-      description: props.product.description,
-      price: props.product.price,
+      name: props.product.name as string,
+      description: props.product.description as string,
+      price: props.product.price as number,
     });
     const { categories } = useCategory();
     const currentCategory = ref({} as any);
@@ -147,6 +148,7 @@ export default defineComponent({
       };
     });
     const loading = ref(false);
+    const { toast } = useIonicService();
 
     const v$ = useVuelidate(rules, state);
 
@@ -157,6 +159,21 @@ export default defineComponent({
       }
       loading.value = true;
       await useKeyboard().hideKeyboard();
+
+      let productExists = false;
+      if (props.product.name !== state.name && !props.product.barcode) {
+        productExists = await productsApiClient.checkProductName(state.name);
+      }
+
+      if (productExists) {
+        loading.value = false;
+        await toast({
+          message: "There is already a product with the same name.",
+          duration: 2000,
+        });
+
+        return;
+      }
 
       const product = { ...props.product };
       product.name = state.name;

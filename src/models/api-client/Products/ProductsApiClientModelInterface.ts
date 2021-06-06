@@ -21,9 +21,15 @@ export interface ProductsApiClientModelInterface {
 
   /**
    * Check if the product already exists in database.
-   * @param id - id of product to check
+   * @param barcode - barcode of product to check
    */
-  checkProduct(id: string): Promise<boolean>;
+  checkProductBarcode(barcode: string): Promise<boolean>;
+
+  /**
+   * Check if the product already exists in database.
+   * @param name - name of product to check
+   */
+  checkProductName(name: string): Promise<boolean>;
 
   /**
    * Obtains products that have name like value of param
