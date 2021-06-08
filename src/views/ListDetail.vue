@@ -6,14 +6,19 @@
           <ion-back-button defaultHref="/" text="Back"></ion-back-button>
         </ion-buttons>
         <ion-title>{{ loading ? "loading..." : list.name }}</ion-title>
-        <ion-button
-          slot="end"
-          color="primary"
-          @click="addProduct($event)"
-          fill="clear"
-        >
-          <ion-icon :icon="add" size="large"></ion-icon>
-        </ion-button>
+        <ion-buttons slot="end">
+          <ion-button
+            v-if="listType !== 'Private'"
+            @click="saveList"
+            color="primary"
+            fill="clear"
+          >
+            <ion-icon :icon="save" size="large"></ion-icon>
+          </ion-button>
+          <ion-button color="primary" @click="addProduct($event)" fill="clear">
+            <ion-icon :icon="add" size="large"></ion-icon>
+          </ion-button>
+        </ion-buttons>
       </ion-toolbar>
     </ion-header>
 
@@ -71,7 +76,7 @@ import {
 } from "@ionic/vue";
 import ListDetailItem from "@/components/listDetail/ListDetailItem.vue";
 import { computed, defineComponent, onUnmounted, watch } from "vue";
-import { add } from "ionicons/icons";
+import { add, saveOutline } from "ionicons/icons";
 import { useListDetailStore } from "@/store/list-detail";
 import { Product } from "@/models/domain/product";
 import { ActionType } from "@/models/store";
@@ -174,13 +179,14 @@ export default defineComponent({
     function addProduct(event) {
       openPopover(event);
     }
-
-    onUnmounted(async () => {
+    async function saveList() {
       await listDetailStore.action(
         ActionType.listDetail.updateList,
         props.listType
       );
-    });
+    }
+
+    onUnmounted(async () => await saveList());
 
     fetchProducts();
 
@@ -194,6 +200,8 @@ export default defineComponent({
       loading,
       isEmptyList,
       add,
+      save: saveOutline,
+      saveList,
       addProduct,
       incrementQuantity,
       decrementQuantity,

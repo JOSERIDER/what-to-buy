@@ -32,7 +32,7 @@
           <div class="space-y-1">
             <p class="font-bold">Name</p>
             <VInput
-              class="shadow"
+              class="shadow rounded"
               name="productName"
               capitalize="words"
               enterkeyhint="next"
@@ -47,7 +47,7 @@
           <div class="space-y-1">
             <p class="font-bold">Description</p>
             <VInput
-              class="shadow"
+              class="shadow rounded"
               ref="description"
               enterkeyhint="next"
               @enter="$refs.price.setFocus()"
@@ -73,6 +73,7 @@
           <div class="space-y-1">
             <p class="font-bold">Price</p>
             <VInput
+              class="shadow rounded"
               ref="price"
               name="productPrice"
               enterkeyhint="done"
@@ -81,6 +82,7 @@
               placeholder="price"
               :v$="v$.price"
               type="number"
+              step="any"
             />
           </div>
 
@@ -112,7 +114,13 @@ import VInput from "@/components/ui/VInput.vue";
 import useVuelidate from "@vuelidate/core";
 import VSpinnerButtonLoading from "@/components/ui/VSpinnerButtonLoading.vue";
 import { computed, defineComponent, reactive, ref } from "vue";
-import { maxLength, minLength, numeric, required } from "@vuelidate/validators";
+import {
+  maxLength,
+  maxValue,
+  minLength,
+  numeric,
+  required,
+} from "@vuelidate/validators";
 import useIonicService from "@/use/useIonicService";
 import useCategory from "../use/useCategory";
 import { usePhotoGallery } from "@/use/usePhotoGallery";
@@ -163,14 +171,17 @@ export default defineComponent({
         name: {
           required,
           minLength: minLength(4),
+          maxLength: maxLength(21),
         },
         description: {
           required,
+          minLength: minLength(4),
           maxLength: maxLength(30),
         },
         price: {
           required,
           numeric,
+          maxValue: maxValue(100),
         },
       };
     });

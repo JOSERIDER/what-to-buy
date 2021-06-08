@@ -1,29 +1,36 @@
 <template>
-  <ion-item>
-    <ion-thumbnail>
-      <ion-img :src="product.image" />
+  <ion-item lines="none" class="m-1 shadow rounded h-24">
+    <ion-thumbnail
+      slot="start"
+      class="p-1 w-16 h-16 flex justify-center items-center"
+    >
+      <ion-img class="rounded" :src="product.image" />
     </ion-thumbnail>
-
-    <ion-button
-      fill="clear"
-      class=""
-      @click="$emit('increment-quantity', product)"
-      color="dark"
-    >
-      <ion-icon size="large" :icon="icons.add"></ion-icon>
-    </ion-button>
-    <ion-label class="ion-text-center name">
-      {{ product.name }}
-    </ion-label>
-    <ion-button
-      fill="clear"
-      class="flex items-center float-right"
-      @click="$emit('decrement-quantity', product)"
-      color="dark"
-    >
-      <ion-icon size="large" :icon="icons.remove"></ion-icon>
-    </ion-button>
-    <ion-badge color="primary" mode="ios">{{ product.quantity }}</ion-badge>
+    <div class="flex flex-col w-full">
+      <p class="font-bold">{{ product.name }}</p>
+      <p class="font-light text-base text-blue-500">{{ product.price }} €</p>
+      <div class="flex w-full justify-center flex-row items-start">
+        <ion-buttons class="space-x-5">
+          <ion-button
+            fill="clear"
+            @click="$emit('decrement-quantity', product)"
+            color="dark"
+          >
+            <ion-icon size="large" :icon="icons.remove"></ion-icon>
+          </ion-button>
+          <ion-button
+            fill="clear"
+            @click="$emit('increment-quantity', product)"
+            color="primary"
+          >
+            <ion-icon size="large" :icon="icons.add"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </div>
+      <div class="price absolute right-4 font-bold text-2xl">
+        {{ product.quantity }}
+      </div>
+    </div>
   </ion-item>
 </template>
 
@@ -34,8 +41,7 @@ import {
   IonItem,
   IonThumbnail,
   IonIcon,
-  IonLabel,
-  IonBadge,
+  IonButtons,
 } from "@ionic/vue";
 import { removeCircleOutline, addCircleOutline } from "ionicons/icons";
 import { defineComponent, PropType } from "vue";
@@ -49,9 +55,8 @@ export default defineComponent({
     IonThumbnail,
     IonImg,
     IonButton,
+    IonButtons,
     IonIcon,
-    IonLabel,
-    IonBadge,
   },
   props: {
     product: {
@@ -70,4 +75,9 @@ export default defineComponent({
 });
 </script>
 
-<style scoped></style>
+<style scoped>
+.price {
+  top: 33px;
+  color: #ffc409;
+}
+</style>

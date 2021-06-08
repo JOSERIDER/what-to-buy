@@ -11,10 +11,10 @@
         <h3>{{ user?.name }}</h3>
         <ion-label color="medium">{{ user?.email }}</ion-label>
       </div>
-      <ion-img
-        class="w-14 h-14 rounded-full"
+      <img
+        class="w-14 h-14 rounded-full shadow"
         :src="user?.image ? user.image : require('@/assets/resources/user.png')"
-      ></ion-img>
+      />
     </ion-header>
     <ion-content>
       <ion-list id="inbox-list">
@@ -48,7 +48,6 @@ import {
   IonContent,
   IonHeader,
   IonIcon,
-  IonImg,
   IonItem,
   IonLabel,
   IonList,
@@ -61,7 +60,7 @@ import {
   listOutline,
   shareOutline,
 } from "ionicons/icons";
-import { computed, defineComponent, ref } from "vue";
+import { computed, defineComponent, onUnmounted, ref } from "vue";
 import router from "@/router";
 import { useUserStore } from "@/store/user";
 
@@ -74,7 +73,6 @@ export default defineComponent({
     IonMenuToggle,
     IonItem,
     IonIcon,
-    IonImg,
     IonHeader,
     IonLabel,
   },
@@ -115,6 +113,7 @@ export default defineComponent({
     }
 
     findCurrentRoute();
+    onUnmounted(() => (selectedIndex.value = 0));
 
     return {
       appPages,

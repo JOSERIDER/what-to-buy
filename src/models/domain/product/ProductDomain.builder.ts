@@ -12,6 +12,7 @@ export class ProductDomainBuilder {
   ): Product {
     name = name.charAt(0).toUpperCase() + name.slice(1);
     const productId = IdBuilder.createIdentifier();
+    price = Math.floor(price * 100) / 100;
     return {
       id: productId,
       name,

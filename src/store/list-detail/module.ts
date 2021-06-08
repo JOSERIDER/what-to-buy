@@ -6,6 +6,7 @@ import apiClient from "@/api-client";
 import { Product } from "@/models/domain/product";
 import { DataProduct, List } from "@/models/domain/list";
 import { SharedList } from "@/models/domain/sharedList";
+import { firestore } from "@/models/http-client/client/firebase.config";
 
 export const mutations: MutationTree<ListDetailStateInterface> = {
   setProducts(state: ListDetailStateInterface, products: Product[]) {
@@ -113,19 +114,21 @@ export const actions: ActionTree<
     }
   },
 
-  async fetchList({ commit }, { listId, listType }) {
+  async fetchList({ commit, dispatch }, { listId, listType }) {
     try {
       commit(MutationType.listDetail.setLoading, true);
       commit(MutationType.listDetail.setError, "");
 
-      let list: List;
       if (listType === "Private") {
-        list = await apiClient.privateLists.get(listId);
+        const list = await apiClient.privateLists.get(listId);
+        commit(MutationType.listDetail.setList, list);
       } else {
-        list = await apiClient.sharedLists.get(listId);
+        firestore.doc(`sharedList/${listId}`).onSnapshot(doc => {
+          const data = doc.data() as SharedList;
+          commit(MutationType.listDetail.setList, data);
+          dispatch(ActionType.listDetail.fetchProducts);
+        });
       }
-
-      commit(MutationType.listDetail.setList, list);
     } catch (error) {
       commit(MutationType.listDetail.setError, error.message);
     } finally {

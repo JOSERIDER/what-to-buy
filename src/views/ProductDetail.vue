@@ -26,7 +26,7 @@
         <img class="w-60" :src="product.image" alt="products image" />
       </div>
 
-      <div class="content h-1/2 shadow-inner p-4">
+      <div class="content w-full h-1/2 shadow-inner p-4">
         <!-- Camera button -->
         <div
           @click="openCameraOptions"
@@ -39,24 +39,26 @@
           />
         </div>
 
-        <!-- Header -->
-        <div class="flex justify-between">
-          <div class="text-2xl font-bold w-2/3">
-            {{ product.name }}
+        <div class="white overflow-y-scroll   w-full">
+          <!-- Header -->
+          <div class="flex justify-between">
+            <div class="text-2xl font-bold w-2/3">
+              {{ product.name }}
+            </div>
+            <div class="font-bold text-xl">{{ product.price }} €</div>
           </div>
-          <div class="font-bold text-xl">{{ product.price }} €</div>
-        </div>
 
-        <!-- Category -->
-        <div class="flex flex-col pt-4 space-y-1">
-          <p class="font-bold text-sm">Category</p>
-          <div class="font-light">{{ product.category }}</div>
-        </div>
+          <!-- Category -->
+          <div class="flex flex-col pt-4 space-y-1">
+            <p class="font-bold text-sm">Category</p>
+            <div class="font-light">{{ product.category }}</div>
+          </div>
 
-        <!-- Description -->
-        <div class="flex flex-col pt-4 space-y-1">
-          <p class="font-bold text-sm">Description</p>
-          <div class="font-light">{{ product.description }}</div>
+          <!-- Description -->
+          <div class="flex flex-col pt-4 space-y-1">
+            <p class="font-bold text-sm">Description</p>
+            <div class="font-light">{{ product.description }}</div>
+          </div>
         </div>
       </div>
     </ion-content>
@@ -190,5 +192,8 @@ export default defineComponent({
   -moz-box-shadow: 0 0 28px -6px rgba(135, 135, 135, 1);
   box-shadow: 0 0 28px -6px rgba(135, 135, 135, 1);
   border-radius: 25px 25px 0 0;
+}
+.white {
+  background: white;
 }
 </style>

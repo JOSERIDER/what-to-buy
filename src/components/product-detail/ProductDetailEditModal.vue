@@ -92,7 +92,13 @@ import {
 import VInput from "@/components/ui/VInput.vue";
 import VSpinner from "@/components/ui/VSpinner.vue";
 import { computed, defineComponent, PropType, reactive, ref } from "vue";
-import { minLength, numeric, required } from "@vuelidate/validators";
+import {
+  maxLength,
+  maxValue,
+  minLength,
+  numeric,
+  required,
+} from "@vuelidate/validators";
 import useVuelidate from "@vuelidate/core";
 import useCategory from "@/use/useCategory";
 import apiClient from "@/api-client";
@@ -136,14 +142,17 @@ export default defineComponent({
         name: {
           required,
           minLength: minLength(4),
+          maxLength: maxLength(21),
         },
         description: {
           required,
           minLength: minLength(4),
+          maxLength: maxLength(30),
         },
         price: {
           required,
           numeric,
+          maxValue: maxValue(100),
         },
       };
     });
@@ -179,7 +188,7 @@ export default defineComponent({
       product.name = state.name;
       product.description = state.description;
       product.category = currentCategory.value.text;
-      product.price = state.price;
+      product.price = Math.floor(state.price * 100) / 100;
       product.keyWords = useKeyWordGen().generateKeywords([product.name]);
 
       await productsApiClient.update(product.id!!, product);
