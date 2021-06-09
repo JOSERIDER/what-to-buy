@@ -39,6 +39,13 @@ export interface ProductsApiClientModelInterface {
   getProductsByName(name: string): Promise<Product[]>;
 
   /**
+   * Obtains products that have name like value of param
+   * @return Return an array that contains all products with name as value..
+   * @param barcode -
+   */
+  getProductByBarcode(barcode: string): Promise<Product>;
+
+  /**
    *
    * Obtains products that pass the filtering criteria.
    * @param filter - filtering criteria

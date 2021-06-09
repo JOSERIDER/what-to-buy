@@ -33,13 +33,6 @@ ion-input {
   border: 1px solid greenyellow;
 }
 
-.cardBackground {
-  background-image: url("../resources/card-background.png");
-  background-position: bottom;
-  background-size: cover;
-  background-repeat: no-repeat;
-}
-
 .btn-login {
   width: 10rem;
   position: relative;

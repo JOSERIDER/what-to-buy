@@ -1,8 +1,10 @@
 <template>
-  <AuthCard :button-enabled="!loading" @submit="signUp">
-    <template #form>
+  <div class="p-4 flex flex-col justify-center">
+    <h1 class="text-5xl text-gray-400 font-bold my-4">Register</h1>
+    <div class="space-y-4">
       <!-- Email -->
       <VInput
+        class="rounded-full shadow"
         :v$="v$.email"
         v-model:value="s.email"
         placeholder="Email"
@@ -16,9 +18,10 @@
       <!-- Name -->
       <VInput
         ref="userName"
+        class="rounded-full shadow"
         :v$="v$.name"
         v-model:value="s.name"
-        placeholder="userName"
+        placeholder="User name"
         enterkeyhint="next"
         @enter="$refs.listName.setFocus()"
         :icon="person"
@@ -28,6 +31,7 @@
       <!-- sharedList name -->
       <VInput
         ref="listName"
+        class="rounded-full shadow"
         :v$="v$.listName"
         v-model:value="s.listName"
         enterkeyhint="next"
@@ -39,6 +43,7 @@
 
       <!-- Password -->
       <VInput
+        class="rounded-full shadow"
         ref="signUp_password"
         :v$="v$.password"
         v-model:value="s.password"
@@ -49,14 +54,31 @@
         name="password"
         type="password"
       />
-    </template>
-    <template v-if="!loading" #button-text>Sign up</template>
-    <template v-else #button-text><VSpinnerButtonLoading /></template>
-  </AuthCard>
+    </div>
+
+    <div class="mt-5 w-full">
+      <ion-button
+        @click="signUp"
+        expand="block"
+        shape="round"
+        v-show="!loading"
+      >
+        Sign Up
+      </ion-button>
+      <ion-button expand="block" shape="round" v-if="loading">
+        <VSpinnerButtonLoading />
+      </ion-button>
+    </div>
+    <p
+      @click="$emit('change-component', 'AuthLogin')"
+      class="signIn text-sm text-center pt-4 font-bold"
+    >
+      Already a member? Sign in
+    </p>
+  </div>
 </template>
 
 <script lang="ts">
-import AuthCard from "@/components/auth/AuthCard.vue";
 import useVuelidate from "@vuelidate/core";
 import VSpinnerButtonLoading from "@/components/ui/VSpinnerButtonLoading.vue";
 import { computed, reactive } from "vue";
@@ -67,11 +89,12 @@ import { ActionType } from "@/models/store";
 import { useAuthsStore } from "@/store/auth";
 import router from "@/router";
 import { useKeyboard } from "@/use/useKeyboard";
+import { IonButton } from "@ionic/vue";
 
 export default {
   components: {
     VInput,
-    AuthCard,
+    IonButton,
     VSpinnerButtonLoading,
   },
   setup() {
@@ -130,3 +153,8 @@ export default {
   },
 };
 </script>
+<style scoped>
+.signIn {
+  color: #0899ba;
+}
+</style>

@@ -122,6 +122,22 @@ export class ProductsApiClientModel implements ProductsApiClientModelInterface {
     });
   }
 
+  getProductByBarcode(barcode: string): Promise<Product> {
+    const params: HttpRequestParamsInterface = {
+      url: this.urls.products,
+      query: { path: "barcode", filter: "==", value: barcode },
+    };
+
+    return new Promise((resolve, reject) => {
+      HttpClient.getWithQuery(params).then(response => {
+        if (resolve.length === 0) {
+          reject();
+        }
+        resolve(response[0] as Product);
+      });
+    });
+  }
+
   checkProductBarcode(barcode: string): Promise<boolean> {
     const params: HttpRequestParamsInterface = {
       url: this.urls.products,

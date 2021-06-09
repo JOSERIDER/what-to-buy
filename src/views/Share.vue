@@ -9,7 +9,7 @@
 
     <ion-content>
       <div class="flex h-1/2 justify-center items-center">
-        <img class="w-48 h-48" :src="user.qrUrl" alt="products image" />
+        <qrcode-vue :value="user.qrUrl" :size="230"></qrcode-vue>
       </div>
 
       <div class="content h-1/2 shadow-inner p-4">
@@ -58,6 +58,7 @@ import { useUserStore } from "@/store/user";
 import { User } from "@/models/domain/user";
 import { SocialSharingModelInterface } from "@/models/modules/social-sharing";
 import socialSharing from "@/module-client/social-sharing";
+import QrcodeVue from "qrcode.vue";
 
 export default defineComponent({
   components: {
@@ -67,6 +68,7 @@ export default defineComponent({
     IonMenuButton,
     IonContent,
     IonPage,
+    QrcodeVue,
   },
   name: "Share",
   setup() {

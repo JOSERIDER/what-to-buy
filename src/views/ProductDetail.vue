@@ -21,12 +21,11 @@
       >
         <VSpinner />
       </div>
+      <div class="overflow-y-hidden">
+        <div class="flex h-1/2 justify-center">
+          <img class="w-60" :src="product.image" alt="products image" />
+        </div>
 
-      <div class="flex h-1/2 justify-center">
-        <img class="w-60" :src="product.image" alt="products image" />
-      </div>
-
-      <div class="content w-full h-1/2 shadow-inner p-4">
         <!-- Camera button -->
         <div
           @click="openCameraOptions"
@@ -39,7 +38,7 @@
           />
         </div>
 
-        <div class="white overflow-y-scroll   w-full">
+        <div class="content w-full h-1/2 shadow-inner p-4">
           <!-- Header -->
           <div class="flex justify-between">
             <div class="text-2xl font-bold w-2/3">
@@ -181,7 +180,7 @@ export default defineComponent({
 <style scoped>
 .camera-button {
   position: relative;
-  top: -35px;
+  bottom: -20px;
   background-color: #ffc409;
 }
 .camera-button:active {
@@ -192,8 +191,5 @@ export default defineComponent({
   -moz-box-shadow: 0 0 28px -6px rgba(135, 135, 135, 1);
   box-shadow: 0 0 28px -6px rgba(135, 135, 135, 1);
   border-radius: 25px 25px 0 0;
-}
-.white {
-  background: white;
 }
 </style>

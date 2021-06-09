@@ -1,17 +1,21 @@
 <template>
   <ion-page>
     <ion-content>
-      <div class="h-full flex flex-col space-y-4 justify-center items-center">
+      <div
+        class="h-full flex flex-col space-y-4 justify-center items-center p-10"
+      >
         <img
           class="rounded-full w-20 h-20 shadow"
-          :src="require('@/assets/resources/user.png')"
+          :src="
+            user.image ? user.image : require('@/assets/resources/user.png')
+          "
           alt="user image"
         />
         <h2 class="text-center">Hi {{ user.name }}!</h2>
 
-        <div class="flex flex-col justify-center">
+        <div class="flex flex-col w-full justify-center space-y-4">
           <VInput
-            class="shadow"
+            class="shadow rounded-full"
             type="password"
             name="password"
             placeholder="Password"
@@ -20,23 +24,33 @@
             v-model:value="state.password"
             :v$="v$"
           />
-          <ion-button @click="login" v-show="!v$.password.$invalid">
-            LOGIN
-          </ion-button>
-          <div
-            v-if="isAvailableFingerPrint"
-            class="font-bold"
-            @click="useTouchID"
+          <ion-button
+            @click="login"
+            expand="block"
+            shape="round"
+            v-show="!v$.password.$invalid"
           >
-            Touch ID
-          </div>
+            Login
+          </ion-button>
+          <ion-button
+            @click="useTouchID"
+            color="secondary"
+            expand="block"
+            shape="round"
+            size="small"
+            v-show="isAvailableFingerPrint"
+          >
+            <ion-icon class="mr-2" :icon="fingerPrint" /> Touch ID
+          </ion-button>
         </div>
-      </div>
-      <div
-        @click="logout"
-        class="bottom-4 absolute w-full text-center font-bold"
-      >
-        Logout ->
+        <ion-button
+          @click="logout"
+          expand="clear"
+          mode="ios"
+          class="logout bottom-4 absolute w-full text-center font-bold"
+        >
+          Logout <ion-icon class="ml-2" :icon="logOutOutline" />
+        </ion-button>
       </div>
     </ion-content>
   </ion-page>
@@ -44,7 +58,7 @@
 
 <script>
 import VInput from "@/components/ui/VInput";
-import { IonButton, IonContent, IonPage } from "@ionic/vue";
+import { IonButton, IonContent, IonIcon, IonPage } from "@ionic/vue";
 import { useUserStore } from "@/store/user";
 import { useAuthsStore } from "@/store/auth";
 import { computed, reactive, ref } from "vue";
@@ -57,10 +71,11 @@ import touchID from "@/module-client/touchID";
 import touchIdStorageClient from "@/storage-client/touchId";
 import useLogout from "@/use/useLogout";
 import { useKeyboard } from "@/use/useKeyboard";
+import { fingerPrint, logOutOutline } from "ionicons/icons";
 
 export default {
   name: "RequireAuth",
-  components: { VInput, IonPage, IonContent, IonButton },
+  components: { VInput, IonPage, IonContent, IonButton, IonIcon },
   setup() {
     const userStore = useUserStore();
     const authStore = useAuthsStore();
@@ -130,8 +145,7 @@ export default {
         .then(async () => {
           await router.push({ name: "Dashboard" });
         })
-        .catch(error => {
-          console.log(error);
+        .catch(() => {
           toast({
             message: "Too many attempts, please insert your password",
             duration: 2000,
@@ -165,6 +179,8 @@ export default {
       login,
       logout,
       useTouchID,
+      fingerPrint,
+      logOutOutline,
     };
   },
 };

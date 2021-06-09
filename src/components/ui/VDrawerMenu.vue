@@ -106,13 +106,15 @@ export default defineComponent({
       return userStore.state.user;
     });
 
-    const path: string = router.currentRoute.value.path;
-
-    function findCurrentRoute() {
+    function findCurrentRoute(path) {
       selectedIndex.value = appPages.findIndex(page => page.url === path);
     }
 
-    findCurrentRoute();
+    router.afterEach(() => {
+      const path: string = router.currentRoute.value.path;
+      findCurrentRoute(path);
+    });
+
     onUnmounted(() => (selectedIndex.value = 0));
 
     return {
