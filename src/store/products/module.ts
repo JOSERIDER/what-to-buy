@@ -96,7 +96,7 @@ export const actions: ActionTree<ProductsStateInterface, RootStateInterface> = {
     }
   },
 
-  async addProduct({ commit, dispatch }, { base64Data, fileName, product }) {
+  async addProduct({ commit }, { base64Data, fileName, product }) {
     try {
       commit(MutationType.products.setLoading, true);
       commit(MutationType.listDetail.setError, "");
@@ -119,8 +119,6 @@ export const actions: ActionTree<ProductsStateInterface, RootStateInterface> = {
       ]);
 
       await productsApiClient.create(product);
-
-      await dispatch(ActionType.products.fetchProducts);
     } catch (error) {
       commit(MutationType.listDetail.setError, error.message);
     } finally {

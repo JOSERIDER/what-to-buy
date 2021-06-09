@@ -1,8 +1,8 @@
 <template>
   <div class="h-full w-full flex justify-center items-center flex-col p-4">
-    <ion-img
+    <img
       :src="require('@/assets/resources/slides/take-a-picture.svg')"
-      class="w-48 "
+      class="w-48"
       alt="App icon"
     />
     <div class="text-xl text-center font-light mt-5">
@@ -17,17 +17,3 @@
     </ion-button>
   </div>
 </template>
-
-<script>
-import { IonImg } from "@ionic/vue";
-
-export default {
-  emit: ["continue"],
-  name: "StarterSlide4",
-  components: {
-    IonImg,
-  },
-};
-</script>
-
-<style scoped></style>

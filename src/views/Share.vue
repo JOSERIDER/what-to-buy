@@ -1,42 +1,55 @@
 <template>
-  <ion-header>
-    <ion-toolbar>
-      <ion-menu-button slot="start"> </ion-menu-button>
-      <ion-title>Share</ion-title>
-    </ion-toolbar>
-  </ion-header>
+  <ion-page>
+    <ion-header>
+      <ion-toolbar>
+        <ion-menu-button slot="start"></ion-menu-button>
+        <ion-title>Share</ion-title>
+      </ion-toolbar>
+    </ion-header>
 
-  <ion-content>
-    <ion-card>
-      <ion-card-header>
-        <ion-card-title>Scan shared list QR code</ion-card-title>
-      </ion-card-header>
-      <ion-card-content class="flex justify-center items-center flex-col">
-        <ion-img class="w-48 h-48" :src="user.qrUrl"></ion-img>
-        <ion-card-subtitle class="ion-margin-vertical"
-          >Ask someone to scan this code to join your shared list if they don't
-          share this code.</ion-card-subtitle
+    <ion-content>
+      <div class="flex h-1/2 justify-center items-center">
+        <qrcode-vue :value="user.qrUrl" :size="230"></qrcode-vue>
+      </div>
+
+      <div class="content h-1/2 shadow-inner p-4">
+        <!-- Camera button -->
+        <div
+          @click="share"
+          class="camera-button rounded-full w-12 p-2 m-auto shadow-lg"
         >
-      </ion-card-content>
-    </ion-card>
-    <ion-button @click="share()" expand="block" fill="clear" shape="round">
-      Share code
-    </ion-button>
-  </ion-content>
+          <img
+            class="w-full"
+            :src="require('@/assets/resources/share.svg')"
+            alt="camera"
+          />
+        </div>
+
+        <!-- Header -->
+        <div class="flex justify-between">
+          <div class="text-2xl font-bold">
+            Scan shared list QR code
+          </div>
+        </div>
+
+        <!-- Category -->
+        <div class="flex flex-col pt-4 space-y-1">
+          <div class="font-light">
+            Ask someone to scan this code to join your shared list if they don't
+            share this code.
+          </div>
+        </div>
+      </div>
+    </ion-content>
+  </ion-page>
 </template>
 
 <script lang="ts">
 import {
-  IonButton,
-  IonCard,
-  IonCardContent,
-  IonCardHeader,
-  IonCardSubtitle,
-  IonCardTitle,
   IonContent,
   IonHeader,
-  IonImg,
   IonMenuButton,
+  IonPage,
   IonTitle,
   IonToolbar,
 } from "@ionic/vue";
@@ -45,21 +58,17 @@ import { useUserStore } from "@/store/user";
 import { User } from "@/models/domain/user";
 import { SocialSharingModelInterface } from "@/models/modules/social-sharing";
 import socialSharing from "@/module-client/social-sharing";
+import QrcodeVue from "qrcode.vue";
 
 export default defineComponent({
   components: {
     IonHeader,
     IonToolbar,
     IonTitle,
-    IonButton,
-    IonCard,
-    IonCardHeader,
-    IonCardTitle,
-    IonCardContent,
-    IonCardSubtitle,
     IonMenuButton,
     IonContent,
-    IonImg,
+    IonPage,
+    QrcodeVue,
   },
   name: "Share",
   setup() {
@@ -78,4 +87,19 @@ export default defineComponent({
 });
 </script>
 
-<style scoped></style>
+<style scoped>
+.camera-button {
+  position: relative;
+  top: -35px;
+  background-color: #ffc409;
+}
+.camera-button:active {
+  @apply shadow-inner;
+}
+.content {
+  -webkit-box-shadow: 0 0 28px -6px rgba(135, 135, 135, 1);
+  -moz-box-shadow: 0 0 28px -6px rgba(135, 135, 135, 1);
+  box-shadow: 0 0 28px -6px rgba(135, 135, 135, 1);
+  border-radius: 25px 25px 0 0;
+}
+</style>

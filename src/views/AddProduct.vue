@@ -32,7 +32,7 @@
           <div class="space-y-1">
             <p class="font-bold">Name</p>
             <VInput
-              class="shadow"
+              class="shadow rounded"
               name="productName"
               capitalize="words"
               enterkeyhint="next"
@@ -47,7 +47,7 @@
           <div class="space-y-1">
             <p class="font-bold">Description</p>
             <VInput
-              class="shadow"
+              class="shadow rounded"
               ref="description"
               enterkeyhint="next"
               @enter="$refs.price.setFocus()"
@@ -73,6 +73,7 @@
           <div class="space-y-1">
             <p class="font-bold">Price</p>
             <VInput
+              class="shadow rounded"
               ref="price"
               name="productPrice"
               enterkeyhint="done"
@@ -81,15 +82,11 @@
               placeholder="price"
               :v$="v$.price"
               type="number"
+              step="any"
             />
           </div>
 
-          <ion-button
-            v-if="!loading"
-            type="submit"
-            @click="save()"
-            expand="block"
-          >
+          <ion-button v-if="!loading" type="submit" expand="block">
             Save
           </ion-button>
           <ion-button v-else expand="block">
@@ -117,7 +114,13 @@ import VInput from "@/components/ui/VInput.vue";
 import useVuelidate from "@vuelidate/core";
 import VSpinnerButtonLoading from "@/components/ui/VSpinnerButtonLoading.vue";
 import { computed, defineComponent, reactive, ref } from "vue";
-import { maxLength, minLength, numeric, required } from "@vuelidate/validators";
+import {
+  maxLength,
+  maxValue,
+  minLength,
+  numeric,
+  required,
+} from "@vuelidate/validators";
 import useIonicService from "@/use/useIonicService";
 import useCategory from "../use/useCategory";
 import { usePhotoGallery } from "@/use/usePhotoGallery";
@@ -158,7 +161,7 @@ export default defineComponent({
       category: "",
       price: 0,
     });
-    const productId: string = router.currentRoute.value.params.id as string;
+    const barcode: string = router.currentRoute.value.params.id as string;
     const loading = computed(() => {
       return productsStore.state.loading;
     });
@@ -168,14 +171,17 @@ export default defineComponent({
         name: {
           required,
           minLength: minLength(4),
+          maxLength: maxLength(21),
         },
         description: {
           required,
+          minLength: minLength(4),
           maxLength: maxLength(30),
         },
         price: {
           required,
           numeric,
+          maxValue: maxValue(100),
         },
       };
     });
@@ -208,7 +214,8 @@ export default defineComponent({
         state.description,
         state.price,
         currentCategory.value.text,
-        productId
+        "",
+        barcode
       );
     }
 
@@ -237,9 +244,12 @@ export default defineComponent({
 
       await productsStore.action(ActionType.products.setLoading, true);
       //Check if the product already exists on database.
-      const productExists = await productApiClient.checkProduct(
-        productId ? productId : state.name
-      );
+      let productExists: boolean;
+      if (barcode) {
+        productExists = await productApiClient.checkProductBarcode(barcode);
+      } else {
+        productExists = await productApiClient.checkProductName(state.name);
+      }
 
       if (productExists) {
         await productsStore.action(ActionType.products.setLoading, false);
@@ -259,6 +269,7 @@ export default defineComponent({
     currentCategory.value = { text: "Choose an option", value: -1 };
 
     categories.splice(0, 1);
+
     return {
       state,
       loading,

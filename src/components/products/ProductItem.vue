@@ -4,17 +4,16 @@
       slot="start"
       class="p-1 w-16 h-16 flex justify-start items-center"
     >
-      <img
-        :src="product.image"
-        class=""
-        width="64"
-        height="64"
-        :alt="product.name"
-      />
+      <img :src="product.image" width="64" height="64" :alt="product.name" />
     </ion-thumbnail>
 
     <div class="flex flex-col h-20 w-full">
-      <p class="font-bold text-lg">{{ product.name }}</p>
+      <p
+        :class="[product.name.length > 10 ? 'text-sm' : 'text-lg']"
+        class="font-bold"
+      >
+        {{ product.name }}
+      </p>
       <p class="font-light text-base text-blue-500">{{ product.price }} €</p>
       <p class="font-extralight text-sm">
         {{ product.category }}

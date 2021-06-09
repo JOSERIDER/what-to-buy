@@ -16,117 +16,133 @@
     </ion-header>
 
     <ion-content>
-      <div class="h-full px-4">
-        <div class="flex flex-col justify-center main items-center">
+      <div class="h-full">
+        <div class="flex flex-col h-1/3 justify-center main items-center">
           <div class="m-4">
-            <ion-avatar @click="openCameraOptions()">
-              <img
-                v-if="photo"
-                class="avatar"
-                :src="photo.webviewPath"
-                alt="user profile image"
-              />
-              <img
-                v-else
-                class="avatar"
-                :src="
-                  user?.image
-                    ? user.image
-                    : require('@/assets/resources/user.png')
-                "
-                alt="user profile image"
-              />
-            </ion-avatar>
+            <img
+              @click="openCameraOptions()"
+              v-if="photo"
+              class="w-24 h-24 rounded-full shadow"
+              :src="photo.webviewPath"
+              alt="user profile image"
+            />
+            <img
+              v-else
+              @click="openCameraOptions()"
+              class="w-24 h-24 rounded-full shadow"
+              :src="
+                user?.image
+                  ? user.image
+                  : require('@/assets/resources/user.png')
+              "
+              alt="user profile image"
+            />
           </div>
-          <div>
-            <ion-text>
-              <ion-label>{{ user.name }}</ion-label>
-            </ion-text>
-          </div>
+          <div></div>
         </div>
 
-        <div class="flex flex-col">
-          <ion-item-group>
-            <ion-item-divider>
-              <ion-label>Personal data</ion-label>
-              <ion-icon
-                slot="end"
-                size="large"
-                color="primary"
-                :icon="editing ? icons.closeOutline : icons.create"
-                @click="editing ? close() : (editing = true)"
-              ></ion-icon>
-            </ion-item-divider>
-            <ion-item>
-              <ion-label>Name</ion-label>
-              <VInput
-                v-if="editing"
-                slot="end"
-                enterkeyhint="next"
-                @enter="$refs.userEmail.setFocus()"
-                :v$="v$.userName"
-                v-model:value="v$.userName.$model"
-                name="name"
-              />
-              <VInput
-                v-else
-                slot="end"
-                :v$="v$.userName"
-                :value="state.userName"
-                :disabled="true"
-                name="name"
-              />
-            </ion-item>
-            <ion-item>
-              <ion-label>Email</ion-label>
-              <VInput
-                v-if="editing"
-                slot="end"
-                ref="userEmail"
-                enterkeyhint="done"
-                @enter="updateUser"
-                :v$="v$.email"
-                v-model:value="v$.email.$model"
-                name="email"
-              />
-              <VInput
-                v-else
-                slot="end"
-                :v$="v$.email"
-                :value="state.email"
-                :disabled="true"
-                name="email"
-              />
-            </ion-item>
-            <ion-item>
-              <ion-label>Private lists</ion-label>
-              <ion-label slot="end" class="ion-text-end">
-                {{ privateLists }}
-              </ion-label>
-            </ion-item>
-            <ion-item>
-              <ion-label>Touch ID</ion-label>
-              <ion-toggle
-                slot="end"
-                v-if="isEnabledFingerPrint"
-                @ionChange="toggleFingerPrint($event.target.value)"
-                :disabled="!isAvailableFingerPrint"
-                checked
-              />
-              <ion-toggle
-                slot="end"
-                v-else
-                @ionChange="toggleFingerPrint($event.target.value)"
-                :disabled="!isAvailableFingerPrint"
-                :checked="false"
-              />
-            </ion-item>
-          </ion-item-group>
-        </div>
-        <div v-if="editing" class="flex justify-center mt-4">
-          <ion-button @click="updateUser">
-            Update user
-          </ion-button>
+        <div
+          class="content h-2/3 overflow-y-scroll absolute bottom-0 w-full shadow-inner p-2"
+        >
+          <!-- Header -->
+          <div class="flex justify-between">
+            <div class="text-xl m-2 font-bold">
+              {{ user.name }}
+            </div>
+          </div>
+
+          <!-- Category -->
+          <div class="flex flex-col pt-4 space-y-1">
+            <div class="font-light">
+              <div class="flex flex-col">
+                <ion-item-group class="space-y-0.5">
+                  <ion-item-divider>
+                    <ion-label>Personal data</ion-label>
+                    <ion-icon
+                      slot="end"
+                      size="large"
+                      color="primary"
+                      :icon="editing ? icons.closeOutline : icons.create"
+                      @click="editing ? close() : (editing = true)"
+                    ></ion-icon>
+                  </ion-item-divider>
+                  <ion-item lines="none" class="shadow rounded">
+                    <ion-label slot="start" class="font-bold">Name</ion-label>
+                    <VInput
+                      class="text-right"
+                      v-if="editing"
+                      slot="end"
+                      enterkeyhint="next"
+                      @enter="$refs.userEmail.setFocus()"
+                      :v$="v$.userName"
+                      v-model:value="v$.userName.$model"
+                      name="name"
+                    />
+                    <VInput
+                      class="text-right"
+                      v-else
+                      slot="end"
+                      :v$="v$.userName"
+                      :value="state.userName"
+                      :disabled="true"
+                      name="name"
+                    />
+                  </ion-item>
+                  <ion-item lines="none" class="shadow rounded">
+                    <ion-label slot="start" class="font-bold">Email</ion-label>
+                    <VInput
+                      class="text-right"
+                      v-if="editing"
+                      slot="end"
+                      ref="userEmail"
+                      enterkeyhint="done"
+                      @enter="updateUser"
+                      :v$="v$.email"
+                      v-model:value="v$.email.$model"
+                      name="email"
+                    />
+                    <VInput
+                      class="text-right"
+                      v-else
+                      slot="end"
+                      :v$="v$.email"
+                      :value="state.email"
+                      :disabled="true"
+                      name="email"
+                    />
+                  </ion-item>
+                  <ion-item lines="none" class="shadow rounded">
+                    <ion-label class="font-bold">Private lists</ion-label>
+                    <ion-label slot="end" class="ion-text-end">
+                      {{ privateLists }}
+                    </ion-label>
+                  </ion-item>
+                  <ion-item lines="none" class="shadow rounded">
+                    <ion-label class="font-bold">Touch ID</ion-label>
+                    <ion-toggle
+                      slot="end"
+                      v-if="isEnabledFingerPrint"
+                      @ionChange="toggleFingerPrint($event.target.value)"
+                      :disabled="!isAvailableFingerPrint"
+                      checked
+                    />
+                    <ion-toggle
+                      slot="end"
+                      v-else
+                      @ionChange="toggleFingerPrint($event.target.value)"
+                      :disabled="!isAvailableFingerPrint"
+                      :checked="false"
+                    />
+                  </ion-item>
+                </ion-item-group>
+              </div>
+              <div v-if="editing" class="flex justify-center mt-4">
+                <ion-button @click="updateUser">
+                  Update user
+                </ion-button>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </ion-content>
@@ -135,7 +151,6 @@
 
 <script>
 import {
-  IonAvatar,
   IonButton,
   IonContent,
   IonHeader,
@@ -146,7 +161,6 @@ import {
   IonLabel,
   IonMenuButton,
   IonPage,
-  IonText,
   IonTitle,
   IonToggle,
   IonToolbar,
@@ -177,12 +191,10 @@ export default {
     IonToolbar,
     IonTitle,
     IonIcon,
-    IonText,
     IonItemGroup,
     IonItem,
     IonItemDivider,
     IonMenuButton,
-    IonAvatar,
     IonLabel,
     IonButton,
     IonToggle,
@@ -409,7 +421,11 @@ export default {
 ion-icon {
   font-size: 2rem;
 }
-.avatar {
-  width: 9rem !important;
+
+.content {
+  -webkit-box-shadow: 0 0 28px -6px rgba(135, 135, 135, 1);
+  -moz-box-shadow: 0 0 28px -6px rgba(135, 135, 135, 1);
+  box-shadow: 0 0 28px -6px rgba(135, 135, 135, 1);
+  border-radius: 25px 25px 0 0;
 }
 </style>

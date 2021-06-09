@@ -4,8 +4,7 @@ import { User } from "@/models/domain/user/UserDomain.interface";
  * Class to encapsulate the logic and responsibility to build a User object.
  * */
 export class UserBuild {
-  private static qrURL = (id: string) =>
-    `https://api.qrserver.com/v1/create-qr-code/?data=${id}&size=200x200`;
+  private static qrURL = (id: string) => id;
 
   /**
    * Build a User object.

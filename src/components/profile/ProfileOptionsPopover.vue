@@ -1,13 +1,33 @@
 <template>
   <ion-content>
-    <ion-item-group>
-      <ion-item @click="logout" :detail="true">
-        <ion-icon slot="start" :icon="logOutOutline"></ion-icon>
+    <ion-item-group class="space-y-0.5 p-1">
+      <ion-item
+        class="shadow rounded"
+        lines="none"
+        @click="logout"
+        button
+        :detail="true"
+      >
+        <ion-icon color="danger" slot="start" :icon="logOutOutline"></ion-icon>
         <ion-label>Logout</ion-label>
       </ion-item>
-      <ion-item @click="deleteAccount" :detail="true">
-        <ion-icon slot="start" :icon="removeCircleOutline"></ion-icon>
-        <ion-label>Delete account</ion-label>
+      <ion-item
+        class="shadow rounded"
+        lines="none"
+        button
+        @click="deleteAccount"
+        :detail="true"
+      >
+        <ion-icon
+          color="danger"
+          slot="start"
+          :icon="removeCircleOutline"
+        ></ion-icon>
+        <ion-label>
+          Delete
+          <br />
+          account
+        </ion-label>
       </ion-item>
     </ion-item-group>
   </ion-content>

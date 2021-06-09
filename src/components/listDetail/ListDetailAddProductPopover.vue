@@ -59,14 +59,13 @@ export default defineComponent({
     const listDetailStore = useListDetailStore();
     const { toast } = useIonicService();
 
-    function addProduct(productId: string) {
+    function addProduct(barcode: string) {
       apiClient.products
-        .get(productId)
+        .getProductByBarcode(barcode)
         .then(product =>
           listDetailStore.action(ActionType.listDetail.addProduct, product)
         )
         .catch(() =>
-          //TODO: NAVIGATE TO CREATE PRODUCT WITH PRODUCT ID.
           toast({
             message: "This product doesn't exits, add it first.",
             duration: 2000,
