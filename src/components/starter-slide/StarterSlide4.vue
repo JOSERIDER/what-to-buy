@@ -17,3 +17,19 @@
     </ion-button>
   </div>
 </template>
+
+<script>
+import { IonButton } from "@ionic/vue";
+
+export default {
+  components: {
+    IonButton,
+  },
+};
+</script>
+
+<style scoped>
+img {
+  max-width: 150px !important;
+}
+</style>

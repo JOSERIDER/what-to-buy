@@ -14,3 +14,9 @@
     </span>
   </div>
 </template>
+
+<style scoped>
+img {
+  max-width: 150px !important;
+}
+</style>
