@@ -2,7 +2,7 @@
   <ion-page>
     <ion-content>
       <div
-        class="h-full flex flex-col space-y-4 justify-center items-center p-10"
+        class="content h-full flex flex-col space-y-4 justify-center items-center p-10"
       >
         <img
           class="rounded-full w-20 h-20 shadow"
@@ -12,7 +12,6 @@
           alt="user image"
         />
         <h2 class="text-center">Hi {{ user.name }}!</h2>
-
         <div class="flex flex-col w-full justify-center space-y-4">
           <VInput
             class="shadow rounded-full"
@@ -42,15 +41,17 @@
           >
             <ion-icon class="mr-2" :icon="fingerPrint" /> Touch ID
           </ion-button>
+
+          <ion-button
+            @click="logout"
+            expand="clear"
+            mode="ios"
+            class="logout w-full mt-5 text-center text-sm font-bold"
+          >
+            Not {{ user.name }}? Logout
+            <ion-icon class="ml-2" :icon="logOutOutline" />
+          </ion-button>
         </div>
-        <ion-button
-          @click="logout"
-          expand="clear"
-          mode="ios"
-          class="logout bottom-4 absolute w-full text-center font-bold"
-        >
-          Logout <ion-icon class="ml-2" :icon="logOutOutline" />
-        </ion-button>
       </div>
     </ion-content>
   </ion-page>
@@ -185,3 +186,9 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.content {
+  background: #f5f5f5;
+}
+</style>
