@@ -9,4 +9,5 @@ export interface ListDetailStateInterface {
   error: string;
   list: List | SharedList;
   type: string;
+  listener: any;
 }

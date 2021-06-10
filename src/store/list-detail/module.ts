@@ -75,6 +75,10 @@ export const mutations: MutationTree<ListDetailStateInterface> = {
   ) {
     state.list.products = dataProduct;
   },
+
+  setListener(state: ListDetailStateInterface, listener: any) {
+    state.listener = listener;
+  },
 };
 
 export const actions: ActionTree<
@@ -123,11 +127,14 @@ export const actions: ActionTree<
         const list = await apiClient.privateLists.get(listId);
         commit(MutationType.listDetail.setList, list);
       } else {
-        firestore.doc(`sharedList/${listId}`).onSnapshot(doc => {
-          const data = doc.data() as SharedList;
-          commit(MutationType.listDetail.setList, data);
-          dispatch(ActionType.listDetail.fetchProducts);
-        });
+        const listener = firestore
+          .doc(`sharedList/${listId}`)
+          .onSnapshot(doc => {
+            const data = doc.data() as SharedList;
+            commit(MutationType.listDetail.setList, data);
+            dispatch(ActionType.listDetail.fetchProducts);
+          });
+        commit(MutationType.listDetail.setListener, listener);
       }
     } catch (error) {
       commit(MutationType.listDetail.setError, error.message);

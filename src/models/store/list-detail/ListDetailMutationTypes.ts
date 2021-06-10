@@ -12,4 +12,5 @@ export namespace ListDetailMutationTypes {
   export const resetStore = "resetStore";
   export const addProduct = "addProduct";
   export const setType = "setType";
+  export const setListener = "setListener";
 }

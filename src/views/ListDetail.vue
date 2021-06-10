@@ -75,7 +75,7 @@ import {
   IonToolbar,
 } from "@ionic/vue";
 import ListDetailItem from "@/components/listDetail/ListDetailItem.vue";
-import { computed, defineComponent, onUnmounted, watch } from "vue";
+import { computed, defineComponent, onMounted, onUnmounted, watch } from "vue";
 import { add, saveOutline } from "ionicons/icons";
 import { useListDetailStore } from "@/store/list-detail";
 import { Product } from "@/models/domain/product";
@@ -143,6 +143,10 @@ export default defineComponent({
       return listDetailStore.state.products.length === 0;
     });
 
+    const listener = computed(() => {
+      return listDetailStore.state.listener;
+    });
+
     const { popover } = useIonicService();
 
     watch(list, () =>
@@ -186,7 +190,13 @@ export default defineComponent({
       );
     }
 
-    onUnmounted(async () => await saveList());
+    onMounted(() => listener.value);
+    onUnmounted(async () => {
+      await saveList();
+      if (listener.value) {
+        listener.value();
+      }
+    });
 
     fetchProducts();
 

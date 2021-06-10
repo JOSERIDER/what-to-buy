@@ -3,7 +3,6 @@ import { HttpClient, HttpRequestParamsInterface } from "@/models/http-client";
 import { ProductsApiClientUrlInterface } from "@/models/api-client/Products/ProductsApiClientUrl.interface";
 import { Product } from "@/models/domain/product";
 import { ProductFilterInterface } from "@/models/store";
-import _ from "lodash";
 
 /**
  * @name ProductsApiClientModel
@@ -56,9 +55,11 @@ export class ProductsApiClientModel implements ProductsApiClientModelInterface {
     };
 
     return new Promise((resolve, reject) => {
-      HttpClient.getCollections(params, this.store)
+      HttpClient.getCollections<Product>(params, this.store)
         .then(products => {
-          resolve(_.orderBy(products, ["name", "price"], ["asc", "desc"]));
+          resolve(
+            products.sort((a, b) => ((a.name ?? "") > (b.name ?? "") ? 1 : -1))
+          );
         })
         .catch(error => reject(error));
     });
@@ -73,9 +74,11 @@ export class ProductsApiClientModel implements ProductsApiClientModelInterface {
     };
 
     return new Promise((resolve, reject) => {
-      HttpClient.getCollections(params, this.store)
+      HttpClient.getCollections<Product>(params, this.store)
         .then(products => {
-          resolve(_.orderBy(products, ["name", "price"], ["asc", "desc"]));
+          resolve(
+            products.sort((a, b) => ((a.name ?? "") > (b.name ?? "") ? 1 : -1))
+          );
         })
         .catch(error => reject(error));
     });
@@ -98,9 +101,11 @@ export class ProductsApiClientModel implements ProductsApiClientModelInterface {
     };
 
     return new Promise((resolve, reject) => {
-      HttpClient.getWithQuery(params)
+      HttpClient.getWithQuery<Product>(params)
         .then(products => {
-          resolve(_.orderBy(products, ["name", "price"], ["asc", "desc"]));
+          resolve(
+            products.sort((a, b) => ((a.name ?? "") > (b.name ?? "") ? 1 : -1))
+          );
         })
         .catch(error => reject(error));
     });
@@ -114,9 +119,11 @@ export class ProductsApiClientModel implements ProductsApiClientModelInterface {
     };
 
     return new Promise((resolve, reject) => {
-      HttpClient.getFilterCollections(params, this.store)
+      HttpClient.getFilterCollections<Product>(params, this.store)
         .then(products => {
-          resolve(_.orderBy(products, ["name", "price"], ["asc", "desc"]));
+          resolve(
+            products.sort((a, b) => ((a.name ?? "") > (b.name ?? "") ? 1 : -1))
+          );
         })
         .catch(error => reject(error));
     });
