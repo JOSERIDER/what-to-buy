@@ -1,6 +1,7 @@
 import {
   actionSheetController,
   alertController,
+  loadingController,
   pickerController,
   popoverController,
   toastController,
@@ -57,8 +58,32 @@ export default function useIonicService() {
       columns,
       cssClass: "picker-hours",
     });
+    picker.columns[0].options.forEach(element => {
+      delete element.selected;
+      delete element.duration;
+      delete element.transform;
+    });
+
     await picker.present();
   }
 
-  return { popover, actionSheet, alert, toast, picker };
+  async function loading({ spinner, message }) {
+    const loading = await loadingController.create({
+      spinner: spinner,
+      message,
+      translucent: true,
+      backdropDismiss: true,
+    });
+    await loading.present();
+    return loading;
+  }
+
+  return {
+    popover,
+    actionSheet,
+    alert,
+    toast,
+    picker,
+    loadingController: loading,
+  };
 }

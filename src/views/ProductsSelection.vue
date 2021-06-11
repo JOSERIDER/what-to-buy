@@ -2,31 +2,40 @@
   <ion-page>
     <ion-header>
       <ion-toolbar>
-        <ion-title>Add products</ion-title>
+        <ion-title>Product selection</ion-title>
         <ion-buttons slot="start">
           <ion-back-button @click="goBack()" default-href="/"></ion-back-button>
         </ion-buttons>
-        <ion-button
-          color="primary"
-          slot="end"
-          @click="openFilterPopover($event)"
-          fill="clear"
-        >
-          <ion-icon size="large" :icon="icons.filter"></ion-icon>
-        </ion-button>
-        <ion-button slot="end" color="success" @click="save()" fill="clear">
-          <ion-icon size="large" :icon="icons.checkmark"></ion-icon>
-        </ion-button>
+        <ion-buttons slot="end">
+          <ion-button
+            color="primary"
+            @click="openFilterPopover($event)"
+            fill="clear"
+          >
+            <ion-icon size="large" :icon="icons.filter"></ion-icon>
+          </ion-button>
+          <ion-button color="success" @click="save()" fill="clear">
+            <ion-icon size="large" :icon="icons.checkmark"></ion-icon>
+          </ion-button>
+        </ion-buttons>
       </ion-toolbar>
     </ion-header>
 
     <ion-content :fullscreen="false" class="p-4">
+      <ion-header collapse="condense">
+        <ion-toolbar>
+          <ion-title size="large">Product selection</ion-title>
+        </ion-toolbar>
+      </ion-header>
+
       <div class="container sm:m-auto">
-        <ion-searchbar
+        <VSearchBar
           placeholder="Search by name"
           inputmode="text"
-          @ionChange="onSearchChange($event.detail.value)"
-        ></ion-searchbar>
+          @onSearchChange="onSearchChange($event.detail.value)"
+          enter-keyhint="search"
+          @enter="hideKeyboard"
+        />
 
         <div
           v-if="error || (loading && !dataFetched) || products.length === 0"
@@ -76,7 +85,6 @@ import {
   IonList,
   IonTitle,
   IonToolbar,
-  IonSearchbar,
   IonPage,
   IonInfiniteScrollContent,
   IonInfiniteScroll,
@@ -95,10 +103,13 @@ import VErrorView from "@/components/ui/VErrorView.vue";
 import ProductsEmptyView from "@/components/products/ProductsEmptyView.vue";
 import router from "@/router";
 import ProductsFilterPopover from "@/components/products/ProductsFilterPopover.vue";
+import VSearchBar from "@/components/ui/VSearchBar.vue";
+import { useKeyboard } from "@/use/useKeyboard";
 
 export default defineComponent({
   name: "ProductsSelection",
   components: {
+    VSearchBar,
     ProductsEmptyView,
     VSpinner,
     ProductSelectionListItem,
@@ -109,7 +120,6 @@ export default defineComponent({
     IonIcon,
     IonButton,
     IonList,
-    IonSearchbar,
     IonPage,
     IonInfiniteScrollContent,
     IonInfiniteScroll,
@@ -120,6 +130,7 @@ export default defineComponent({
   setup() {
     const productsSelectionStore = useProductsSelectionStore();
     const { alert, popover } = useIonicService();
+    const { hideKeyboard } = useKeyboard();
     const dataFetched = ref(false);
 
     const products = computed(() => {
@@ -160,7 +171,7 @@ export default defineComponent({
     function onSearchChange(value: string) {
       productsSelectionStore.action(
         ActionType.productsSelection.searchProducts,
-        value
+        value.trim()
       );
     }
 
@@ -234,6 +245,7 @@ export default defineComponent({
       loading,
       isDisabledInfiniteScroll,
       dataFetched,
+      hideKeyboard,
       save,
       fetchProducts,
       unselectProduct,

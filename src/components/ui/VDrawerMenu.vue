@@ -11,10 +11,10 @@
         <h3>{{ user?.name }}</h3>
         <ion-label color="medium">{{ user?.email }}</ion-label>
       </div>
-      <ion-img
-        class="w-14 h-14 rounded-full"
+      <img
+        class="w-14 h-14 rounded-full shadow"
         :src="user?.image ? user.image : require('@/assets/resources/user.png')"
-      ></ion-img>
+      />
     </ion-header>
     <ion-content>
       <ion-list id="inbox-list">
@@ -37,17 +37,6 @@
           </ion-item>
         </ion-menu-toggle>
       </ion-list>
-      <ion-menu-toggle>
-        <ion-item
-          @click="logout()"
-          lines="none"
-          detail="false"
-          class="hydrated"
-        >
-          <ion-icon slot="start" :icon="logOutOutline"></ion-icon>
-          <ion-label>Logout</ion-label></ion-item
-        >
-      </ion-menu-toggle>
     </ion-content>
   </ion-menu>
   <!-- Should render <ion-router-outlet/> and must have contentId as id -->
@@ -59,7 +48,6 @@ import {
   IonContent,
   IonHeader,
   IonIcon,
-  IonImg,
   IonItem,
   IonLabel,
   IonList,
@@ -70,14 +58,11 @@ import {
   settingsOutline,
   fastFoodOutline,
   listOutline,
-  logOutOutline,
   shareOutline,
 } from "ionicons/icons";
-import { computed, defineComponent, ref } from "vue";
+import { computed, defineComponent, onUnmounted, ref } from "vue";
 import router from "@/router";
 import { useUserStore } from "@/store/user";
-import { ActionType } from "@/models/store";
-import { useAuthsStore } from "@/store/auth";
 
 export default defineComponent({
   name: "VDrawerMenu",
@@ -88,13 +73,11 @@ export default defineComponent({
     IonMenuToggle,
     IonItem,
     IonIcon,
-    IonImg,
     IonHeader,
     IonLabel,
   },
   setup() {
     const userStore = useUserStore();
-    const authStore = useAuthsStore();
     const selectedIndex = ref(0);
     const appPages = [
       {
@@ -123,25 +106,21 @@ export default defineComponent({
       return userStore.state.user;
     });
 
-    async function logout() {
-      await userStore.action(ActionType.user.removeUser);
-      await authStore.action(ActionType.auth.logout);
-      await router.push("/auth");
-    }
-    const path: string = router.currentRoute.value.path;
-
-    function findCurrentRoute() {
+    function findCurrentRoute(path) {
       selectedIndex.value = appPages.findIndex(page => page.url === path);
     }
 
-    findCurrentRoute();
+    router.afterEach(() => {
+      const path: string = router.currentRoute.value.path;
+      findCurrentRoute(path);
+    });
+
+    onUnmounted(() => (selectedIndex.value = 0));
 
     return {
       appPages,
       user,
-      logOutOutline,
       selectedIndex,
-      logout,
     };
   },
 });

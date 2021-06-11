@@ -35,11 +35,18 @@ export const mutations: MutationTree<ListsStateInterface> = {
   setError(state: ListsStateInterface, error: string) {
     state.error = error;
   },
+  resetLists(state: ListsStateInterface) {
+    state.lists = [];
+    state.type = "Private";
+    state.editing = false;
+    state.error = "";
+  },
 };
 
 export const actions: ActionTree<ListsStateInterface, RootStateInterface> = {
   async fetchLists({ commit, state }) {
     commit(MutationType.lists.loadingLists);
+    commit(MutationType.lists.setError, "");
     const user = useUserStore().state.user;
 
     try {
@@ -61,6 +68,7 @@ export const actions: ActionTree<ListsStateInterface, RootStateInterface> = {
   async createList({ commit, state }, list: List) {
     try {
       commit(MutationType.lists.loadingLists);
+      commit(MutationType.lists.setError, "");
 
       if (state.type === "Private") {
         await privateListsApiClient.create(list);
@@ -75,6 +83,7 @@ export const actions: ActionTree<ListsStateInterface, RootStateInterface> = {
   async deleteList({ commit }, listId: string) {
     try {
       commit(MutationType.lists.loadingLists);
+      commit(MutationType.lists.setError, "");
       await privateListsApiClient.delete(listId);
     } catch (error) {
       commit(ActionType.lists.setError, error.message);
@@ -85,8 +94,8 @@ export const actions: ActionTree<ListsStateInterface, RootStateInterface> = {
 
   async updateList({ commit }, { listId, listItem }) {
     try {
-      commit(ActionType.lists.setError, "");
       commit(MutationType.lists.loadingLists);
+      commit(ActionType.lists.setError, "");
 
       await privateListsApiClient.update(listId, listItem);
     } catch (error) {
@@ -107,6 +116,8 @@ export const actions: ActionTree<ListsStateInterface, RootStateInterface> = {
   async createUserSharedList({ commit }, sharedList: SharedList) {
     try {
       commit(MutationType.lists.loadingLists);
+      commit(MutationType.lists.setError, "");
+
       await sharedListsApiClient.create(sharedList);
     } catch (error) {
       commit(ActionType.lists.setError, error.message);
@@ -122,6 +133,8 @@ export const actions: ActionTree<ListsStateInterface, RootStateInterface> = {
   async unJoinList({ commit, state }, listId: string) {
     try {
       commit(MutationType.lists.loadingLists);
+      commit(MutationType.lists.setError, "");
+
       const userId = useUserStore().state.user.id as string;
       const list = state.lists.find(
         list => list.listCode === listId
@@ -135,6 +148,10 @@ export const actions: ActionTree<ListsStateInterface, RootStateInterface> = {
     } finally {
       commit(MutationType.lists.loadedLists);
     }
+  },
+
+  resetLists({ commit }) {
+    commit(MutationType.lists.resetLists);
   },
 };
 

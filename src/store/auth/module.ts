@@ -76,6 +76,7 @@ export const actions: ActionTree<AuthStateInterface, RootStateInterface> = {
 
   async signUp({ commit }, { email, password, userName, listName }) {
     commit(MutationType.auth.loading);
+    commit(MutationType.auth.setError, "");
     const listsStore = useListsStore();
     const userStore = useUserStore();
 
@@ -108,19 +109,24 @@ export const actions: ActionTree<AuthStateInterface, RootStateInterface> = {
       );
 
       await userStore.action(ActionType.user.createUser, newUser);
-
-      commit(MutationType.auth.loaded);
     } catch (error) {
-      commit(MutationType.auth.loaded);
       commit(MutationType.auth.setError, error.message);
+    } finally {
+      commit(MutationType.auth.loaded);
     }
   },
 
   async logout({ commit }) {
     commit(MutationType.auth.loading);
-    await firebaseAuth.signOut();
-    commit(MutationType.auth.removeUser);
-    commit(MutationType.auth.loaded);
+    try {
+      commit(MutationType.auth.setError, "");
+      await firebaseAuth.signOut();
+      commit(MutationType.auth.removeUser);
+    } catch (error) {
+      commit(MutationType.auth.setError, error.message);
+    } finally {
+      commit(MutationType.auth.loaded);
+    }
   },
 
   setUser({ commit }, user: any) {

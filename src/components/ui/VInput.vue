@@ -7,8 +7,14 @@
       <ion-input
         :disabled="disabled"
         :name="name"
+        :ref="name"
         @change="v$.$touch()"
         :value="value"
+        :enterkeyhint="enterkeyhint"
+        :inputmode="inputMode"
+        :clear-input="clearInput"
+        :step="step"
+        @keypress.enter="$emit('enter')"
         @ionInput="$emit('update:value', $event.target.value)"
         :class="{
           invalid: v$.$invalid && v$.$dirty,
@@ -16,17 +22,23 @@
         }"
         :placeholder="placeholder"
         :type="type"
+        :autocapitalize="capitalize"
       >
       </ion-input>
     </ion-col>
   </ion-row>
 </template>
-<script lang="ts">
+<script>
 import { IonCol, IonIcon, IonInput, IonRow } from "@ionic/vue";
 
 export default {
   name: "VInput",
-  emits: ["update:value"],
+  emits: ["update:value", "enter"],
+  methods: {
+    setFocus() {
+      this.$refs[this.name].$el.setFocus();
+    },
+  },
   props: {
     disabled: {
       type: Boolean,
@@ -58,6 +70,30 @@ export default {
     name: {
       type: String,
       required: true,
+    },
+    enterkeyhint: {
+      type: String,
+      default: undefined,
+    },
+    inputMode: {
+      type: String,
+      default: undefined,
+    },
+    clearInput: {
+      type: Boolean,
+      default: false,
+    },
+    reference: {
+      type: String,
+      default: "",
+    },
+    step: {
+      type: String,
+      default: "",
+    },
+    capitalize: {
+      type: String,
+      default: "off",
     },
   },
   components: {

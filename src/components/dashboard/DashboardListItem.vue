@@ -13,26 +13,26 @@
           v-if="editing && canBeDeleted"
           class="flex items-center w-1/3 justify-end"
         >
-          <ion-button
-            v-if="type === 'Private'"
-            fill="clear"
-            slot="end"
-            @click="$emit('edit-item', list)"
-          >
-            <ion-icon size="large" color="success" :icon="edit"></ion-icon>
-          </ion-button>
-          <ion-button
-            fill="clear"
-            slot="end"
-            class="ml-1 mr-1"
-            @click="$emit('delete-item', list.listCode)"
-          >
-            <ion-icon
-              size="large"
-              color="danger"
-              :icon="type === 'Shared' ? exit : trash"
-            ></ion-icon>
-          </ion-button>
+          <ion-buttons slot="end">
+            <ion-button
+              v-if="type === 'Private'"
+              fill="clear"
+              @click="$emit('edit-item', list)"
+            >
+              <ion-icon size="large" color="success" :icon="edit"></ion-icon>
+            </ion-button>
+            <ion-button
+              fill="clear"
+              class="ml-1 mr-1"
+              @click="$emit('delete-item', list.listCode)"
+            >
+              <ion-icon
+                size="large"
+                color="danger"
+                :icon="type === 'Shared' ? exit : trash"
+              ></ion-icon>
+            </ion-button>
+          </ion-buttons>
         </div>
         <div v-else class="flex items-center w-1/3 justify-end">
           <ion-badge color="medium">
@@ -47,7 +47,14 @@
 
 <script lang="ts">
 import { PropType } from "vue";
-import { IonBadge, IonButton, IonCard, IonIcon, IonItem } from "@ionic/vue";
+import {
+  IonBadge,
+  IonButton,
+  IonButtons,
+  IonCard,
+  IonIcon,
+  IonItem,
+} from "@ionic/vue";
 import {
   chevronForwardOutline,
   trashOutline,
@@ -66,6 +73,7 @@ export default {
     IonIcon,
     IonBadge,
     IonButton,
+    IonButtons,
   },
   data() {
     return {

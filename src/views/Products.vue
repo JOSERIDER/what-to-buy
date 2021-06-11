@@ -1,6 +1,6 @@
 <template>
   <ion-page>
-    <ion-header>
+    <ion-header :translucent="true">
       <ion-toolbar>
         <ion-menu-button slot="start"> </ion-menu-button>
         <ion-title>Products</ion-title>
@@ -21,12 +21,20 @@
 
     <ion-content :fullscreen="false" class="p-4">
       <VRefresher @do-refresh="doRefresh($event)" :icons="icons.dotsCircle" />
+      <ion-header collapse="condense" :translucent="true">
+        <ion-toolbar>
+          <ion-title size="large">Products</ion-title>
+        </ion-toolbar>
+      </ion-header>
       <div class="container sm:m-auto">
-        <ion-searchbar
+        <VSearchBar
           placeholder="Search by name"
           inputmode="text"
-          @ionChange="onSearchChange($event.detail.value)"
-        ></ion-searchbar>
+          @onSearchChange="onSearchChange($event.detail.value)"
+          enter-keyhint="search"
+          @enter="hideKeyboard"
+        />
+
         <div
           v-if="error || (loading && !dataFetched) || products.length === 0"
           class="flex flex-row items-center h-full justify-center"
@@ -78,7 +86,6 @@ import {
   IonList,
   IonMenuButton,
   IonPage,
-  IonSearchbar,
   IonTitle,
   IonToolbar,
   IonInfiniteScrollContent,
@@ -98,10 +105,13 @@ import useIonicService from "@/use/useIonicService";
 import router from "@/router";
 import useScanner from "@/use/useScanner";
 import apiClient from "@/api-client";
+import VSearchBar from "@/components/ui/VSearchBar.vue";
+import { useKeyboard } from "@/use/useKeyboard";
 
 export default defineComponent({
   name: "Products",
   components: {
+    VSearchBar,
     ProductItem,
     ProductsEmptyView,
     VSpinner,
@@ -113,7 +123,6 @@ export default defineComponent({
     IonInfiniteScroll,
     IonTitle,
     IonList,
-    IonSearchbar,
     IonPage,
     IonMenuButton,
     IonButtons,
@@ -129,7 +138,7 @@ export default defineComponent({
     const loading = computed(() => {
       return productsStore.state.loading;
     });
-
+    const { hideKeyboard } = useKeyboard();
     const isDisabledInfiniteScroll = computed(() => {
       return productsStore.state.isDisableInfiniteScroll;
     });
@@ -143,7 +152,7 @@ export default defineComponent({
     });
 
     function onSearchChange(value: string) {
-      productsStore.action(ActionType.products.getProductsByName, value);
+      productsStore.action(ActionType.products.getProductsByName, value.trim());
     }
 
     async function fetchProducts() {
@@ -151,8 +160,7 @@ export default defineComponent({
     }
 
     async function doRefresh(ev) {
-      await productsStore.action(ActionType.products.restoreProducts);
-      await productsStore.action(ActionType.products.loadData);
+      await productsStore.action(ActionType.products.refresh);
       ev.target.complete();
     }
 
@@ -161,8 +169,10 @@ export default defineComponent({
       ev.target.complete();
     }
 
-    async function checkProduct(productId: string) {
-      const productExists = await productsApiClient.checkProduct(productId);
+    async function checkProduct(barcode: string) {
+      const productExists = await productsApiClient.checkProductBarcode(
+        barcode
+      );
 
       if (productExists) {
         await ionicService.toast({
@@ -170,12 +180,15 @@ export default defineComponent({
           duration: 2000,
         });
       } else {
-        await router.push({ name: "AddProduct", params: { id: productId } });
+        await router.push({ name: "AddProduct", params: { id: barcode } });
       }
     }
 
     function openScanner() {
-      useScanner(resp => checkProduct(resp));
+      useScanner(resp => {
+        if (!resp) return;
+        checkProduct(resp);
+      });
     }
 
     function openOptions() {
@@ -227,11 +240,10 @@ export default defineComponent({
       doRefresh,
       openFilterPopover,
       loadData,
+      hideKeyboard,
       isDisabledInfiniteScroll,
-      icons: { filter, add, dotsCirlce: chevronDownCircleOutline },
+      icons: { filter, add, dotsCircle: chevronDownCircleOutline },
     };
   },
 });
 </script>
-
-<style scoped></style>

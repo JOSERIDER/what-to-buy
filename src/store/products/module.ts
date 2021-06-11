@@ -14,8 +14,8 @@ import useKeyWordGen from "@/use/useKeyWordGen";
 import useCategory from "@/use/useCategory";
 
 export const mutations: MutationTree<ProductsStateInterface> = {
-  setProducts(state: ProductsStateInterface, products: Product[]) {
-    if (state.products) {
+  setProducts(state: ProductsStateInterface, { products, replace = false }) {
+    if (state.products && !replace) {
       state.products = state.products.concat(products);
       return;
     }
@@ -88,7 +88,7 @@ export const actions: ActionTree<ProductsStateInterface, RootStateInterface> = {
         commit(MutationType.products.setLastQuery, null);
       }
 
-      commit(MutationType.products.setProducts, products);
+      commit(MutationType.products.setProducts, { products });
     } catch (error) {
       commit(MutationType.listDetail.setError, error.message);
     } finally {
@@ -96,9 +96,10 @@ export const actions: ActionTree<ProductsStateInterface, RootStateInterface> = {
     }
   },
 
-  async addProduct({ commit, dispatch }, { base64Data, fileName, product }) {
+  async addProduct({ commit }, { base64Data, fileName, product }) {
     try {
       commit(MutationType.products.setLoading, true);
+      commit(MutationType.listDetail.setError, "");
       const productsApiClient = apiClient.products;
 
       if (base64Data && fileName) {
@@ -111,12 +112,13 @@ export const actions: ActionTree<ProductsStateInterface, RootStateInterface> = {
         product.image =
           "https://firebasestorage.googleapis.com/v0/b/shopping-list-93c19.appspot.com/o/images%2Fdefault-product.png?alt=media&token=822bdabf-84df-4006-a865-ea7b96294798";
       }
+      const productName = product.name;
 
-      product.keyWords = useKeyWordGen().generateKeywords([product.name]);
+      product.keyWords = useKeyWordGen().generateKeywords([
+        productName.charAt(0).toUpperCase() + productName.slice(1),
+      ]);
 
       await productsApiClient.create(product);
-
-      await dispatch(ActionType.products.fetchProducts);
     } catch (error) {
       commit(MutationType.listDetail.setError, error.message);
     } finally {
@@ -127,13 +129,14 @@ export const actions: ActionTree<ProductsStateInterface, RootStateInterface> = {
   async fetchProductsById({ commit }, productsId: string[]) {
     try {
       commit(MutationType.products.setLoading, true);
+      commit(MutationType.listDetail.setError, "");
       const productsApiClient = apiClient.products;
 
       if (!productsId) return;
 
       const products = await productsApiClient.getProductsById(productsId);
 
-      commit(MutationType.products.setProducts, products);
+      commit(MutationType.products.setProducts, { products });
     } catch (error) {
       commit(MutationType.listDetail.setError, error.message);
     } finally {
@@ -144,6 +147,7 @@ export const actions: ActionTree<ProductsStateInterface, RootStateInterface> = {
   async getProductsByName({ commit }, name: string) {
     try {
       commit(MutationType.products.setLoading, true);
+      commit(MutationType.listDetail.setError, "");
       commit(MutationType.products.setName, name);
       const productsApiClient = apiClient.products;
       commit(MutationType.products.restoreFilter);
@@ -156,7 +160,7 @@ export const actions: ActionTree<ProductsStateInterface, RootStateInterface> = {
         commit(MutationType.products.setLastQuery, null);
       }
 
-      commit(MutationType.products.setProducts, products);
+      commit(MutationType.products.setProducts, { products });
     } catch (error) {
       commit(MutationType.listDetail.setError, error.message);
     } finally {
@@ -164,7 +168,7 @@ export const actions: ActionTree<ProductsStateInterface, RootStateInterface> = {
     }
   },
 
-  async loadData({ commit, state }) {
+  async loadData({ commit, state }, replace = false) {
     try {
       commit(MutationType.products.setLoading, true);
       commit(MutationType.products.setError, "");
@@ -187,7 +191,7 @@ export const actions: ActionTree<ProductsStateInterface, RootStateInterface> = {
         commit(MutationType.products.setInfiniteScroll, false);
       }
 
-      commit(MutationType.products.setProducts, products);
+      commit(MutationType.products.setProducts, { products, replace });
     } catch (error) {
       commit(MutationType.products.setError, error.message);
     } finally {
@@ -206,12 +210,13 @@ export const actions: ActionTree<ProductsStateInterface, RootStateInterface> = {
   async fetchFilterProducts({ commit, state }) {
     try {
       commit(MutationType.products.setLoading, true);
+      commit(MutationType.listDetail.setError, "");
       const productsApiClient = apiClient.products;
       commit(MutationType.products.restoreProducts);
 
       const products = await productsApiClient.getFilterProducts(state.filter);
 
-      commit(MutationType.products.setProducts, products);
+      commit(MutationType.products.setProducts, { products });
     } catch (error) {
       console.error(error);
       commit(MutationType.products.setError, error.message);
@@ -228,10 +233,16 @@ export const actions: ActionTree<ProductsStateInterface, RootStateInterface> = {
     commit(MutationType.products.restoreProducts);
   },
 
+  async refresh({ commit, dispatch }) {
+    commit(MutationType.products.setLastQuery, null);
+    await dispatch(ActionType.products.loadData, true);
+  },
+
   restoreStore({ commit }) {
     commit(MutationType.products.restoreProducts);
     commit(MutationType.products.restoreName);
     commit(MutationType.products.restoreFilter);
+    commit(MutationType.products.setError, "");
   },
 };
 

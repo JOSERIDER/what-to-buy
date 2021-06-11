@@ -12,71 +12,88 @@
     </ion-header>
 
     <ion-content>
-      <ion-grid fixed class="form">
-        <ion-row class="ion-justify-content-center">
-          <ion-col size="6">
-            <ion-img
-              :src="
-                photo
-                  ? photo.webviewPath
-                  : require('@/assets/resources/file-image-icon.png')
-              "
-              @click="openCameraOptions"
-            ></ion-img>
-          </ion-col>
-        </ion-row>
+      <div class="flex flex-col items-center  justify-center mt-10 ">
+        <img
+          class="w-32 h-32 rounded"
+          :src="
+            photo
+              ? photo.webviewPath
+              : require('@/assets/resources/products/add-image.png')
+          "
+          @click="openCameraOptions"
+          alt="Product image"
+        />
+        <p class="text-lg font-extralight mt-3">Take a cool picture</p>
+      </div>
 
-        <ion-card class="flexbox ion-padding">
-          <!-- name -->
-          <form>
+      <ion-card class="flexbox ion-padding">
+        <!-- name -->
+        <form class="space-y-4" @submit.prevent="save">
+          <div class="space-y-1">
+            <p class="font-bold">Name</p>
             <VInput
+              class="shadow rounded"
               name="productName"
-              v-model:value="state.name"
-              placeholder="Name of product"
+              capitalize="words"
+              enterkeyhint="next"
+              @enter="$refs.description.setFocus()"
+              v-model:value.trim="state.name"
               :v$="v$.name"
+              placeholder="product name"
             />
+          </div>
 
-            <!-- Description -->
-            <VTextarea
+          <!-- Description -->
+          <div class="space-y-1">
+            <p class="font-bold">Description</p>
+            <VInput
+              class="shadow rounded"
+              ref="description"
+              enterkeyhint="next"
+              @enter="$refs.price.setFocus()"
               name="productDescription"
-              v-model:value="state.description"
+              v-model:value.trim="state.description"
               placeholder="Description"
               :v$="v$.description"
             />
+          </div>
 
-            <ion-grid @click="openPicker()">
-              <ion-row class="justify-center">
-                <ion-col>
-                  <ion-label class="text-center">
-                    Category
-                  </ion-label>
-                </ion-col>
-              </ion-row>
-              <ion-row>
-                <ion-col>
-                  <ion-label class="text-center">
-                    {{ currentCategory.text }}
-                  </ion-label>
-                </ion-col>
-              </ion-row>
-            </ion-grid>
-            <!-- Price -->
+          <!-- Category -->
+          <div class="space-y-1">
+            <p class="font-bold">Category</p>
+            <VPicker
+              @categorySelected="currentCategory = $event"
+              :options="categories"
+              :category="currentCategory"
+              column-name="Categories"
+            />
+          </div>
+
+          <!-- Price -->
+          <div class="space-y-1">
+            <p class="font-bold">Price</p>
             <VInput
+              class="shadow rounded"
+              ref="price"
               name="productPrice"
-              v-model:value.number="state.price"
+              enterkeyhint="done"
+              @enter="save"
+              v-model:value.number.trim="state.price"
               placeholder="price"
               :v$="v$.price"
               type="number"
+              step="any"
             />
-            <ion-button v-if="!loading" @click="save()" expand="block">
-              Save
-            </ion-button>
-            <ion-button v-else expand="block">
-              <VSpinnerButtonLoading />
-            </ion-button>
-          </form>
-        </ion-card>
-      </ion-grid>
+          </div>
+
+          <ion-button v-if="!loading" type="submit" expand="block">
+            Save
+          </ion-button>
+          <ion-button v-else expand="block">
+            <VSpinnerButtonLoading />
+          </ion-button>
+        </form>
+      </ion-card>
     </ion-content>
   </ion-page>
 </template>
@@ -86,24 +103,24 @@ import {
   IonBackButton,
   IonButton,
   IonCard,
-  IonCol,
   IonContent,
-  IonGrid,
   IonHeader,
-  IonImg,
-  IonLabel,
   IonPage,
-  IonRow,
   IonTitle,
   IonToolbar,
 } from "@ionic/vue";
 import router from "@/router";
 import VInput from "@/components/ui/VInput.vue";
 import useVuelidate from "@vuelidate/core";
-import VTextarea from "@/components/ui/VTextarea.vue";
 import VSpinnerButtonLoading from "@/components/ui/VSpinnerButtonLoading.vue";
 import { computed, defineComponent, reactive, ref } from "vue";
-import { maxLength, minLength, numeric, required } from "@vuelidate/validators";
+import {
+  maxLength,
+  maxValue,
+  minLength,
+  numeric,
+  required,
+} from "@vuelidate/validators";
 import useIonicService from "@/use/useIonicService";
 import useCategory from "../use/useCategory";
 import { usePhotoGallery } from "@/use/usePhotoGallery";
@@ -112,30 +129,28 @@ import { ActionType } from "@/models/store";
 import { ProductDomainBuilder } from "@/models/domain/product/ProductDomain.builder";
 import apiClient from "@/api-client";
 import { Product } from "@/models/domain/product";
+import { useKeyboard } from "@/use/useKeyboard";
+import VPicker from "@/components/ui/VPicker.vue";
 
 export default defineComponent({
   name: "AddProduct",
   components: {
+    VPicker,
     VSpinnerButtonLoading,
-    VTextarea,
     VInput,
     IonPage,
-    IonLabel,
     IonContent,
-    IonRow,
-    IonCol,
     IonButton,
     IonCard,
-    IonGrid,
     IonHeader,
     IonToolbar,
     IonTitle,
     IonBackButton,
-    IonImg,
   },
   setup() {
-    const { picker, toast, actionSheet } = useIonicService();
+    const { toast, actionSheet } = useIonicService();
     const { categories } = useCategory();
+    const { hideKeyboard } = useKeyboard();
     const { takePhotoCamera, selectFromGallery, photo } = usePhotoGallery();
     const currentCategory = ref({} as any);
     const productsStore = useProductsStore();
@@ -146,8 +161,7 @@ export default defineComponent({
       category: "",
       price: 0,
     });
-    const productId: string = router.currentRoute.value.params.id as string;
-
+    const barcode: string = router.currentRoute.value.params.id as string;
     const loading = computed(() => {
       return productsStore.state.loading;
     });
@@ -157,42 +171,20 @@ export default defineComponent({
         name: {
           required,
           minLength: minLength(4),
+          maxLength: maxLength(21),
         },
         description: {
           required,
+          minLength: minLength(4),
           maxLength: maxLength(30),
         },
         price: {
           required,
           numeric,
+          maxValue: maxValue(100),
         },
       };
     });
-
-    function openPicker() {
-      picker({
-        animated: true,
-        buttons: [
-          {
-            text: "Cancel",
-            role: "cancel",
-          },
-          {
-            text: "Choose",
-            handler: val => {
-              currentCategory.value = val["Categories"];
-              return true;
-            },
-          },
-        ],
-        columns: [
-          {
-            name: "Categories",
-            options: categories,
-          },
-        ],
-      });
-    }
 
     function openCameraOptions() {
       actionSheet({
@@ -222,7 +214,8 @@ export default defineComponent({
         state.description,
         state.price,
         currentCategory.value.text,
-        productId
+        "",
+        barcode
       );
     }
 
@@ -242,6 +235,8 @@ export default defineComponent({
         return;
       }
 
+      await hideKeyboard();
+
       if (currentCategory.value.value === -1) {
         await toast({ message: "Please, select a category", duration: 1500 });
         return;
@@ -249,9 +244,12 @@ export default defineComponent({
 
       await productsStore.action(ActionType.products.setLoading, true);
       //Check if the product already exists on database.
-      const productExists = await productApiClient.checkProduct(
-        productId ? productId : state.name
-      );
+      let productExists: boolean;
+      if (barcode) {
+        productExists = await productApiClient.checkProductBarcode(barcode);
+      } else {
+        productExists = await productApiClient.checkProductName(state.name);
+      }
 
       if (productExists) {
         await productsStore.action(ActionType.products.setLoading, false);
@@ -271,6 +269,7 @@ export default defineComponent({
     currentCategory.value = { text: "Choose an option", value: -1 };
 
     categories.splice(0, 1);
+
     return {
       state,
       loading,
@@ -278,16 +277,12 @@ export default defineComponent({
       currentCategory,
       photo,
       router,
+      categories,
       save,
       openCameraOptions,
-      openPicker,
     };
   },
 });
 </script>
 
-<style>
-p {
-  color: rgb(178, 178, 178);
-}
-</style>
+<style></style>

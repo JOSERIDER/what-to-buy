@@ -1,32 +1,53 @@
 <template>
-  <AuthCard :button-enabled="!loading" @submit="login">
-    <template #form>
+  <div class="flex flex-col justify-center mt-10 p-4">
+    <h1 class="text-5xl text-gray-400 font-bold my-4">Sign In</h1>
+    <div class="space-y-4">
       <!-- Email -->
       <VInput
         :v$="v$.email"
+        class="rounded-full shadow"
         v-model:value="state.email"
         placeholder="Email"
         :icon="email"
+        enterkeyhint="next"
+        @enter="$refs.pass.setFocus()"
+        input-mode="email"
         name="email"
       />
 
       <!-- Password -->
       <VInput
+        class="rounded-full shadow"
+        ref="pass"
         :v$="v$.password"
         v-model:value="state.password"
         placeholder="Password"
+        enterkeyhint="done"
+        :clearInput="true"
         :icon="password"
+        @enter="login"
         name="password"
         type="password"
       />
-    </template>
-    <template v-if="!loading" #button-text>Login</template>
-    <template v-else #button-text><VSpinnerButtonLoading /></template>
-  </AuthCard>
+    </div>
+    <div class="mt-5 w-full">
+      <ion-button @click="login" expand="block" shape="round" v-show="!loading">
+        Sign In
+      </ion-button>
+      <ion-button expand="block" shape="round" v-if="loading">
+        <VSpinnerButtonLoading />
+      </ion-button>
+    </div>
+    <p
+      @click="$emit('change-component', 'AuthSignUp')"
+      class="register text-sm text-center pt-4 font-bold"
+    >
+      Don't have an account? Sign up
+    </p>
+  </div>
 </template>
 
 <script lang="ts">
-import AuthCard from "@/components/auth/AuthCard.vue";
 import VInput from "@/components/ui/VInput.vue";
 import VSpinnerButtonLoading from "@/components/ui/VSpinnerButtonLoading.vue";
 import { computed, reactive } from "vue";
@@ -36,16 +57,18 @@ import { email, required } from "@vuelidate/validators";
 import { ActionType } from "@/models/store";
 import { useAuthsStore } from "@/store/auth";
 import router from "@/router";
+import { useKeyboard } from "@/use/useKeyboard";
+import { IonButton } from "@ionic/vue";
 
 export default {
   components: {
     VInput,
-    AuthCard,
     VSpinnerButtonLoading,
+    IonButton,
   },
   setup() {
     const authStore = useAuthsStore();
-
+    const { hideKeyboard } = useKeyboard();
     const state = reactive({
       email: "",
       password: "",
@@ -74,6 +97,7 @@ export default {
 
       if (v$.value.$error) return;
 
+      await hideKeyboard();
       await authStore.action(ActionType.auth.login, {
         email: state.email,
         password: state.password,
@@ -88,3 +112,8 @@ export default {
   },
 };
 </script>
+<style scoped>
+.register {
+  color: #0899ba;
+}
+</style>

@@ -2,8 +2,7 @@
   border-radius: 13px;
   margin: 1rem;
   background-color: white;
-  -webkit-box-shadow: 0 0 21px 4px rgba(35, 35, 35, 0.37);
-  box-shadow: 0 0 21px 4px rgba(35, 35, 35, 0.37);
+  @apply shadow-2xl;
 }
 
 ion-input {
@@ -32,13 +31,6 @@ ion-input {
 
 .valid {
   border: 1px solid greenyellow;
-}
-
-.cardBackground {
-  background-image: url("../resources/card-background.png");
-  background-position: bottom;
-  background-size: cover;
-  background-repeat: no-repeat;
 }
 
 .btn-login {

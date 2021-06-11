@@ -49,8 +49,25 @@ export default defineComponent({
     }
 
     async function remove(listId) {
-      await listsStore.action(ActionType.lists.deleteList, listId);
-      await listsStore.action(ActionType.lists.fetchLists);
+      await alert({
+        header: "Delete list",
+        message:
+          "Your list will be deleted without rollback option. Are you sure ?",
+        buttons: [
+          {
+            text: "Cancel",
+            role: "cancel",
+          },
+          {
+            text: "Continue",
+            handler: async () => {
+              await listsStore.action(ActionType.lists.deleteList, listId);
+              await listsStore.action(ActionType.lists.fetchLists);
+            },
+          },
+        ],
+        inputs: [],
+      });
     }
 
     function openList(item) {

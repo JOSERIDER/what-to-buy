@@ -54,7 +54,15 @@ export class ProductsApiClientModel implements ProductsApiClientModelInterface {
       orderBy: "name",
     };
 
-    return HttpClient.getCollections(params, this.store);
+    return new Promise((resolve, reject) => {
+      HttpClient.getCollections<Product>(params, this.store)
+        .then(products => {
+          resolve(
+            products.sort((a, b) => ((a.name ?? "") > (b.name ?? "") ? 1 : -1))
+          );
+        })
+        .catch(error => reject(error));
+    });
   }
 
   getProductsByName(name: string): Promise<Product[]> {
@@ -65,7 +73,15 @@ export class ProductsApiClientModel implements ProductsApiClientModelInterface {
       orderBy: "name",
     };
 
-    return HttpClient.getCollections(params, this.store);
+    return new Promise((resolve, reject) => {
+      HttpClient.getCollections<Product>(params, this.store)
+        .then(products => {
+          resolve(
+            products.sort((a, b) => ((a.name ?? "") > (b.name ?? "") ? 1 : -1))
+          );
+        })
+        .catch(error => reject(error));
+    });
   }
 
   update(id: string, payload: Product): Promise<void> {
@@ -84,7 +100,15 @@ export class ProductsApiClientModel implements ProductsApiClientModelInterface {
       query: { path: "id", filter: "in", value: productsId },
     };
 
-    return HttpClient.getWithQuery(params);
+    return new Promise((resolve, reject) => {
+      HttpClient.getWithQuery<Product>(params)
+        .then(products => {
+          resolve(
+            products.sort((a, b) => ((a.name ?? "") > (b.name ?? "") ? 1 : -1))
+          );
+        })
+        .catch(error => reject(error));
+    });
   }
 
   getFilterProducts(filter: ProductFilterInterface): Promise<Product[]> {
@@ -94,14 +118,56 @@ export class ProductsApiClientModel implements ProductsApiClientModelInterface {
       query: { ...filter },
     };
 
-    return HttpClient.getFilterCollections(params, this.store);
+    return new Promise((resolve, reject) => {
+      HttpClient.getFilterCollections<Product>(params, this.store)
+        .then(products => {
+          resolve(
+            products.sort((a, b) => ((a.name ?? "") > (b.name ?? "") ? 1 : -1))
+          );
+        })
+        .catch(error => reject(error));
+    });
   }
 
-  checkProduct(id: string): Promise<boolean> {
+  getProductByBarcode(barcode: string): Promise<Product> {
+    const params: HttpRequestParamsInterface = {
+      url: this.urls.products,
+      query: { path: "barcode", filter: "==", value: barcode },
+    };
+
+    return new Promise((resolve, reject) => {
+      HttpClient.getWithQuery(params).then(response => {
+        if (resolve.length === 0) {
+          reject();
+        }
+        resolve(response[0] as Product);
+      });
+    });
+  }
+
+  checkProductBarcode(barcode: string): Promise<boolean> {
+    const params: HttpRequestParamsInterface = {
+      url: this.urls.products,
+      query: { path: "barcode", filter: "==", value: barcode },
+    };
+
+    return this.checkProduct(params);
+  }
+
+  checkProductName(name: string): Promise<boolean> {
+    const params: HttpRequestParamsInterface = {
+      url: this.urls.products,
+      query: { path: "name", filter: "==", value: name },
+    };
+
+    return this.checkProduct(params);
+  }
+
+  private checkProduct(params: HttpRequestParamsInterface): Promise<boolean> {
     return new Promise(resolve => {
-      this.get(id)
-        .then(() => resolve(true))
-        .catch(() => resolve(false));
+      HttpClient.getWithQuery(params).then(response =>
+        resolve(response.length > 0)
+      );
     });
   }
 

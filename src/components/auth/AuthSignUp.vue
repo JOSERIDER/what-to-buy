@@ -1,28 +1,41 @@
 <template>
-  <AuthCard :button-enabled="!loading" @submit="signUp">
-    <template #form>
+  <div class="p-4 flex flex-col justify-center">
+    <h1 class="text-5xl text-gray-400 font-bold my-4">Register</h1>
+    <div class="space-y-4">
       <!-- Email -->
       <VInput
+        class="rounded-full shadow"
         :v$="v$.email"
-        v-model:value="s.email"
+        v-model:value.trim="s.email"
         placeholder="Email"
         :icon="email"
-        name="Email"
+        enterkeyhint="next"
+        @enter="$refs.userName.setFocus()"
+        input-mode="email"
+        name="email"
       />
 
       <!-- Name -->
       <VInput
+        ref="userName"
+        class="rounded-full shadow"
         :v$="v$.name"
-        v-model:value="s.name"
-        placeholder="userName"
+        v-model:value.trim="s.name"
+        placeholder="User name"
+        enterkeyhint="next"
+        @enter="$refs.listName.setFocus()"
         :icon="person"
         name="userName"
       />
 
       <!-- sharedList name -->
       <VInput
+        ref="listName"
+        class="rounded-full shadow"
         :v$="v$.listName"
-        v-model:value="s.listName"
+        v-model:value.trim="s.listName"
+        enterkeyhint="next"
+        @enter="$refs.signUp_password.setFocus()"
         placeholder="Name of your shared list"
         :icon="list"
         name="listName"
@@ -30,21 +43,42 @@
 
       <!-- Password -->
       <VInput
+        class="rounded-full shadow"
+        ref="signUp_password"
         :v$="v$.password"
-        v-model:value="s.password"
+        v-model:value.trim="s.password"
+        enterkeyhint="done"
+        @enter="signUp"
         placeholder="Password"
         :icon="password"
         name="password"
         type="password"
       />
-    </template>
-    <template v-if="!loading" #button-text>Sign up</template>
-    <template v-else #button-text><VSpinnerButtonLoading /></template>
-  </AuthCard>
+    </div>
+
+    <div class="mt-5 w-full">
+      <ion-button
+        @click="signUp"
+        expand="block"
+        shape="round"
+        v-show="!loading"
+      >
+        Sign Up
+      </ion-button>
+      <ion-button expand="block" shape="round" v-if="loading">
+        <VSpinnerButtonLoading />
+      </ion-button>
+    </div>
+    <p
+      @click="$emit('change-component', 'AuthLogin')"
+      class="signIn text-sm text-center pt-4 font-bold"
+    >
+      Already a member? Sign in
+    </p>
+  </div>
 </template>
 
 <script lang="ts">
-import AuthCard from "@/components/auth/AuthCard.vue";
 import useVuelidate from "@vuelidate/core";
 import VSpinnerButtonLoading from "@/components/ui/VSpinnerButtonLoading.vue";
 import { computed, reactive } from "vue";
@@ -54,16 +88,18 @@ import VInput from "@/components/ui/VInput.vue";
 import { ActionType } from "@/models/store";
 import { useAuthsStore } from "@/store/auth";
 import router from "@/router";
+import { useKeyboard } from "@/use/useKeyboard";
+import { IonButton } from "@ionic/vue";
 
 export default {
   components: {
     VInput,
-    AuthCard,
+    IonButton,
     VSpinnerButtonLoading,
   },
   setup() {
     const authStore = useAuthsStore();
-
+    const { hideKeyboard } = useKeyboard();
     const state = reactive({
       name: "",
       email: "",
@@ -91,6 +127,7 @@ export default {
 
       if (v$.value.$error) return;
 
+      await hideKeyboard();
       await authStore.action(ActionType.auth.signUp, {
         email: state.email,
         password: state.password,
@@ -116,3 +153,8 @@ export default {
   },
 };
 </script>
+<style scoped>
+.signIn {
+  color: #0899ba;
+}
+</style>
