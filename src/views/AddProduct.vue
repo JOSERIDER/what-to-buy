@@ -37,7 +37,7 @@
               capitalize="words"
               enterkeyhint="next"
               @enter="$refs.description.setFocus()"
-              v-model:value="state.name"
+              v-model:value.trim="state.name"
               :v$="v$.name"
               placeholder="product name"
             />
@@ -52,7 +52,7 @@
               enterkeyhint="next"
               @enter="$refs.price.setFocus()"
               name="productDescription"
-              v-model:value="state.description"
+              v-model:value.trim="state.description"
               placeholder="Description"
               :v$="v$.description"
             />
@@ -78,7 +78,7 @@
               name="productPrice"
               enterkeyhint="done"
               @enter="save"
-              v-model:value.number="state.price"
+              v-model:value.number.trim="state.price"
               placeholder="price"
               :v$="v$.price"
               type="number"

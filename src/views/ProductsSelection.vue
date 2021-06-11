@@ -171,7 +171,7 @@ export default defineComponent({
     function onSearchChange(value: string) {
       productsSelectionStore.action(
         ActionType.productsSelection.searchProducts,
-        value
+        value.trim()
       );
     }
 

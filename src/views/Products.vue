@@ -152,7 +152,7 @@ export default defineComponent({
     });
 
     function onSearchChange(value: string) {
-      productsStore.action(ActionType.products.getProductsByName, value);
+      productsStore.action(ActionType.products.getProductsByName, value.trim());
     }
 
     async function fetchProducts() {

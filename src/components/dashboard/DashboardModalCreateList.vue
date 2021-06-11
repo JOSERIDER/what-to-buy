@@ -19,7 +19,7 @@
         <VInput
           class="mt-4"
           :border="true"
-          v-model:value="state.name"
+          v-model:value.trim="state.name"
           :v$="v$.name"
           enterkeyhint="done"
           @enter="createList"
