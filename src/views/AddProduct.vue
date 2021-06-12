@@ -34,7 +34,7 @@
             <VInput
               class="shadow rounded"
               name="productName"
-              capitalize="words"
+              capitalize="sentences"
               enterkeyhint="next"
               @enter="$refs.description.setFocus()"
               v-model:value.trim="state.name"
@@ -50,6 +50,7 @@
               class="shadow rounded"
               ref="description"
               enterkeyhint="next"
+              capitalize="sentences"
               @enter="$refs.price.setFocus()"
               name="productDescription"
               v-model:value.trim="state.description"

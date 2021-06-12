@@ -17,6 +17,7 @@
               <VInput
                 class="shadow rounded"
                 enterkeyhint="next"
+                capitalize="sentences"
                 @enter="$refs.productEditDescription.setFocus()"
                 v-model:value.trim="state.name"
                 :v$="v$.name"
@@ -30,6 +31,7 @@
               <VInput
                 class="shadow rounded"
                 ref="productEditDescription"
+                capitalize="sentences"
                 enterkeyhint="next"
                 @enter="$refs.productEditPrice.setFocus()"
                 v-model:value.trim="state.description"
