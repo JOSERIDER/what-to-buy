@@ -53,6 +53,7 @@
               :key="product.id"
               @increment-quantity="incrementQuantity($event)"
               @decrement-quantity="decrementQuantity($event)"
+              @remove-item="removeItem($event)"
             />
           </ion-list>
         </div>
@@ -170,6 +171,10 @@ export default defineComponent({
       });
     }
 
+    function removeItem(product: Product) {
+      listDetailStore.action(ActionType.listDetail.deleteProduct, product.id);
+    }
+
     async function openPopover(ev: Event) {
       await popover({
         component: ListDetailAddProductPopover,
@@ -183,6 +188,7 @@ export default defineComponent({
     function addProduct(event) {
       openPopover(event);
     }
+
     async function saveList() {
       await listDetailStore.action(
         ActionType.listDetail.updateList,
@@ -215,6 +221,7 @@ export default defineComponent({
       addProduct,
       incrementQuantity,
       decrementQuantity,
+      removeItem,
     };
   },
 });
