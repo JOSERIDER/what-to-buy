@@ -72,6 +72,7 @@
                       class="text-right"
                       v-if="editing"
                       slot="end"
+                      capitalize="words"
                       enterkeyhint="next"
                       @enter="$refs.userEmail.setFocus()"
                       :v$="v$.userName"
