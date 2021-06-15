@@ -206,8 +206,8 @@ export const actions: ActionTree<
       product.quantity = 1;
     }
 
-    dispatch(ActionType.listDetail.updateSummary);
     commit(MutationType.listDetail.addProduct, product);
+    dispatch(ActionType.listDetail.updateSummary);
   },
 
   async saveSelection({ commit, state }, products: DataProduct[]) {
