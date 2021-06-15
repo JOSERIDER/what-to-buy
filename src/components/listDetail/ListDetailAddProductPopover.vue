@@ -74,7 +74,10 @@ export default defineComponent({
     }
 
     function scanBarcode() {
-      useScanner(resp => addProduct(resp));
+      useScanner(resp => {
+        if (!resp) return;
+        addProduct(resp);
+      });
       popoverController.dismiss();
     }
 
@@ -100,6 +103,7 @@ export default defineComponent({
   background-color: var(--ion-color-light);
   border-radius: 5px;
 }
+
 .button p {
   color: var(--ion-color-primary);
 }
