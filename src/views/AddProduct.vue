@@ -14,7 +14,8 @@
     <ion-content>
       <div class="flex flex-col items-center  justify-center mt-10 ">
         <img
-          class="w-32 h-32 rounded"
+          style="width: 128px; height: 128px; object-fit: cover;"
+          class="rounded"
           :src="
             photo
               ? photo.webviewPath
